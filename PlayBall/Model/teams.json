@@ -1,0 +1,60 @@
+[
+  {
+    "name" : "Cheetahs",
+    "games" : [
+      {
+        "name" : "Game 1",
+        "availablePlayers" : [
+          "Alana",
+          "Brooke",
+          "Haley",
+          "Elaina",
+          "Lucy",
+          "Eliza",
+          "Amelia",
+          "Addy",
+          "Aaradhya"
+        ],
+        "date" : "2025-04-06T01:52:00Z"
+      }
+    ],
+    "players" : [
+      {
+        "name" : "Aaradhya",
+        "tint" : "red"
+      },
+      {
+        "name" : "Addy",
+        "tint" : "orange"
+      },
+      {
+        "name" : "Alana",
+        "tint" : "yellow"
+      },
+      {
+        "name" : "Amelia",
+        "tint" : "green"
+      },
+      {
+        "name" : "Brooke",
+        "tint" : "teal"
+      },
+      {
+        "name" : "Elaina",
+        "tint" : "blue"
+      },
+      {
+        "name" : "Eliza",
+        "tint" : "indigo"
+      },
+      {
+        "name" : "Haley",
+        "tint" : "purple"
+      },
+      {
+        "name" : "Lucy",
+        "tint" : "pink"
+      }
+    ]
+  }
+]
