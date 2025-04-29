@@ -25,7 +25,6 @@ struct TeamEditorForm: View {
             ZStack {
                 ColorGradient()
                     .opacity(0.3)
-                    .ignoresSafeArea()
 
                 VStack {
                     ScrollView {

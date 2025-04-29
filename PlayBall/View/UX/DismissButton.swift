@@ -14,13 +14,26 @@ struct DismissButton: View {
     var body: some View {
         Button(action: action) {
             Image(systemName: "xmark.circle.fill")
-                .foregroundStyle(Color.primary)
+                .foregroundStyle(Color.primary.opacity(0.9))
         }
     }
 }
 
-#Preview {
-    DismissButton {
-        print("Dismiss tapped")
+#Preview("ColorGradient") {
+    ZStack {
+        ColorGradient()
+        DismissButton {
+            print("Dismiss tapped")
+        }
+    }
+}
+
+#Preview("ColorGradient with Blur") {
+    ZStack {
+        ColorGradient()
+            .opacity(0.3)
+        DismissButton {
+            print("Dismiss tapped")
+        }
     }
 }

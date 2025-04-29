@@ -43,7 +43,7 @@ struct GlassCard<Content: View>: View {
                 .fill(.thinMaterial)
                 .overlay(
                     RoundedRectangle(cornerRadius: 20)
-                        .stroke(Color.white.opacity(0.5), lineWidth: 1)
+                        .stroke(Color.primary.opacity(0.3), lineWidth: 1)
                 )
         )
         .padding(.horizontal)
@@ -103,7 +103,6 @@ struct GlassCard<Content: View>: View {
             Text("Game 2")
             Text("Game 3")
         }
-        .foregroundStyle(.white)
     }
 }
 
@@ -117,7 +116,6 @@ struct GlassCard<Content: View>: View {
             Text("Player 2")
             Text("Player 3")
         }
-        .foregroundStyle(.white)
     }
 }
 

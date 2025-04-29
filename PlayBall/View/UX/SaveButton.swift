@@ -14,19 +14,38 @@ struct SaveButton: View {
                 .foregroundStyle(Color.primary)
         }
         .disabled(!isEnabled)
-        .opacity(isEnabled ? 1 : 0.2)
+        .opacity(isEnabled ? 0.9 : 0.2)
     }
 }
 
-#Preview {
-    VStack(spacing: 32) {
-        SaveButton(isEnabled: true) {
-            print("Saved!")
-        }
-
-        SaveButton(isEnabled: false) {
-            print("Shouldn't be tappable")
+#Preview("Gradient") {
+    ZStack {
+        ColorGradient()
+        VStack(spacing: 32) {
+            SaveButton(isEnabled: true) {
+                print("Saved!")
+            }
+            
+            SaveButton(isEnabled: false) {
+                print("Shouldn't be tappable")
+            }
         }
     }
-    .padding()
+}
+
+
+#Preview("Gradient Blur") {
+    ZStack {
+        ColorGradient()
+            .opacity(0.3)
+        VStack(spacing: 32) {
+            SaveButton(isEnabled: true) {
+                print("Saved!")
+            }
+            
+            SaveButton(isEnabled: false) {
+                print("Shouldn't be tappable")
+            }
+        }
+    }
 }
