@@ -85,16 +85,6 @@ struct GameEditorForm: View {
     private var isSaveEnabled: Bool {
         !gameName.trimmingCharacters(in: .whitespaces).isEmpty && !availablePlayers.isEmpty
     }
-    
-//    private func saveGame() {
-//        let newGame = Game(
-//            name: gameName,
-//            date: gameDate,
-//            availablePlayers: availablePlayers
-//        )
-//        team.games.append(newGame)
-//        dismiss()
-//    }
 }
 
 #Preview("Game Editor Form") {

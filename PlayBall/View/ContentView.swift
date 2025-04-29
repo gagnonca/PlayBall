@@ -44,7 +44,6 @@ struct ContentView: View {
 
                         } label: {
                             Image(systemName: "slider.horizontal.3")
-                                .font(.title2)
                                 .foregroundStyle(.white)
                         }
                     }
@@ -76,7 +75,6 @@ struct ContentView: View {
                         showingTeamCreation = true
                     } label: {
                         Image(systemName: "plus.circle.fill")
-                            .font(.title2)
                             .foregroundStyle(.white)
                     }
                 }
@@ -86,21 +84,16 @@ struct ContentView: View {
                     selectedTeam = coach.teams.first
                 }
             }
-            .fullScreenCover(isPresented: $showingTeamCreation, onDismiss: {
-                if selectedTeam == nil, !coach.teams.isEmpty {
-                    selectedTeam = coach.teams.first
+            .fullScreenCover(isPresented: $showingTeamCreation) {
+                TeamAddView { newTeam in
+                    coach.saveTeam(newTeam)
+                    selectedTeam = newTeam
                 }
-            }) {
-                TeamCreationView(
-                    team: .constant(
-                        Team(name: "", players: [])
-                    )
-                )
             }
             .fullScreenCover(isPresented: $showingEditTeam) {
-                if let index = coach.teams.firstIndex(where: { $0.id == selectedTeam?.id }),
-                   let selectedTeam = selectedTeam {
-                    TeamCreationView(team: $coach.teams[index])
+                if let selectedTeam = selectedTeam,
+                   let index = coach.teams.firstIndex(where: { $0.id == selectedTeam.id }) {
+                    TeamEditView(team: $coach.teams[index])
                 }
             }
         }

@@ -9,10 +9,11 @@ import SwiftUI
 
 struct SelectedTeamView: View {
     @Binding var team: Team
+//    @State private var selectedGame: Game?
+//    @State private var showingGameDay = false
+    
+    // Game Creation States
     @State private var showingGameCreation = false
-    @State private var selectedGame: Game?
-    @State private var showingGameDay = false
-
 
     var body: some View {
         ScrollView {
@@ -22,29 +23,38 @@ struct SelectedTeamView: View {
                     addNewGame: {
                         showingGameCreation = true
                     },
-                    gameTapped: { game in
-                        selectedGame = game
-                        showingGameDay = true
+                    destination: { game in
+                        AnyView(
+                            GameDayView(
+                                game: bindingForGame(game),
+                                team: team
+                            )
+                        )
                     }
                 )
                 RosterSection(players: team.players)
             }
         }
         .fullScreenCover(isPresented: $showingGameCreation) {
-            GameCreationView(team: $team)
-        }
-        .fullScreenCover(isPresented: $showingGameDay) {
-            if let selectedGame {
-                GameDayView(game: selectedGame)
-            }
+            // not using this yet
+//            GameCreationView(team: $team)
+            GameAddView(team: team)
         }
     }
+    
+    private func bindingForGame(_ game: Game) -> Binding<Game> {
+        guard let index = team.games.firstIndex(where: { $0.id == game.id }) else {
+            fatalError("Game not found!")
+        }
+        return $team.games[index]
+    }
+
 }
 
 struct GamesSection: View {
     var games: [Game]
     var addNewGame: () -> Void
-    var gameTapped: (Game) -> Void
+    var destination: (Game) -> AnyView
 
     var body: some View {
         GlassCard(
@@ -57,14 +67,14 @@ struct GamesSection: View {
                 if games.isEmpty {
                     Text("No games yet.")
                         .foregroundStyle(.white.opacity(0.7))
-                        .padding(.vertical, 8)
-                        .frame(maxWidth: .infinity, alignment: .leading)
                 } else {
                     ForEach(games) { game in
-                        Button {
-                            gameTapped(game)
+                        NavigationLink {
+                            destination(game)
                         } label: {
                             GameRow(game: game)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
                     }
@@ -86,9 +96,8 @@ struct RosterSection: View {
                 if players.isEmpty {
                     Text("No players yet.")
                         .foregroundStyle(.white.opacity(0.7))
-                        .padding(.vertical, 8)
                 } else {
-                    ForEach(players) { player in
+                    FlowLayout(items: players, spacing: 8) { player in
                         PlayerBadge(player: player)
                     }
                 }
@@ -97,34 +106,30 @@ struct RosterSection: View {
     }
 }
 
-
-#Preview ("Game Section") {
+#Preview ("GameSection") {
     GamesSection(
         games: [
             Game(name: "Game 1", date: Date(), availablePlayers: []),
             Game(name: "Game 2", date: Date(), availablePlayers: [])
         ],
         addNewGame: {},
-        gameTapped: { _ in }
+        destination: { _ in AnyView(EmptyView()) }
+    )
+    
+    GamesSection(
+        games: [],
+        addNewGame: {},
+        destination: { _ in AnyView(EmptyView()) }
     )
 }
 
-#Preview {
-    @Previewable @State var mockTeam = Team(
-        name: "Mock Team",
-        players: [
-            Player(name: "Alice", tint: .red),
-            Player(name: "Bob", tint: .blue),
-            Player(name: "Charlie", tint: .green),
-            Player(name: "Dana", tint: .orange),
-            Player(name: "Eve", tint: .yellow),
-            Player(name: "Frank", tint: .green)
-        ],
-        games: [
-            Game(name: "Game 1", date: Date(), availablePlayers: []),
-            Game(name: "Game 2", date: Date(), availablePlayers: [])
-        ],
-    )
+#Preview ("RosterSection") {
+    RosterSection(players: Coach.previewCoach.teams.first!.players)
+    RosterSection(players:[])
+}
+
+#Preview ("SelectedTeamView") {
+    @Previewable @State var mockTeam = Coach.previewCoach.teams.first!
 
     return ZStack {
         LinearGradient(

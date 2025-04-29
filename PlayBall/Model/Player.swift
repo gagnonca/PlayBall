@@ -13,3 +13,11 @@ struct Player: Identifiable, Hashable {
     var name: String    // name of the player
     var tint: Color     // tint color used for UI elements
 }
+
+struct PlayerPalette {
+    static let colors: [Color] = [.red, .orange, .yellow, .green, .teal, .blue, .indigo, .purple, .pink]
+
+    static func color(for index: Int) -> Color {
+        colors[index % colors.count]
+    }
+}

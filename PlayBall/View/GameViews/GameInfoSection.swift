@@ -25,7 +25,7 @@ struct GameInfoSection: View {
                         RoundedRectangle(cornerRadius: 12)
                             .fill(.ultraThinMaterial)
                     )
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.primary)
 
                 DatePicker("Game Date", selection: $gameDate, displayedComponents: .date)
                     .datePickerStyle(.compact)
@@ -34,7 +34,7 @@ struct GameInfoSection: View {
                         RoundedRectangle(cornerRadius: 12)
                             .fill(.ultraThinMaterial)
                     )
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.primary)
             }
         }
     }

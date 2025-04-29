@@ -12,13 +12,13 @@ struct PlayerBadge: View {
     
     var body: some View {
         Text(player.name)
-            .font(.title3.bold())
+            .font(.subheadline)
             .lineLimit(1)
-            .padding(.horizontal, 8)
+            .padding(.horizontal, 12)
             .padding(.vertical, 4)
             .background(player.tint.opacity(0.25), in: Capsule())
             .overlay(
-                Capsule().stroke(player.tint, lineWidth: 1)
+                Capsule().stroke(player.tint, lineWidth: 2)
             )
     }
 }

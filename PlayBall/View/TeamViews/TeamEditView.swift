@@ -9,25 +9,32 @@ import SwiftUI
 
 struct TeamEditView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var coach = Coach.shared
-
     @Binding var team: Team
+
+    @State private var teamName: String
+    @State private var players: [Player]
+
+    init(team: Binding<Team>) {
+        _team = team
+        _teamName = State(initialValue: team.wrappedValue.name)
+        _players = State(initialValue: team.wrappedValue.players)
+    }
 
     var body: some View {
         TeamEditorForm(
-            teamName: $team.name,
-            players: $team.players,
-            onSave: {
-                coach.saveTeam(team)
-                dismiss()
-            },
-            onCancel: {
-                dismiss()
-            },
+            teamName: $teamName,
+            players: $players,
             title: "Edit Team",
             showDelete: true,
+            onSave: {
+                team.name = teamName
+                team.players = players
+                Coach.shared.updateTeam(team)
+                dismiss()
+            },
+            onCancel: { dismiss() },
             onDelete: {
-                coach.deleteTeam(team)
+                Coach.shared.deleteTeam(team)
                 dismiss()
             }
         )

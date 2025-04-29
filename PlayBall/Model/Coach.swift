@@ -17,20 +17,24 @@ class Coach {
         loadTeams()
     }
 
-    func addTeam(_ team: Team) {
-        teams.append(team)
-        saveTeams()
+    func saveTeam(_ team: Team) {
+        if let index = teams.firstIndex(where: { $0.id == team.id }) {
+            teams[index] = team
+        } else {
+            teams.append(team)
+        }
+        saveTeamsToJson()
     }
-    
+
     func updateTeam(_ updatedTeam: Team) {
         guard let index = teams.firstIndex(where: { $0.id == updatedTeam.id }) else { return }
         teams[index] = updatedTeam
-        saveTeams()
+        saveTeamsToJson()
     }
         
     func deleteTeam(_ team: Team) {
         teams.removeAll { $0.id == team.id }
-        saveTeams()
+        saveTeamsToJson()
     }
 
     var games: [Game] {
@@ -61,7 +65,7 @@ extension Coach {
         decodeTeams(from: data)
     }
 
-    func saveTeams() {
+    func saveTeamsToJson() {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted]
         encoder.dateEncodingStrategy = .iso8601
@@ -134,19 +138,38 @@ extension Coach {
     }
 }
 
+/// Preview Coach for UI Previews
+extension Coach {
+    static var previewEmptyCoach: Coach {
+        let coach = Coach()
+        return coach
+    }
+}
+
 /// For File sharing to Assistant Coaches
 extension Coach {
     @discardableResult
-    func exportToTempFile() -> URL? {
+    func export(team: Team) -> URL? {
         let url = FileManager.default.temporaryDirectory
-            .appendingPathComponent("PlayBall_teams.json")
-        do   { try saveTeams(to: url);  return url }
-        catch { print("Export failed:", error);     return nil }
+            .appendingPathComponent("PlayBall_\(team.name).json")
+
+        do {
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.prettyPrinted]
+            encoder.dateEncodingStrategy = .iso8601
+
+            let data = try encoder.encode(TeamData(from: team))
+            try data.write(to: url, options: [.atomic])
+            return url
+        } catch {
+            print("Export failed:", error)
+            return nil
+        }
     }
 
     func importFrom(url: URL) {
         loadTeams(from: url)
-        saveTeams()
+        saveTeamsToJson()
     }
 
     /// Write to an arbitrary URL instead of the sandbox file.

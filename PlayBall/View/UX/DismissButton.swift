@@ -13,21 +13,14 @@ struct DismissButton: View {
 
     var body: some View {
         Button(action: action) {
-            Image(systemName: "xmark")
-                .foregroundStyle(.white)
-                .frame(width: 40, height: 40)
-                .background(.gray, in: Circle())
-                .opacity(0.8)
+            Image(systemName: "xmark.circle.fill")
+                .foregroundStyle(Color.primary)
         }
     }
 }
 
 #Preview {
-    ZStack {
-        Color.black.ignoresSafeArea()
-
-        DismissButton {
-            print("Dismiss tapped")
-        }
+    DismissButton {
+        print("Dismiss tapped")
     }
 }

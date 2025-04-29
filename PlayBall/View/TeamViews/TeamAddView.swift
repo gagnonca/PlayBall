@@ -13,26 +13,29 @@ struct TeamAddView: View {
 
     @State private var teamName = ""
     @State private var players: [Player] = []
+    
+    let onSave: (Team) -> Void
 
     var body: some View {
         TeamEditorForm(
             teamName: $teamName,
             players: $players,
+            title: "Create Team",
+            showDelete: false,
             onSave: {
                 let newTeam = Team(name: teamName, players: players)
                 coach.saveTeam(newTeam)
+                onSave(newTeam)
                 dismiss()
             },
             onCancel: {
                 dismiss()
             },
-            title: "Create Team",
-            showDelete: false,
             onDelete: nil
         )
     }
 }
 
 #Preview("Add Team") {
-    TeamAddView()
+    TeamAddView { _ in print("Saved!") }
 }

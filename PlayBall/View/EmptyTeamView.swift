@@ -17,20 +17,19 @@ struct EmptyTeamView: View {
             VStack(spacing: 30) {
                 // Icon
                 Image(systemName: "person.3.fill")
-                    .font(.system(size: 40))
-                    .foregroundStyle(.white.opacity(0.8))
+                    .font(.largeTitle)
+                    .foregroundStyle(.primary.opacity(0.8))
 
                 // Title
                 Text("No Team Selected")
                     .font(.title.bold())
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.primary)
 
                 // Subtitle
                 Text("Once you create or your first team, it will appear here.")
                     .font(.body)
-                    .foregroundStyle(.white.opacity(0.7))
+                    .foregroundStyle(.primary.opacity(0.7))
                     .multilineTextAlignment(.center)
-                    .padding(.horizontal)
 
                 // Create Button
                 Button {
@@ -38,7 +37,7 @@ struct EmptyTeamView: View {
                 } label: {
                     Text("Create Team")
                         .font(.headline)
-                        .foregroundColor(.black)
+                        .foregroundColor(.primary)
                         .padding()
                         .frame(maxWidth: .infinity)
                         .background(.white)
@@ -47,7 +46,7 @@ struct EmptyTeamView: View {
                 .padding(.top, 8)
                 .padding(.horizontal, 40)
             }
-            .padding(.vertical, 100)
+            .padding(.vertical, 50)
             .background(
                 RoundedRectangle(cornerRadius: 30)
                     .fill(.thinMaterial)
@@ -56,7 +55,7 @@ struct EmptyTeamView: View {
                             .stroke(Color.white.opacity(0.15), lineWidth: 1)
                     )
             )
-            .padding(.horizontal, 12)
+            .padding(.horizontal, 24)
 
             Spacer()
         }

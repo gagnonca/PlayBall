@@ -12,11 +12,12 @@ struct TeamEditorForm: View {
     @Binding var teamName: String
     @Binding var players: [Player]
     @State private var newPlayerName: String = ""
+    @Environment(\.dismiss) private var dismiss
 
-    let onSave: () -> Void
-    let onCancel: () -> Void
     let title: String
     let showDelete: Bool
+    let onSave: () -> Void
+    let onCancel: () -> Void
     let onDelete: (() -> Void)?
 
     var body: some View {
@@ -48,10 +49,14 @@ struct TeamEditorForm: View {
             .navigationTitle(title)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    DismissButton(action: onCancel)
+                    DismissButton {
+                        dismiss()
+                    }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    SaveButton(isEnabled: isSaveEnabled, action: onSave)
+                    SaveButton(isEnabled: isSaveEnabled) {
+                        onSave()
+                    }
                 }
             }
         }
@@ -93,10 +98,10 @@ struct TeamEditorForm: View {
     return TeamEditorForm(
         teamName: $teamName,
         players: $players,
-        onSave: { print("Saved!") },
-        onCancel: { print("Canceled!") },
         title: "Create/Edit Team",
         showDelete: true,
+        onSave: { print("Saved!") },
+        onCancel: { print("Canceled!") },
         onDelete: { print("Deleted!") }
     )
 }

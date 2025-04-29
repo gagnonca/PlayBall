@@ -14,7 +14,7 @@ struct GameRow: View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
                 Text(game.name)
-                    .font(.title3)
+                    .font(.subheadline)
                 Text(game.date, format: .dateTime.month().day().year())
                     .font(.caption)
                     .foregroundStyle(.secondary)

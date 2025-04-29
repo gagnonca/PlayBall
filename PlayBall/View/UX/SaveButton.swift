@@ -10,13 +10,11 @@ struct SaveButton: View {
                 action()
             }
         }) {
-            Image(systemName: "checkmark")
-                .foregroundStyle(.white)
-                .frame(width: 40, height: 40)
-                .background(.ultraThinMaterial, in: Circle())
+            Image(systemName: "checkmark.circle.fill")
+                .foregroundStyle(Color.primary)
         }
         .disabled(!isEnabled)
-        .opacity(isEnabled ? 1 : 0.5)
+        .opacity(isEnabled ? 1 : 0.2)
     }
 }
 
@@ -31,5 +29,4 @@ struct SaveButton: View {
         }
     }
     .padding()
-    .background(Color.black.ignoresSafeArea())
 }

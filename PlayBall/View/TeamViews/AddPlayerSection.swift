@@ -11,6 +11,12 @@ struct AddPlayerSection: View {
     @Binding var newPlayerName: String
     @Binding var players: [Player]
     var addPlayer: () -> Void
+    
+    @FocusState private var isTextFieldFocused: Bool
+    
+    var isAddEnabled: Bool {
+        !newPlayerName.trimmingCharacters(in: .whitespaces).isEmpty
+    }
 
     var body: some View {
         GlassCard(title: "Add Player", sfSymbol: "person.fill.badge.plus") {
@@ -18,12 +24,18 @@ struct AddPlayerSection: View {
                 HStack {
                     TextField("Enter Player Name", text: $newPlayerName)
                         .textInputAutocapitalization(.words)
+                        .submitLabel(.done)
+                        .focused($isTextFieldFocused)
+                        .onSubmit {
+                            isTextFieldFocused = true
+                            addPlayer()
+                        }
                     Spacer()
                     Button(action: {
                         addPlayer()
                     }) {
                         Image(systemName: "plus.circle.fill")
-                            .foregroundStyle(.primary)
+                            .foregroundStyle(isAddEnabled ? .green : .secondary)
                     }
                     .disabled(newPlayerName.trimmingCharacters(in: .whitespaces).isEmpty)
                 }

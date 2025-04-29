@@ -10,10 +10,6 @@ import SwiftUI
 struct GameDayView: View {
     @Binding var game: Game
     let team: Team
-    
-//    private var segments: [SubSegment] {
-//        game.buildSegments()
-//    }
 
     // Game time management
     @State private var segments: [SubSegment] = []
@@ -66,10 +62,14 @@ struct GameDayView: View {
                     }
                 }
             }
+            .navigationBarBackButtonHidden(true)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    DismissButton {
+                    Button {
                         dismiss()
+                    } label: {
+                        Image(systemName: "chevron.backward.circle.fill")
+                            .foregroundStyle(.white)
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
@@ -88,7 +88,7 @@ struct GameDayView: View {
             .onChange(of: game) {
                 segments = game.buildSegments()
             }
-            .sheet(isPresented: $showingGameEditor) {
+            .fullScreenCover(isPresented: $showingGameEditor) {
                 GameEditView(game: $game, team: team)
             }
         }

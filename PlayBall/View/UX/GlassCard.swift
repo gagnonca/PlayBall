@@ -19,7 +19,7 @@ struct GlassCard<Content: View>: View {
             if let title, let sfSymbol {
                 HStack {
                     Label(title, systemImage: sfSymbol)
-                        .font(.title3.bold())
+                        .font(.headline.bold())
                         .padding(.bottom, 4)
 
                     Spacer()
@@ -27,8 +27,8 @@ struct GlassCard<Content: View>: View {
                     if let buttonSymbol, let onButtonTap {
                         Button(action: onButtonTap) {
                             Image(systemName: buttonSymbol)
-                                .font(.title3)
-                                .foregroundStyle(.white)
+                                .font(.headline)
+                                .foregroundStyle(Color.primary)
                         }
                     }
                 }
@@ -50,6 +50,44 @@ struct GlassCard<Content: View>: View {
     }
 }
 
+#Preview("Font Size") {
+    let title = "Games"
+    let sfSymbol = "calendar"
+    
+    Label("LargeTitle", systemImage: sfSymbol)
+        .font(.largeTitle.bold())
+        .padding(.bottom, 4)
+    Label("Title", systemImage: sfSymbol)
+        .font(.title.bold())
+        .padding(.bottom, 4)
+    Label("Title2", systemImage: sfSymbol)
+        .font(.title2.bold())
+        .padding(.bottom, 4)
+    Label("Title3", systemImage: sfSymbol)
+        .font(.title3.bold())
+        .padding(.bottom, 4)
+    Label("Headline", systemImage: sfSymbol)
+        .font(.headline.bold())
+        .padding(.bottom, 4)
+    Label("Subheadline", systemImage: sfSymbol)
+        .font(.subheadline.bold())
+        .padding(.bottom, 4)
+    Label("Body", systemImage: sfSymbol)
+        .font(.body.bold())
+        .padding(.bottom, 4)
+    Label("Footnote", systemImage: sfSymbol)
+        .font(.footnote.bold())
+        .padding(.bottom, 4)
+    Label("Callout", systemImage: sfSymbol)
+        .font(.callout.bold())
+        .padding(.bottom, 4)
+    Label("Caption", systemImage: sfSymbol)
+        .font(.caption.bold())
+        .padding(.bottom, 4)
+    Label("Caption2", systemImage: sfSymbol)
+        .font(.caption2.bold())
+        .padding(.bottom, 4)
+}
 
 #Preview("With Button") {
     GlassCard(
