@@ -61,7 +61,6 @@ extension Coach {
             print("Failed to load data from documents.")
             return
         }
-
         decodeTeams(from: data)
     }
 

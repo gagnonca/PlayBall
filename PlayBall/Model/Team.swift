@@ -18,15 +18,18 @@ class Team: Identifiable {
         self.name = name
         self.players = players
         self.games = games
+        sortPlayers()
     }
 
     func addPlayer(_ player: Player) {
         players.append(player)
+        self.sortPlayers()
         Coach.shared.saveTeamsToJson()
     }
 
     func removePlayer(_ player: Player) {
         players.removeAll { $0.id == player.id }
+        self.sortPlayers()
         Coach.shared.saveTeamsToJson()
     }
 
@@ -38,5 +41,11 @@ class Team: Identifiable {
     func removeGame(_ game: Game) {
         games.removeAll { $0.id == game.id }
         Coach.shared.saveTeamsToJson()
+    }
+}
+
+extension Team {
+    func sortPlayers() {
+        players.sort { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
     }
 }
