@@ -26,15 +26,15 @@ struct GameAddView: View {
             gameDate: $gameDate,
             availablePlayers: $availablePlayers,
             team: team,
+            title: "New Game",
+            showDelete: false,
             onSave: {
                 let newGame = Game(name: gameName, date: gameDate, availablePlayers: availablePlayers)
                 team.addGame(newGame)
-//                team.games.append(newGame)
-//                Coach.shared.saveTeam()
                 dismiss()
             },
             onCancel: { dismiss() },
-            title: "New Game"
+            onDelete: nil
         )
     }
 }

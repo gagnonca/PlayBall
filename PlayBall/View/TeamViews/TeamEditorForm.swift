@@ -38,7 +38,9 @@ struct TeamEditorForm: View {
                             )
 
                             if showDelete, let onDelete {
-                                deleteButton(onDelete: onDelete)
+                                DeleteButton(title: "Delete Team") {
+                                    onDelete()
+                                }
                             }
                         }
                         .padding(.top, 32)
@@ -71,22 +73,6 @@ struct TeamEditorForm: View {
         let tint = PlayerPalette.color(for: players.count)
         players.append(Player(name: trimmed, tint: tint))
         newPlayerName = ""
-    }
-
-    private func deleteButton(onDelete: @escaping () -> Void) -> some View {
-        Button(role: .destructive) {
-            onDelete()
-        } label: {
-            Label("Delete Team", systemImage: "trash")
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(.ultraThinMaterial)
-                )
-        }
-        .padding(.horizontal)
-        .padding(.top, 16)
     }
 }
 

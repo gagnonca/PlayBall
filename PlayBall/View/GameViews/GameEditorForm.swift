@@ -15,9 +15,11 @@ struct GameEditorForm: View {
     @Environment(\.dismiss) private var dismiss
 
     let team: Team
+    let title: String
+    let showDelete: Bool
     let onSave: () -> Void
     let onCancel: () -> Void
-    let title: String
+    let onDelete: (() -> Void)?
 
     var body: some View {
         NavigationStack {
@@ -79,6 +81,12 @@ struct GameEditorForm: View {
                     }
                 }
             }
+            if showDelete, let onDelete = onDelete {
+                DeleteButton(title: "Delete Game") {
+                    onDelete()
+                    dismiss()
+                }
+            }
         }
     }
     
@@ -91,14 +99,16 @@ struct GameEditorForm: View {
     @Previewable @State var gameName = "Saturday Match"
     @Previewable @State var gameDate = Date()
     @Previewable @State var availablePlayers = Array(Coach.previewCoach.teams.first!.players.prefix(5))
-
-    return GameEditorForm(
+    
+    GameEditorForm(
         gameName: $gameName,
         gameDate: $gameDate,
         availablePlayers: $availablePlayers,
         team: Coach.previewCoach.teams.first!,
+        title: "Edit Game",
+        showDelete: true,
         onSave: { print("Saved!") },
         onCancel: { print("Canceled!") },
-        title: "Edit Game"
+        onDelete: { print("Deleted!") }
     )
 }

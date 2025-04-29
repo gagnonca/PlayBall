@@ -30,16 +30,19 @@ struct GameEditView: View {
             gameDate: $gameDate,
             availablePlayers: $availablePlayers,
             team: team,
+            title: "Edit Game",
+            showDelete: true,
             onSave: {
                 game.name = gameName
                 game.date = gameDate
                 game.availablePlayers = availablePlayers
-//                Coach.shared.saveTeamsToJson()
                 Coach.shared.updateTeam(team)
                 dismiss()
             },
             onCancel: { dismiss() },
-            title: "Edit Game"
+            onDelete: {
+                team.removeGame(game)
+            }
         )
     }
 }
