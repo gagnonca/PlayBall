@@ -5,12 +5,6 @@
 //  Created by Corey Gagnon on 4/18/25.
 //
 
-
-//
-//  GameRow.swift
-//  PlayBall
-//
-
 import SwiftUI
 
 struct GameRow: View {
@@ -20,11 +14,16 @@ struct GameRow: View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
                 Text(game.name)
-                    .font(.body)
+                    .font(.title3)
                 Text(game.date, format: .dateTime.month().day().year())
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
+            Spacer()
+            Image(systemName: "chevron.right")
+                .font(.subheadline)
+                .foregroundStyle(.white.opacity(0.5))
+
         }
         .padding(.vertical, 4)
     }
@@ -32,5 +31,4 @@ struct GameRow: View {
 
 #Preview {
     GameRow(game: Coach.previewCoach.teams.first!.games.first!)
-        .previewLayout(.sizeThatFits)
 }

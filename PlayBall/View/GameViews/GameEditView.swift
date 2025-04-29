@@ -14,13 +14,13 @@ struct GameEditView: View {
 
     @State private var gameName: String
     @State private var gameDate: Date
-    @State private var selectedPlayers: [Player]
+    @State private var availablePlayers: [Player]
 
     init(game: Binding<Game>, team: Team) {
         _game = game
         _gameName = State(initialValue: game.wrappedValue.name)
         _gameDate = State(initialValue: game.wrappedValue.date)
-        _selectedPlayers = State(initialValue: game.wrappedValue.availablePlayers)
+        _availablePlayers = State(initialValue: game.wrappedValue.availablePlayers)
         self.team = team
     }
 
@@ -28,13 +28,14 @@ struct GameEditView: View {
         GameEditorForm(
             gameName: $gameName,
             gameDate: $gameDate,
-            selectedPlayers: $selectedPlayers,
+            availablePlayers: $availablePlayers,
             team: team,
             onSave: {
                 game.name = gameName
                 game.date = gameDate
-                game.availablePlayers = selectedPlayers
-                Coach.shared.saveTeams()
+                game.availablePlayers = availablePlayers
+//                Coach.shared.saveTeamsToJson()
+                Coach.shared.updateTeam(team)
                 dismiss()
             },
             onCancel: { dismiss() },
@@ -44,6 +45,6 @@ struct GameEditView: View {
 }
 
 #Preview {
-    @State var game = Coach.previewCoach.teams.first!.games.first!
+    @Previewable @State var game = Coach.previewCoach.teams.first!.games.first!
     GameEditView(game: $game, team: Coach.previewCoach.teams.first!)
 }

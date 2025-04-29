@@ -12,7 +12,7 @@ struct PlayerBadge: View {
     
     var body: some View {
         Text(player.name)
-            .font(.caption)
+            .font(.title3.bold())
             .lineLimit(1)
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
@@ -21,4 +21,12 @@ struct PlayerBadge: View {
                 Capsule().stroke(player.tint, lineWidth: 1)
             )
     }
+}
+
+#Preview {
+    PlayerBadge(player: Player(name: "Eliza", tint: .red))
+    PlayerBadge(player: Player(name: "Alana", tint: .orange))
+    PlayerBadge(player: Player(name: "Lucy", tint: .yellow))
+    PlayerBadge(player: Player(name: "Elaina", tint: .green))
+    PlayerBadge(player: Player(name: "Haley", tint: .purple))
 }

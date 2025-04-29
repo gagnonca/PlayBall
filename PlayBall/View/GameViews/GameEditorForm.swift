@@ -2,15 +2,17 @@
 //  GameEditorForm.swift
 //  PlayBall
 //
-//  Created by Corey Gagnon on 4/17/25.
+//  Created by Corey Gagnon on 4/27/25.
 //
+
 
 import SwiftUI
 
 struct GameEditorForm: View {
     @Binding var gameName: String
     @Binding var gameDate: Date
-    @Binding var selectedPlayers: [Player]
+    @Binding var availablePlayers: [Player]
+    @Environment(\.dismiss) private var dismiss
 
     let team: Team
     let onSave: () -> Void
@@ -26,10 +28,10 @@ struct GameEditorForm: View {
                 }
 
                 Section("Available Players") {
-                    if selectedPlayers.isEmpty {
+                    if availablePlayers.isEmpty {
                         Text("No players selected").foregroundStyle(.secondary)
                     } else {
-                        ForEach(Array(selectedPlayers.enumerated()), id: \.element.id) { index, player in
+                        ForEach(Array(availablePlayers.enumerated()), id: \.element.id) { index, player in
                             VStack(spacing: 0) {
                                 HStack {
                                     Text("\(index + 1). \(player.name)")
@@ -40,19 +42,19 @@ struct GameEditorForm: View {
                                 }
                             }
                         }
-                        .onDelete { selectedPlayers.remove(atOffsets: $0) }
-                        .onMove { selectedPlayers.move(fromOffsets: $0, toOffset: $1) }
+                        .onDelete { availablePlayers.remove(atOffsets: $0) }
+                        .onMove { availablePlayers.move(fromOffsets: $0, toOffset: $1) }
                     }
                 }
 
-                if selectedPlayers.count < team.players.count {
+                if availablePlayers.count < team.players.count {
                     Section("Team Roster") {
-                        ForEach(team.players.filter { !selectedPlayers.contains($0) }) { player in
+                        ForEach(team.players.filter { !availablePlayers.contains($0) }) { player in
                             HStack {
                                 Text(player.name)
                                 Spacer()
                                 Button {
-                                    selectedPlayers.append(player)
+                                    availablePlayers.append(player)
                                 } label: {
                                     Image(systemName: "plus.circle.fill")
                                         .foregroundStyle(player.tint)
@@ -65,15 +67,48 @@ struct GameEditorForm: View {
             }
             .navigationTitle(title)
             .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save", action: onSave)
-                        .disabled(gameName.trimmingCharacters(in: .whitespaces).isEmpty || selectedPlayers.isEmpty)
+                ToolbarItem(placement: .topBarLeading) {
+                    DismissButton {
+                        dismiss()
+                    }
                 }
 
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel", action: onCancel)
+                ToolbarItem(placement: .topBarTrailing) {
+                    SaveButton(isEnabled: isSaveEnabled) {
+                        onSave()
+                    }
                 }
             }
         }
     }
+    
+    private var isSaveEnabled: Bool {
+        !gameName.trimmingCharacters(in: .whitespaces).isEmpty && !availablePlayers.isEmpty
+    }
+    
+//    private func saveGame() {
+//        let newGame = Game(
+//            name: gameName,
+//            date: gameDate,
+//            availablePlayers: availablePlayers
+//        )
+//        team.games.append(newGame)
+//        dismiss()
+//    }
+}
+
+#Preview("Game Editor Form") {
+    @Previewable @State var gameName = "Saturday Match"
+    @Previewable @State var gameDate = Date()
+    @Previewable @State var availablePlayers = Array(Coach.previewCoach.teams.first!.players.prefix(5))
+
+    return GameEditorForm(
+        gameName: $gameName,
+        gameDate: $gameDate,
+        availablePlayers: $availablePlayers,
+        team: Coach.previewCoach.teams.first!,
+        onSave: { print("Saved!") },
+        onCancel: { print("Canceled!") },
+        title: "Edit Game"
+    )
 }

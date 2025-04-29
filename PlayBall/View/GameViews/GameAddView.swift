@@ -2,7 +2,7 @@
 //  GameAddView.swift
 //  PlayBall
 //
-//  Created by Corey Gagnon on 4/17/25.
+//  Created by Corey Gagnon on 4/28/25.
 //
 
 import SwiftUI
@@ -13,7 +13,7 @@ struct GameAddView: View {
 
     @State private var gameName: String
     @State private var gameDate: Date = Date()
-    @State private var selectedPlayers: [Player] = []
+    @State private var availablePlayers: [Player] = []
 
     init(team: Team) {
         self.team = team
@@ -24,12 +24,13 @@ struct GameAddView: View {
         GameEditorForm(
             gameName: $gameName,
             gameDate: $gameDate,
-            selectedPlayers: $selectedPlayers,
+            availablePlayers: $availablePlayers,
             team: team,
             onSave: {
-                let newGame = Game(name: gameName, date: gameDate, availablePlayers: selectedPlayers)
-                team.games.append(newGame)
-                Coach.shared.saveTeams()
+                let newGame = Game(name: gameName, date: gameDate, availablePlayers: availablePlayers)
+                team.addGame(newGame)
+//                team.games.append(newGame)
+//                Coach.shared.saveTeam()
                 dismiss()
             },
             onCancel: { dismiss() },
