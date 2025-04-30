@@ -41,11 +41,13 @@ struct GameClockSection: View {
                 .frame(maxWidth: .infinity, alignment: .center)
 
                 HStack(spacing: 24) {
+                    let quarterOffset = Double(currentQuarter - 1) * quarterLength
+
                     // Previous Sub
-                    let canJumpBackToSub = lastSubTime != nil && lastSubTime! <= quarterLength
+                    let canJumpBackToSub = lastSubTime != nil && lastSubTime! - quarterOffset >= 0
                     Button {
                         if canJumpBackToSub {
-                            currentTime = lastSubTime!
+                            currentTime = lastSubTime! - quarterOffset
                         }
                     } label: {
                         Image(systemName: "arrowtriangle.backward.fill")
@@ -83,18 +85,16 @@ struct GameClockSection: View {
                     }
 
                     // Next Sub
-                    let canJumpForwardToSub = nextSubTime != nil && nextSubTime! <= quarterLength
+                    let canJumpForwardToSub = nextSubTime != nil && nextSubTime! - quarterOffset <= quarterLength
                     Button {
                         if canJumpForwardToSub {
-                            currentTime = nextSubTime!
+                            currentTime = nextSubTime! - quarterOffset
                         }
                     } label: {
                         Image(systemName: "arrowtriangle.forward.fill")
                             .foregroundStyle(.primary.opacity(canJumpForwardToSub ? 1 : 0.3))
                     }
                 }
-                .font(.title2)
-
                 .font(.title2)
                 .foregroundStyle(.primary)
             }

@@ -21,8 +21,9 @@ struct GameDayView: View {
     let totalQuarters = 4
     var timerInterval: TimeInterval = 1 // to allow speeding up time for testing
 
-    // ability to edit games in the fly
+
     @State private var showingGameEditor = false
+    @State private var showingGameOverview = false
 
     @Environment(\.dismiss) private var dismiss
 
@@ -33,7 +34,6 @@ struct GameDayView: View {
 
                 ScrollView {
                     VStack(spacing: 12) {
-
                         // Game Info Header
                         VStack() {
                             Text(game.name)
@@ -83,8 +83,14 @@ struct GameDayView: View {
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        showingGameEditor = true
+                    Menu {
+                        Button("Edit Game", systemImage: "pencil") {
+                            showingGameEditor = true
+                        }
+
+                        Button("Game Overview", systemImage: "list.bullet.rectangle") {
+                            showingGameOverview = true
+                        }
                     } label: {
                         Image(systemName: "slider.horizontal.3")
                             .foregroundStyle(.white)
@@ -100,6 +106,10 @@ struct GameDayView: View {
             .fullScreenCover(isPresented: $showingGameEditor) {
                 GameEditView(game: $game, team: team)
             }
+            .sheet(isPresented: $showingGameOverview) {
+                GameOverviewView(game: game)
+            }
+
         }
     }
 
@@ -171,8 +181,8 @@ struct GameDayView: View {
                 timerRunning = false
 
                 if currentQuarter < totalQuarters {
+                    currentQuarter += 1
                     currentTime = 0
-                    // Optional: vibrate or alert "Start next quarter"
                 } else {
                     // Full game completed
                 }
