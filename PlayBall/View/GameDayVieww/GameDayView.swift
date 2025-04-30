@@ -14,9 +14,9 @@ struct GameDayView: View {
     // Game time management
     @State private var segments: [SubSegment] = []
     @State private var currentTime: TimeInterval = 0
+    @State private var currentQuarter: Int = 1
     @State private var timerRunning = false
     @State private var timer: Timer?
-    @State private var currentQuarter = 1
     let quarterLength: TimeInterval = 10 * 60
     let totalQuarters = 4
     var timerInterval: TimeInterval = 1 // to allow speeding up time for testing
@@ -32,33 +32,43 @@ struct GameDayView: View {
                 ColorGradient()
 
                 ScrollView {
-                    VStack(spacing: 24) {
+                    VStack(spacing: 12) {
 
                         // Game Info Header
-                        VStack(spacing: 8) {
+                        VStack() {
                             Text(game.name)
-                                .font(.largeTitle.bold())
+                                .font(.title.bold())
                                 .foregroundStyle(.primary)
 
                             Text(game.date, style: .date)
-                                .font(.title3)
+                                .font(.subheadline)
                                 .foregroundStyle(.secondary)
                         }
-                        .padding(.top, 24)
+                        .padding(.top, 12)
 
-                        // Timer Section
+                        // Game Clock
                         GameClockSection(
                             currentTimeFormatted: currentTimeFormatted,
-                            currentQuarter: currentQuarter,
+                            currentQuarter: $currentQuarter,
                             timerRunning: timerRunning,
-                            toggleTimer: toggleTimer
+                            toggleTimer: toggleTimer,
+                            nextSubTime: segments.first(where: { $0.on > totalElapsedTime })?.on,
+                            lastSubTime: segments.last(where: { $0.on < totalElapsedTime })?.on,
+                            currentTime: $currentTime,
+                            quarterLength: quarterLength,
+                            totalQuarters: totalQuarters
                         )
-
-                        // Coming On Section
-                        NextOnSection(nextPlayers: nextPlayers, nextSubRelativeFormatted: nextSubRelativeFormatted)
 
                         // On Field Section
                         OnFieldSection(players: currentPlayers)
+                        
+                        // Coming On Section
+                        NextOnSection(nextPlayers: nextPlayers, nextSubRelativeFormatted: nextSubRelativeFormatted)
+                        
+                        // Bench Section
+                        if (!benchPlayers.isEmpty) {
+                            BenchSection(players: benchPlayers)
+                        }
                     }
                 }
             }
@@ -80,7 +90,6 @@ struct GameDayView: View {
                             .foregroundStyle(.white)
                     }
                 }
-
             }
             .onAppear {
                 segments = game.buildSegments()
@@ -133,6 +142,12 @@ struct GameDayView: View {
             return []
         }
     }
+    
+    private var benchPlayers: [Player] {
+        game.availablePlayers.filter { !currentPlayers.contains($0) && !nextPlayers.contains($0)
+        }
+    }
+
 
     private var totalElapsedTime: TimeInterval {
         return (Double(currentQuarter - 1) * quarterLength) + currentTime
@@ -156,7 +171,6 @@ struct GameDayView: View {
                 timerRunning = false
 
                 if currentQuarter < totalQuarters {
-                    currentQuarter += 1
                     currentTime = 0
                     // Optional: vibrate or alert "Start next quarter"
                 } else {
@@ -177,6 +191,7 @@ struct GameDayView: View {
     GameDayView(
         game: $game,
         team: Coach.previewCoach.teams.first!,
-        timerInterval: 0.01 // Fast preview mode
+        timerInterval: 1 // Fast preview mode
+//        timerInterval: 0.01 // Fast preview mode
     )
 }
