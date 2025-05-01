@@ -11,8 +11,8 @@ struct ColorGradient: View {
     var body: some View {
         LinearGradient(
             colors: [
-                Color(red: 64/255, green: 160/255, blue: 43/255),
-                Color(red: 136/255, green: 57/255, blue: 239/255)
+                .green,
+                .mauve,
             ],
             startPoint: .topLeading,
             endPoint: .bottomTrailing

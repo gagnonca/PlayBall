@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ActivityKit
 
 struct GameDayView: View {
     @Binding var game: Game
@@ -21,9 +22,10 @@ struct GameDayView: View {
     let totalQuarters = 4
     var timerInterval: TimeInterval = 1 // to allow speeding up time for testing
 
-
     @State private var showingGameEditor = false
     @State private var showingGameOverview = false
+    
+    @State private var liveActivity: Activity<PlayBallWidgetLiveActivityAttributes>?
 
     @Environment(\.dismiss) private var dismiss
 
@@ -176,23 +178,91 @@ struct GameDayView: View {
         timer = Timer.scheduledTimer(withTimeInterval: timerInterval, repeats: true) { _ in
             if currentTime < quarterLength {
                 currentTime += 1
+                updateLiveActivity()
             } else {
                 stopTimer()
                 timerRunning = false
+                updateLiveActivity()
 
                 if currentQuarter < totalQuarters {
                     currentQuarter += 1
                     currentTime = 0
                 } else {
-                    // Full game completed
+                    endLiveActivity()
                 }
             }
         }
+        startLiveActivity()
     }
 
     private func stopTimer() {
         timer?.invalidate()
         timer = nil
+    }
+    
+    // MARK: Live Activity Helpers
+    func startLiveActivity() {
+        let attributes = PlayBallWidgetLiveActivityAttributes(gameName: game.name)
+
+        let nextSubTime = segments.first(where: { $0.on > totalElapsedTime })?.on
+        let nextSubCountdown = nextSubTime.map { $0 - totalElapsedTime }
+
+        let state = PlayBallWidgetLiveActivityAttributes.ContentState(
+            currentTime: currentTime,
+            quarter: currentQuarter,
+            isRunning: timerRunning,
+            nextPlayers: nextPlayers.map {
+                LivePlayer(name: $0.name, tintHex: "8839ef")
+            },
+            nextSubCountdown: nextSubCountdown
+        )
+
+        let content = ActivityContent(state: state, staleDate: nil)
+
+        do {
+            liveActivity = try Activity<PlayBallWidgetLiveActivityAttributes>.request(
+                attributes: attributes,
+                content: content,
+                pushType: nil
+            )
+        } catch {
+            print("❌ Failed to start Live Activity: \(error)")
+        }
+    }
+    
+    func updateLiveActivity() {
+        let nextSubTime = segments.first(where: { $0.on > totalElapsedTime })?.on
+        let nextSubCountdown = nextSubTime.map { $0 - totalElapsedTime }
+
+        let state = PlayBallWidgetLiveActivityAttributes.ContentState(
+            currentTime: currentTime,
+            quarter: currentQuarter,
+            isRunning: timerRunning,
+            nextPlayers: nextPlayers.map {
+                LivePlayer(name: $0.name, tintHex: "8839ef")
+            },
+            nextSubCountdown: nextSubCountdown
+        )
+
+        Task {
+            let content = ActivityContent(state: state, staleDate: nil)
+            await liveActivity?.update(content)
+        }
+    }
+
+    func endLiveActivity() {
+        let state = PlayBallWidgetLiveActivityAttributes.ContentState(
+            currentTime: currentTime,
+            quarter: currentQuarter,
+            isRunning: false,
+            nextPlayers: []
+        )
+        let content = ActivityContent(state: state, staleDate: nil)
+
+        Task {
+            await liveActivity?.end(content, dismissalPolicy: .immediate)
+            liveActivity = nil
+        }
     }
 }
 

@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		4E2879CC2DB0923D00042201 /* ElegantEmojiPicker in Frameworks */ = {isa = PBXBuildFile; productRef = 4E2879CB2DB0923D00042201 /* ElegantEmojiPicker */; };
 		4E2879D32DB094BA00042201 /* EmojiPicker in Frameworks */ = {isa = PBXBuildFile; productRef = 4E2879D22DB094BA00042201 /* EmojiPicker */; };
+		4EC1F7642DC2D6680057BD60 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4EC1F7632DC2D6680057BD60 /* WidgetKit.framework */; };
+		4EC1F7662DC2D6680057BD60 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4EC1F7652DC2D6680057BD60 /* SwiftUI.framework */; };
+		4EC1F7772DC2D66A0057BD60 /* PlayBallWidgetExtensionExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 4EC1F7612DC2D6680057BD60 /* PlayBallWidgetExtensionExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -26,17 +29,61 @@
 			remoteGlobalIDString = 4E28797F2DAFD63300042201;
 			remoteInfo = PlayBall;
 		};
+		4EC1F7752DC2D66A0057BD60 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4E2879782DAFD63300042201 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4EC1F7602DC2D6680057BD60;
+			remoteInfo = PlayBallWidgetExtensionExtension;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		4EC1F77C2DC2D66A0057BD60 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				4EC1F7772DC2D66A0057BD60 /* PlayBallWidgetExtensionExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		4E2879802DAFD63300042201 /* PlayBall.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PlayBall.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4E28798F2DAFD63500042201 /* PlayBallTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PlayBallTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4E2879992DAFD63500042201 /* PlayBallUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PlayBallUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		4EC1F7612DC2D6680057BD60 /* PlayBallWidgetExtensionExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PlayBallWidgetExtensionExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		4EC1F7632DC2D6680057BD60 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		4EC1F7652DC2D6680057BD60 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		4EC1F75C2DC2D1AE0057BD60 /* Exceptions for "PlayBall" folder in "PlayBall" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 4E28797F2DAFD63300042201 /* PlayBall */;
+		};
+		4EC1F77B2DC2D66A0057BD60 /* Exceptions for "PlayBallWidgetExtension" folder in "PlayBallWidgetExtensionExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 4EC1F7602DC2D6680057BD60 /* PlayBallWidgetExtensionExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		4E2879822DAFD63300042201 /* PlayBall */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				4EC1F75C2DC2D1AE0057BD60 /* Exceptions for "PlayBall" folder in "PlayBall" target */,
+			);
 			path = PlayBall;
 			sourceTree = "<group>";
 		};
@@ -48,6 +95,14 @@
 		4E28799C2DAFD63500042201 /* PlayBallUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = PlayBallUITests;
+			sourceTree = "<group>";
+		};
+		4EC1F7672DC2D6680057BD60 /* PlayBallWidgetExtension */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				4EC1F77B2DC2D66A0057BD60 /* Exceptions for "PlayBallWidgetExtension" folder in "PlayBallWidgetExtensionExtension" target */,
+			);
+			path = PlayBallWidgetExtension;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -76,6 +131,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4EC1F75E2DC2D6680057BD60 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4EC1F7662DC2D6680057BD60 /* SwiftUI.framework in Frameworks */,
+				4EC1F7642DC2D6680057BD60 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -85,6 +149,8 @@
 				4E2879822DAFD63300042201 /* PlayBall */,
 				4E2879922DAFD63500042201 /* PlayBallTests */,
 				4E28799C2DAFD63500042201 /* PlayBallUITests */,
+				4EC1F7672DC2D6680057BD60 /* PlayBallWidgetExtension */,
+				4EC1F7622DC2D6680057BD60 /* Frameworks */,
 				4E2879812DAFD63300042201 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -95,8 +161,18 @@
 				4E2879802DAFD63300042201 /* PlayBall.app */,
 				4E28798F2DAFD63500042201 /* PlayBallTests.xctest */,
 				4E2879992DAFD63500042201 /* PlayBallUITests.xctest */,
+				4EC1F7612DC2D6680057BD60 /* PlayBallWidgetExtensionExtension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		4EC1F7622DC2D6680057BD60 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4EC1F7632DC2D6680057BD60 /* WidgetKit.framework */,
+				4EC1F7652DC2D6680057BD60 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -109,10 +185,12 @@
 				4E28797C2DAFD63300042201 /* Sources */,
 				4E28797D2DAFD63300042201 /* Frameworks */,
 				4E28797E2DAFD63300042201 /* Resources */,
+				4EC1F77C2DC2D66A0057BD60 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				4EC1F7762DC2D66A0057BD60 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				4E2879822DAFD63300042201 /* PlayBall */,
@@ -172,6 +250,28 @@
 			productReference = 4E2879992DAFD63500042201 /* PlayBallUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		4EC1F7602DC2D6680057BD60 /* PlayBallWidgetExtensionExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4EC1F7782DC2D66A0057BD60 /* Build configuration list for PBXNativeTarget "PlayBallWidgetExtensionExtension" */;
+			buildPhases = (
+				4EC1F75D2DC2D6680057BD60 /* Sources */,
+				4EC1F75E2DC2D6680057BD60 /* Frameworks */,
+				4EC1F75F2DC2D6680057BD60 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				4EC1F7672DC2D6680057BD60 /* PlayBallWidgetExtension */,
+			);
+			name = PlayBallWidgetExtensionExtension;
+			packageProductDependencies = (
+			);
+			productName = PlayBallWidgetExtensionExtension;
+			productReference = 4EC1F7612DC2D6680057BD60 /* PlayBallWidgetExtensionExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -192,6 +292,9 @@
 					4E2879982DAFD63500042201 = {
 						CreatedOnToolsVersion = 16.3;
 						TestTargetID = 4E28797F2DAFD63300042201;
+					};
+					4EC1F7602DC2D6680057BD60 = {
+						CreatedOnToolsVersion = 16.3;
 					};
 				};
 			};
@@ -216,6 +319,7 @@
 				4E28797F2DAFD63300042201 /* PlayBall */,
 				4E28798E2DAFD63500042201 /* PlayBallTests */,
 				4E2879982DAFD63500042201 /* PlayBallUITests */,
+				4EC1F7602DC2D6680057BD60 /* PlayBallWidgetExtensionExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -236,6 +340,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		4E2879972DAFD63500042201 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4EC1F75F2DC2D6680057BD60 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -266,6 +377,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4EC1F75D2DC2D6680057BD60 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -278,6 +396,11 @@
 			isa = PBXTargetDependency;
 			target = 4E28797F2DAFD63300042201 /* PlayBall */;
 			targetProxy = 4E28799A2DAFD63500042201 /* PBXContainerItemProxy */;
+		};
+		4EC1F7762DC2D66A0057BD60 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4EC1F7602DC2D6680057BD60 /* PlayBallWidgetExtensionExtension */;
+			targetProxy = 4EC1F7752DC2D66A0057BD60 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -414,6 +537,7 @@
 				DEVELOPMENT_TEAM = K4665LK4MM;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PlayBall/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PlayBall;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -446,6 +570,7 @@
 				DEVELOPMENT_TEAM = K4665LK4MM;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PlayBall/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PlayBall;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -539,6 +664,62 @@
 			};
 			name = Release;
 		};
+		4EC1F7792DC2D66A0057BD60 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = K4665LK4MM;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PlayBallWidgetExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = PlayBallWidgetExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cgagnon.playball.PlayBallWidgetExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		4EC1F77A2DC2D66A0057BD60 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = K4665LK4MM;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PlayBallWidgetExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = PlayBallWidgetExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cgagnon.playball.PlayBallWidgetExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -574,6 +755,15 @@
 			buildConfigurations = (
 				4E2879AA2DAFD63500042201 /* Debug */,
 				4E2879AB2DAFD63500042201 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4EC1F7782DC2D66A0057BD60 /* Build configuration list for PBXNativeTarget "PlayBallWidgetExtensionExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4EC1F7792DC2D66A0057BD60 /* Debug */,
+				4EC1F77A2DC2D66A0057BD60 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
