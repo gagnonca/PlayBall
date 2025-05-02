@@ -6,26 +6,16 @@
 //
 
 import SwiftUI
-import ActivityKit
 
 struct GameDayView: View {
     @Binding var game: Game
     let team: Team
 
-    // Game time management
-    @State private var segments: [SubSegment] = []
-    @State private var currentTime: TimeInterval = 0
-    @State private var currentQuarter: Int = 1
-    @State private var timerRunning = false
-    @State private var timer: Timer?
-    let quarterLength: TimeInterval = 10 * 60
-    let totalQuarters = 4
-    var timerInterval: TimeInterval = 1 // to allow speeding up time for testing
+    @StateObject private var timerManager = GameTimerManager()
+    private let liveActivityManager = LiveActivityManager()
 
     @State private var showingGameEditor = false
     @State private var showingGameOverview = false
-    
-    @State private var liveActivity: Activity<PlayBallWidgetLiveActivityAttributes>?
 
     @Environment(\.dismiss) private var dismiss
 
@@ -36,8 +26,7 @@ struct GameDayView: View {
 
                 ScrollView {
                     VStack(spacing: 12) {
-                        // Game Info Header
-                        VStack() {
+                        VStack {
                             Text(game.name)
                                 .font(.title.bold())
                                 .foregroundStyle(.primary)
@@ -48,27 +37,22 @@ struct GameDayView: View {
                         }
                         .padding(.top, 12)
 
-                        // Game Clock
                         GameClockSection(
                             currentTimeFormatted: currentTimeFormatted,
-                            currentQuarter: $currentQuarter,
-                            timerRunning: timerRunning,
-                            toggleTimer: toggleTimer,
-                            nextSubTime: segments.first(where: { $0.on > totalElapsedTime })?.on,
-                            lastSubTime: segments.last(where: { $0.on < totalElapsedTime })?.on,
-                            currentTime: $currentTime,
-                            quarterLength: quarterLength,
-                            totalQuarters: totalQuarters
+                            currentQuarter: $timerManager.currentQuarter,
+                            timerRunning: timerManager.timerRunning,
+                            toggleTimer: timerManager.toggleTimer,
+                            nextSubTime: nextSubTime,
+                            lastSubTime: lastSubTime,
+                            currentTime: $timerManager.currentTime,
+                            quarterLength: timerManager.quarterLength,
+                            totalQuarters: timerManager.totalQuarters
                         )
 
-                        // On Field Section
                         OnFieldSection(players: currentPlayers)
-                        
-                        // Coming On Section
                         NextOnSection(nextPlayers: nextPlayers, nextSubRelativeFormatted: nextSubRelativeFormatted)
-                        
-                        // Bench Section
-                        if (!benchPlayers.isEmpty) {
+
+                        if !benchPlayers.isEmpty {
                             BenchSection(players: benchPlayers)
                         }
                     }
@@ -100,10 +84,11 @@ struct GameDayView: View {
                 }
             }
             .onAppear {
-                segments = game.buildSegments()
+                timerManager.updateSegments(game.buildSegments())
+                timerManager.configure(gameName: game.name, availablePlayers: game.availablePlayers)
             }
             .onChange(of: game) {
-                segments = game.buildSegments()
+                timerManager.updateSegments(game.buildSegments())
             }
             .fullScreenCover(isPresented: $showingGameEditor) {
                 GameEditView(game: $game, team: team)
@@ -111,158 +96,53 @@ struct GameDayView: View {
             .sheet(isPresented: $showingGameOverview) {
                 GameOverviewView(game: game)
             }
-
         }
     }
 
-    // MARK: - Helpers
-    private var nextSubRelativeFormatted: String {
-        if let next = segments.first(where: { $0.on > totalElapsedTime }) {
-            let remaining = next.on - totalElapsedTime
-            return remaining.timeFormatted
-        } else {
-            return "End"
-        }
-    }
+    // MARK: - Computed Properties
 
-    private var currentTimeFormatted: String {
-        let minutes = Int(currentTime) / 60
-        let seconds = Int(currentTime) % 60
-        return String(format: "%d:%02d", minutes, seconds)
-    }
-
-    private var nextSubTimeFormatted: String {
-        if let next = segments.first(where: { $0.on > totalElapsedTime }) {
-            return next.onFormatted
-        } else {
-            return "End"
-        }
+    private var totalElapsedTime: TimeInterval {
+        timerManager.totalElapsedTime
     }
 
     private var currentPlayers: [Player] {
-        if let current = segments.last(where: { totalElapsedTime >= $0.on && totalElapsedTime < $0.off }) {
+        if let current = timerManager.segments.last(where: { totalElapsedTime >= $0.on && totalElapsedTime < $0.off }) {
             return current.players
-        } else {
-            return []
         }
+        return []
     }
 
     private var nextPlayers: [Player] {
-        if let next = segments.first(where: { $0.on > totalElapsedTime }) {
+        if let next = timerManager.segments.first(where: { $0.on > totalElapsedTime }) {
             return next.players
-        } else {
-            return []
         }
+        return []
     }
-    
+
     private var benchPlayers: [Player] {
-        game.availablePlayers.filter { !currentPlayers.contains($0) && !nextPlayers.contains($0)
+        game.availablePlayers.filter { !currentPlayers.contains($0) && !nextPlayers.contains($0) }
+    }
+
+    private var currentTimeFormatted: String {
+        let minutes = Int(timerManager.currentTime) / 60
+        let seconds = Int(timerManager.currentTime) % 60
+        return String(format: "%d:%02d", minutes, seconds)
+    }
+
+    private var nextSubRelativeFormatted: String {
+        if let next = timerManager.segments.first(where: { $0.on > totalElapsedTime }) {
+            let remaining = next.on - totalElapsedTime
+            return remaining.timeFormatted
         }
+        return "End"
     }
 
-
-    private var totalElapsedTime: TimeInterval {
-        return (Double(currentQuarter - 1) * quarterLength) + currentTime
+    private var nextSubTime: TimeInterval? {
+        timerManager.segments.first(where: { $0.on > totalElapsedTime })?.on
     }
 
-    private func toggleTimer() {
-        timerRunning.toggle()
-        if timerRunning {
-            startTimer()
-        } else {
-            stopTimer()
-        }
-    }
-
-    private func startTimer() {
-        timer = Timer.scheduledTimer(withTimeInterval: timerInterval, repeats: true) { _ in
-            if currentTime < quarterLength {
-                currentTime += 1
-                updateLiveActivity()
-            } else {
-                stopTimer()
-                timerRunning = false
-                updateLiveActivity()
-
-                if currentQuarter < totalQuarters {
-                    currentQuarter += 1
-                    currentTime = 0
-                } else {
-                    endLiveActivity()
-                }
-            }
-        }
-        startLiveActivity()
-    }
-
-    private func stopTimer() {
-        timer?.invalidate()
-        timer = nil
-    }
-    
-    // MARK: Live Activity Helpers
-    func startLiveActivity() {
-        let attributes = PlayBallWidgetLiveActivityAttributes(gameName: game.name)
-
-        let nextSubTime = segments.first(where: { $0.on > totalElapsedTime })?.on
-        let nextSubCountdown = nextSubTime.map { $0 - totalElapsedTime }
-
-        let state = PlayBallWidgetLiveActivityAttributes.ContentState(
-            currentTime: currentTime,
-            quarter: currentQuarter,
-            isRunning: timerRunning,
-            nextPlayers: nextPlayers.map {
-                LivePlayer(name: $0.name, tintHex: "8839ef")
-            },
-            nextSubCountdown: nextSubCountdown
-        )
-
-        let content = ActivityContent(state: state, staleDate: nil)
-
-        do {
-            liveActivity = try Activity<PlayBallWidgetLiveActivityAttributes>.request(
-                attributes: attributes,
-                content: content,
-                pushType: nil
-            )
-        } catch {
-            print("❌ Failed to start Live Activity: \(error)")
-        }
-    }
-    
-    func updateLiveActivity() {
-        let nextSubTime = segments.first(where: { $0.on > totalElapsedTime })?.on
-        let nextSubCountdown = nextSubTime.map { $0 - totalElapsedTime }
-
-        let state = PlayBallWidgetLiveActivityAttributes.ContentState(
-            currentTime: currentTime,
-            quarter: currentQuarter,
-            isRunning: timerRunning,
-            nextPlayers: nextPlayers.map {
-                LivePlayer(name: $0.name, tintHex: "8839ef")
-            },
-            nextSubCountdown: nextSubCountdown
-        )
-
-        Task {
-            let content = ActivityContent(state: state, staleDate: nil)
-            await liveActivity?.update(content)
-        }
-    }
-
-    func endLiveActivity() {
-        let state = PlayBallWidgetLiveActivityAttributes.ContentState(
-            currentTime: currentTime,
-            quarter: currentQuarter,
-            isRunning: false,
-            nextPlayers: []
-        )
-        let content = ActivityContent(state: state, staleDate: nil)
-
-        Task {
-            await liveActivity?.end(content, dismissalPolicy: .immediate)
-            liveActivity = nil
-        }
+    private var lastSubTime: TimeInterval? {
+        timerManager.segments.last(where: { $0.on < totalElapsedTime })?.on
     }
 }
 
@@ -270,8 +150,6 @@ struct GameDayView: View {
     @Previewable @State var game = Coach.previewCoach.teams.first!.games.first!
     GameDayView(
         game: $game,
-        team: Coach.previewCoach.teams.first!,
-        timerInterval: 1 // Fast preview mode
-//        timerInterval: 0.01 // Fast preview mode
+        team: Coach.previewCoach.teams.first!
     )
 }
