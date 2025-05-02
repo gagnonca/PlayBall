@@ -27,35 +27,24 @@ struct ContentView: View {
                 }
             }
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    if selectedTeam != nil {
-                        Menu {
-                            Button {
-                                showingEditTeam = true
-                            } label: {
-                                Label("Edit Team", systemImage: "pencil")
-                            }
-
-                            Button(role: .destructive) {
-                                deleteSelectedTeam()
-                            } label: {
-                                Label("Delete Team", systemImage: "trash")
-                            }
-
-                        } label: {
-                            Image(systemName: "slider.horizontal.3")
-                                .foregroundStyle(.white)
-                        }
-                    }
-                }
-                
                 ToolbarItem(placement: .principal) {
                     Menu {
+                        // List existing teams
                         ForEach(coach.teams) { team in
                             Button(team.name) {
                                 selectedTeam = team
                             }
                         }
+
+                        Divider()
+
+                        // Add New Team
+                        Button {
+                            showingTeamCreation = true
+                        } label: {
+                            Label("Add New Team", systemImage: "plus")
+                        }
+
                     } label: {
                         HStack(spacing: 4) {
                             Text(selectedTeam?.name ?? "Select Team")
@@ -69,13 +58,25 @@ struct ContentView: View {
                         }
                     }
                 }
-
+                
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        showingTeamCreation = true
-                    } label: {
-                        Image(systemName: "plus.circle.fill")
-                            .foregroundStyle(.white)
+                    if selectedTeam != nil {
+                        Menu {
+                            Button {
+                                showingEditTeam = true
+                            } label: {
+                                Label("Edit Team", systemImage: "pencil")
+                            }
+
+                            Button(role: .destructive) {
+                                deleteSelectedTeam()
+                            } label: {
+                                Label("Delete Team", systemImage: "trash")
+                            }
+                        } label: {
+                            Image(systemName: "slider.horizontal.3")
+                                .foregroundStyle(.white)
+                        }
                     }
                 }
             }

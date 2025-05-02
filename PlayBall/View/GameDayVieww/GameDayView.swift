@@ -14,6 +14,7 @@ struct GameDayView: View {
     @StateObject private var timerManager = GameTimerManager()
     @State private var showingGameEditor = false
     @State private var showingGameOverview = false
+    @State private var shouldDeleteGame = false
 
     @Environment(\.dismiss) private var dismiss
 
@@ -81,6 +82,14 @@ struct GameDayView: View {
                         Button("Game Overview", systemImage: "list.bullet.rectangle") {
                             showingGameOverview = true
                         }
+                        
+                        Button(role: .destructive) {
+                            timerManager.endLiveActivity()
+                            shouldDeleteGame = true
+                            dismiss()
+                        } label: {
+                            Label("Delete Game", systemImage: "trash")
+                        }
                     } label: {
                         Image(systemName: "slider.horizontal.3")
                             .foregroundStyle(.white)
@@ -93,6 +102,12 @@ struct GameDayView: View {
             }
             .onChange(of: game) {
                 timerManager.updateSegments(game.buildSegments())
+            }
+            .onDisappear {
+                if shouldDeleteGame {
+                    team.removeGame(game)
+                    Coach.shared.updateTeam(team)
+                }
             }
             .fullScreenCover(isPresented: $showingGameEditor) {
                 GameEditView(game: $game, team: team)

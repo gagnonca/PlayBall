@@ -48,7 +48,6 @@ struct SelectedTeamView: View {
         }
         return $team.games[index]
     }
-
 }
 
 struct GamesSection: View {
