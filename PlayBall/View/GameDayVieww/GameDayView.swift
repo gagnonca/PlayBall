@@ -17,9 +17,6 @@ struct GameDayView: View {
 
     @Environment(\.dismiss) private var dismiss
 
-    // UI-only Timer just to refresh the display
-    @State private var uiRefreshTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-
     var body: some View {
         NavigationStack {
             ZStack {
@@ -68,6 +65,7 @@ struct GameDayView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
+                        timerManager.endLiveActivity()
                         dismiss()
                     } label: {
                         Image(systemName: "chevron.backward.circle.fill")
@@ -101,21 +99,6 @@ struct GameDayView: View {
             }
             .sheet(isPresented: $showingGameOverview) {
                 GameOverviewView(game: game)
-            }
-            .onReceive(uiRefreshTimer) { _ in
-                if timerManager.startTime != nil {
-                    timerManager.updateLiveActivity()
-                }
-
-                if timerManager.isQuarterOver && timerManager.timerRunning {
-                    timerManager.timerRunning = false
-                    timerManager.startTime = nil
-                    timerManager.pausedElapsedTime = 0
-
-                    if timerManager.currentQuarter < timerManager.totalQuarters {
-                        timerManager.currentQuarter += 1
-                    }
-                }
             }
         }
     }
