@@ -13,27 +13,3 @@ struct Player: Identifiable, Hashable {
     var tint: Color = .rosewater
 }
 
-struct PlayerPalette {
-    static let colors: [Color] = [
-        .rosewater,
-//        .flamingo,
-        .pink,
-        .mauve,
-        .red,
-//        .maroon,
-        .peach,
-        .yellow,
-        .green,
-//        .teal,
-        .sky,
-//        .sapphire,
-        .blue,
-        .lavender
-    ]
-
-    static func color(for index: Int) -> Color {
-        colors[index % colors.count]
-    }
-}
-
-
