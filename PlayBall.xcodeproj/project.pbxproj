@@ -76,6 +76,20 @@
 			);
 			target = 4EC1F7602DC2D6680057BD60 /* PlayBallWidgetExtensionExtension */;
 		};
+		4EC1F80C2DC443250057BD60 /* Exceptions for "PlayBallWidgetExtension" folder in "PlayBall" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				LiveActivityAttributes.swift,
+			);
+			target = 4E28797F2DAFD63300042201 /* PlayBall */;
+		};
+		4EC1F80E2DC443380057BD60 /* Exceptions for "PlayBall" folder in "PlayBallWidgetExtensionExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				View/UX/ColorGradient.swift,
+			);
+			target = 4EC1F7602DC2D6680057BD60 /* PlayBallWidgetExtensionExtension */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -83,6 +97,7 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				4EC1F75C2DC2D1AE0057BD60 /* Exceptions for "PlayBall" folder in "PlayBall" target */,
+				4EC1F80E2DC443380057BD60 /* Exceptions for "PlayBall" folder in "PlayBallWidgetExtensionExtension" target */,
 			);
 			path = PlayBall;
 			sourceTree = "<group>";
@@ -100,6 +115,7 @@
 		4EC1F7672DC2D6680057BD60 /* PlayBallWidgetExtension */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
+				4EC1F80C2DC443250057BD60 /* Exceptions for "PlayBallWidgetExtension" folder in "PlayBall" target */,
 				4EC1F77B2DC2D66A0057BD60 /* Exceptions for "PlayBallWidgetExtension" folder in "PlayBallWidgetExtensionExtension" target */,
 			);
 			path = PlayBallWidgetExtension;

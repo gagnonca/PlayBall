@@ -9,18 +9,6 @@ import ActivityKit
 import WidgetKit
 import SwiftUI
 
-struct PlayBallWidgetLiveActivityAttributes: ActivityAttributes {
-    public struct ContentState: Codable, Hashable {
-        var currentTime: TimeInterval
-        var quarter: Int
-        var isRunning: Bool
-        var nextPlayers: [LivePlayer]
-        var nextSubCountdown: TimeInterval?
-    }
-
-    var gameName: String
-}
-
 struct PlayBallWidgetExtensionLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: PlayBallWidgetLiveActivityAttributes.self) { context in
