@@ -22,29 +22,31 @@ struct GameOverviewView: View {
                 HStack {
                     Text("Players").bold()
                         .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.horizontal, 4)
 
                     Text("Off").bold()
-                        .frame(width: timeColumnWidth, alignment: .trailing)
+                        .frame(width: timeColumnWidth, alignment: .center)
+                        .padding(.horizontal, 4)
                 }
                 .padding(.vertical, 8)
                 .background(Color.green.opacity(0.25))
 
-                Divider()
-
                 // Segment rows
                 ForEach(segments) { segment in
                     HStack(alignment: .top, spacing: 8) {
-                        FlowLayout(items: segment.players, spacing: 8) { player in
+                        FlowLayout(items: segment.players, spacing: 4) { player in
                             PlayerBadge(player: player)
                         }
                         .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.horizontal, 4)
 
                         Text(segment.offFormatted)
                             .monospacedDigit()
-                            .frame(width: timeColumnWidth, alignment: .trailing)
+                            .frame(width: timeColumnWidth, alignment: .center)
                             .padding(.top, 4)
+                            .padding(.horizontal, 4)
                     }
-                    .padding(.vertical, 6)
+                    .padding(.vertical, 10)
                     .background(Color.green.opacity(0.15))
                 }
             }
@@ -53,7 +55,18 @@ struct GameOverviewView: View {
 }
 
 #Preview {
-    let coach = Coach.previewCoach
-    let game = coach.teams.first!.games.first!
-    GameOverviewView(game: game)
+    PreviewSheetContainer()
+}
+
+private struct PreviewSheetContainer: View {
+    @State private var showingSheet = true
+
+    var body: some View {
+        Color.clear // background doesn't matter
+            .sheet(isPresented: $showingSheet) {
+                let coach = Coach.previewCoach
+                let game = coach.teams.first!.games.first!
+                GameOverviewView(game: game)
+            }
+    }
 }
