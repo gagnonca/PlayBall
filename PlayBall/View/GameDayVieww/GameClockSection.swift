@@ -5,26 +5,22 @@
 //  Created by Corey Gagnon on 4/27/25.
 //
 
-//
-//  GameClockSection.swift
-//  PlayBall
-//
-//  Created by Corey Gagnon on 4/27/25.
-//
-
 import SwiftUI
 
 struct GameClockSection: View {
     var currentTimeFormatted: String
     @Binding var currentQuarter: Int
     var timerRunning: Bool
-    var toggleTimer: () -> Void
-
+    var elapsedTime: TimeInterval
+    var quarterLength: TimeInterval
     var nextSubTime: TimeInterval?
     var lastSubTime: TimeInterval?
-    @Binding var currentTime: TimeInterval
-    var quarterLength: TimeInterval
-    var totalQuarters: Int
+
+    var toggleTimer: () -> Void
+    var jumpBack30: () -> Void
+    var jumpForward30: () -> Void
+    var jumpToLastSub: () -> Void
+    var jumpToNextSub: () -> Void
 
     var body: some View {
         GlassCard(title: "Game Clock", sfSymbol: "timer") {
@@ -40,60 +36,43 @@ struct GameClockSection: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
 
+                let quarterOffset = Double(currentQuarter - 1) * quarterLength
+
+                let canJumpBack30 = elapsedTime >= 30
+                let canJumpForward30 = elapsedTime + 30 <= quarterLength
+                let canJumpToLastSub = lastSubTime != nil && lastSubTime! - quarterOffset >= 0
+                let canJumpToNextSub = nextSubTime != nil && nextSubTime! - quarterOffset <= quarterLength
+
                 HStack(spacing: 24) {
-                    let quarterOffset = Double(currentQuarter - 1) * quarterLength
-
-                    // Previous Sub
-                    let canJumpBackToSub = lastSubTime != nil && lastSubTime! - quarterOffset >= 0
-                    Button {
-                        if canJumpBackToSub {
-                            currentTime = lastSubTime! - quarterOffset
-                        }
-                    } label: {
+                    Button(action: jumpToLastSub) {
                         Image(systemName: "arrowtriangle.backward.fill")
-                            .foregroundStyle(.primary.opacity(canJumpBackToSub ? 1 : 0.3))
+                            .opacity(canJumpToLastSub ? 1 : 0.5)
                     }
+                    .disabled(!canJumpToLastSub)
 
-                    // -30 Seconds
-                    let canGoBack30 = currentTime >= 30
-                    Button {
-                        if canGoBack30 {
-                            currentTime = max(0, currentTime - 30)
-                        }
-                    } label: {
+                    Button(action: jumpBack30) {
                         Image(systemName: "30.arrow.trianglehead.counterclockwise")
-                            .foregroundStyle(.primary.opacity(canGoBack30 ? 1 : 0.3))
+                            .opacity(canJumpBack30 ? 1 : 0.5)
                     }
+                    .disabled(!canJumpBack30)
 
-                    // Play / Pause
                     Button(action: toggleTimer) {
                         Image(systemName: timerRunning ? "pause.fill" : "play.fill")
                             .padding(12)
                             .background(.regularMaterial, in: Circle())
-                            .foregroundStyle(.primary)
                     }
 
-                    // +30 Seconds
-                    let canGoForward30 = currentTime + 30 <= quarterLength
-                    Button {
-                        if canGoForward30 {
-                            currentTime = min(quarterLength, currentTime + 30)
-                        }
-                    } label: {
+                    Button(action: jumpForward30) {
                         Image(systemName: "30.arrow.trianglehead.clockwise")
-                            .foregroundStyle(.primary.opacity(canGoForward30 ? 1 : 0.3))
+                            .opacity(canJumpForward30 ? 1 : 0.5)
                     }
+                    .disabled(!canJumpForward30)
 
-                    // Next Sub
-                    let canJumpForwardToSub = nextSubTime != nil && nextSubTime! - quarterOffset <= quarterLength
-                    Button {
-                        if canJumpForwardToSub {
-                            currentTime = nextSubTime! - quarterOffset
-                        }
-                    } label: {
+                    Button(action: jumpToNextSub) {
                         Image(systemName: "arrowtriangle.forward.fill")
-                            .foregroundStyle(.primary.opacity(canJumpForwardToSub ? 1 : 0.3))
+                            .opacity(canJumpToNextSub ? 1 : 0.5)
                     }
+                    .disabled(!canJumpToNextSub)
                 }
                 .font(.title2)
                 .foregroundStyle(.primary)
@@ -102,8 +81,7 @@ struct GameClockSection: View {
     }
 }
 
-#Preview {
-    @Previewable @State var currentTime: TimeInterval = 84
+#Preview("Normal State (Playing, mid-quarter)") {
     @Previewable @State var currentQuarter = 1
 
     ZStack {
@@ -111,15 +89,72 @@ struct GameClockSection: View {
         ScrollView {
             VStack(spacing: 32) {
                 GameClockSection(
-                    currentTimeFormatted: "1:24",
+                    currentTimeFormatted: "4:30",
+                    currentQuarter: $currentQuarter,
+                    timerRunning: true,
+                    elapsedTime: 270, // 4 min 30 sec
+                    quarterLength: 600,
+                    nextSubTime: 300,
+                    lastSubTime: 240,
+                    toggleTimer: {},
+                    jumpBack30: {},
+                    jumpForward30: {},
+                    jumpToLastSub: {},
+                    jumpToNextSub: {}
+                )
+            }
+            .padding(.top, 40)
+        }
+    }
+}
+
+#Preview("Disabled Back Buttons (at 0:00)") {
+    @Previewable @State var currentQuarter = 1
+
+    ZStack {
+        ColorGradient()
+        ScrollView {
+            VStack(spacing: 32) {
+                GameClockSection(
+                    currentTimeFormatted: "0:00",
                     currentQuarter: $currentQuarter,
                     timerRunning: false,
-                    toggleTimer: {},
-                    nextSubTime: 120,
-                    lastSubTime: 60,
-                    currentTime: $currentTime,
+                    elapsedTime: 0,
                     quarterLength: 600,
-                    totalQuarters: 4
+                    nextSubTime: 100,
+                    lastSubTime: nil, // no previous sub
+                    toggleTimer: {},
+                    jumpBack30: {},
+                    jumpForward30: {},
+                    jumpToLastSub: {},
+                    jumpToNextSub: {}
+                )
+            }
+            .padding(.top, 40)
+        }
+    }
+}
+
+#Preview("Disabled Forward Buttons (at 10:00)") {
+    @Previewable @State var currentQuarter = 4
+
+    ZStack {
+        ColorGradient()
+        ScrollView {
+            VStack(spacing: 32) {
+                GameClockSection(
+                    currentTimeFormatted: "10:00",
+                    currentQuarter: $currentQuarter,
+                    timerRunning: false,
+                    elapsedTime: 600,
+                    quarterLength: 600,
+                    nextSubTime: nil, // no next sub
+                    lastSubTime: 540,
+                    toggleTimer: {},
+                    jumpBack30: {},
+                    jumpForward30: {},
+                    jumpToLastSub: {},
+                    jumpToNextSub: {}
                 )
             }
             .padding(.top, 40)

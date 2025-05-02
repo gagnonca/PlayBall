@@ -10,6 +10,10 @@ import ActivityKit
 
 class LiveActivityManager {
     private var liveActivity: Activity<PlayBallWidgetLiveActivityAttributes>?
+    
+    var isActive: Bool {
+        liveActivity != nil
+    }
 
     func startLiveActivity(gameName: String, currentTime: TimeInterval, currentQuarter: Int, isRunning: Bool, nextPlayers: [Player], nextSubCountdown: TimeInterval?) {
         let attributes = PlayBallWidgetLiveActivityAttributes(gameName: gameName)

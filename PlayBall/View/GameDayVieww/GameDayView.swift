@@ -12,12 +12,13 @@ struct GameDayView: View {
     let team: Team
 
     @StateObject private var timerManager = GameTimerManager()
-    private let liveActivityManager = LiveActivityManager()
-
     @State private var showingGameEditor = false
     @State private var showingGameOverview = false
 
     @Environment(\.dismiss) private var dismiss
+
+    // UI-only Timer just to refresh the display
+    @State private var uiRefreshTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     var body: some View {
         NavigationStack {
@@ -37,23 +38,28 @@ struct GameDayView: View {
                         }
                         .padding(.top, 12)
 
-                        GameClockSection(
-                            currentTimeFormatted: currentTimeFormatted,
-                            currentQuarter: $timerManager.currentQuarter,
-                            timerRunning: timerManager.timerRunning,
-                            toggleTimer: timerManager.toggleTimer,
-                            nextSubTime: nextSubTime,
-                            lastSubTime: lastSubTime,
-                            currentTime: $timerManager.currentTime,
-                            quarterLength: timerManager.quarterLength,
-                            totalQuarters: timerManager.totalQuarters
-                        )
-
-                        OnFieldSection(players: currentPlayers)
-                        NextOnSection(nextPlayers: nextPlayers, nextSubRelativeFormatted: nextSubRelativeFormatted)
-
-                        if !benchPlayers.isEmpty {
-                            BenchSection(players: benchPlayers)
+                        TimelineView(.periodic(from: Date(), by: 1)) { _ in
+                            GameClockSection(
+                                currentTimeFormatted: formattedElapsedTime,
+                                currentQuarter: $timerManager.currentQuarter,
+                                timerRunning: timerManager.timerRunning,
+                                elapsedTime: timerManager.elapsedTime,
+                                quarterLength: timerManager.quarterLength,
+                                nextSubTime: nextSubTime,
+                                lastSubTime: lastSubTime,
+                                toggleTimer: timerManager.toggleTimer,
+                                jumpBack30: { timerManager.adjustStartTime(by: -30) },
+                                jumpForward30: { timerManager.adjustStartTime(by: 30) },
+                                jumpToLastSub: timerManager.jumpToLastSub,
+                                jumpToNextSub: timerManager.jumpToNextSub
+                            )
+                            
+                            OnFieldSection(players: currentPlayers)
+                            NextOnSection(nextPlayers: nextPlayers, nextSubRelativeFormatted: nextSubRelativeFormatted)
+                        
+                            if !benchPlayers.isEmpty {
+                                BenchSection(players: benchPlayers)
+                            }
                         }
                     }
                 }
@@ -96,10 +102,30 @@ struct GameDayView: View {
             .sheet(isPresented: $showingGameOverview) {
                 GameOverviewView(game: game)
             }
+            .onReceive(uiRefreshTimer) { _ in
+                if timerManager.startTime != nil {
+                    timerManager.updateLiveActivity()
+                }
+
+                if timerManager.isQuarterOver && timerManager.timerRunning {
+                    timerManager.timerRunning = false
+                    timerManager.startTime = nil
+                    timerManager.pausedElapsedTime = 0
+
+                    if timerManager.currentQuarter < timerManager.totalQuarters {
+                        timerManager.currentQuarter += 1
+                    }
+                }
+            }
         }
     }
 
     // MARK: - Computed Properties
+    private var formattedElapsedTime: String {
+        let minutes = Int(timerManager.elapsedTime) / 60
+        let seconds = Int(timerManager.elapsedTime) % 60
+        return String(format: "%d:%02d", minutes, seconds)
+    }
 
     private var totalElapsedTime: TimeInterval {
         timerManager.totalElapsedTime
@@ -123,12 +149,6 @@ struct GameDayView: View {
         game.availablePlayers.filter { !currentPlayers.contains($0) && !nextPlayers.contains($0) }
     }
 
-    private var currentTimeFormatted: String {
-        let minutes = Int(timerManager.currentTime) / 60
-        let seconds = Int(timerManager.currentTime) % 60
-        return String(format: "%d:%02d", minutes, seconds)
-    }
-
     private var nextSubRelativeFormatted: String {
         if let next = timerManager.segments.first(where: { $0.on > totalElapsedTime }) {
             let remaining = next.on - totalElapsedTime
@@ -145,6 +165,7 @@ struct GameDayView: View {
         timerManager.segments.last(where: { $0.on < totalElapsedTime })?.on
     }
 }
+
 
 #Preview {
     @Previewable @State var game = Coach.previewCoach.teams.first!.games.first!
