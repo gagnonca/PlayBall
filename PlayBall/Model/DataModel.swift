@@ -1,5 +1,5 @@
 //
-//  TeamData.swift
+//  DataModel.swift
 //  PlayBall
 //
 //  Created by Corey Gagnon on 4/16/25.
@@ -20,7 +20,10 @@ struct TeamData: Codable {
     }
 
     func toTeam() -> Team {
-        let players = self.players.map { $0.toPlayer() }
+        var players = self.players.map { $0.toPlayer() }
+        for (index, _) in players.enumerated() {
+            players[index].tint = PlayerPalette.color(for: index)
+        }
         let games = self.games.map { $0.toGame(withPlayers: players) }
         return Team(name: name, players: players, games: games)
     }
@@ -28,31 +31,13 @@ struct TeamData: Codable {
 
 struct PlayerData: Codable {
     let name: String
-    let tint: String
 
     init(from player: Player) {
         self.name = player.name
-        self.tint = player.tint.description // Adjust if needed
     }
 
     func toPlayer() -> Player {
-        Player(name: name, tint: color)
-    }
-
-    var color: Color {
-        switch tint.lowercased() {
-        case "red": return .red
-        case "orange": return .orange
-        case "yellow": return .yellow
-        case "green": return .green
-        case "blue": return .blue
-        case "cyan": return .cyan
-        case "teal": return .teal
-        case "indigo": return .indigo
-        case "purple": return .purple
-        case "pink": return .pink
-        default: return .gray
-        }
+        Player(name: name)
     }
 }
 

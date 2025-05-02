@@ -23,10 +23,17 @@ struct PlayerBadge: View {
     }
 }
 
-#Preview {
-    PlayerBadge(player: Player(name: "Eliza", tint: .red))
-    PlayerBadge(player: Player(name: "Alana", tint: .orange))
-    PlayerBadge(player: Player(name: "Lucy", tint: .yellow))
-    PlayerBadge(player: Player(name: "Elaina", tint: .green))
-    PlayerBadge(player: Player(name: "Haley", tint: .purple))
+#Preview("PlayerBadge Palette Preview") {
+    ScrollView(.horizontal, showsIndicators: false) {
+        VStack(spacing: 12) {
+            ForEach(PlayerPalette.colors.indices, id: \.self) { index in
+                PlayerBadge(player:Player(
+                    name: "Haley",
+                    tint: PlayerPalette.color(for: index))
+                )
+            }
+        }
+        .padding()
+        .background(Color(.systemBackground))
+    }
 }

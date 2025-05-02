@@ -9,8 +9,8 @@ import SwiftUI
 
 struct Player: Identifiable, Hashable {
     let id = UUID()
-    var name: String    // name of the player
-    var tint: Color     // tint color used for UI elements
+    var name: String
+    var tint: Color = .rosewater
 }
 
 struct PlayerPalette {
@@ -36,18 +36,4 @@ struct PlayerPalette {
     }
 }
 
-#Preview("PlayerBadge Palette Preview") {
-    ScrollView(.horizontal, showsIndicators: false) {
-        VStack(spacing: 12) {
-            ForEach(PlayerPalette.colors.indices, id: \.self) { index in
-                PlayerBadge(player:Player(
-                    name: "Haley",
-                    tint: PlayerPalette.color(for: index)
-                ))
-            }
-        }
-        .padding()
-        .background(Color(.systemBackground))
-    }
-}
 
