@@ -11,12 +11,19 @@ struct GameDayView: View {
     @Binding var game: Game
     let team: Team
 
-    @StateObject private var timerManager = GameTimerManager()
+    @StateObject private var gameDayHandler: GameDayHandler
+
     @State private var showingGameEditor = false
     @State private var showingGameOverview = false
     @State private var shouldDeleteGame = false
 
     @Environment(\.dismiss) private var dismiss
+
+    init(game: Binding<Game>, team: Team) {
+        _game = game
+        self.team = team
+        _gameDayHandler = StateObject(wrappedValue: GameDayHandler(game: game.wrappedValue, team: team))
+    }
 
     var body: some View {
         NavigationStack {
@@ -37,24 +44,10 @@ struct GameDayView: View {
                         .padding(.top, 12)
 
                         TimelineView(.periodic(from: Date(), by: 1)) { _ in
-                            GameClockSection(
-                                currentTimeFormatted: formattedElapsedTime,
-                                currentQuarter: $timerManager.currentQuarter,
-                                timerRunning: timerManager.timerRunning,
-                                elapsedTime: timerManager.elapsedTime,
-                                quarterLength: timerManager.quarterLength,
-                                nextSubTime: nextSubTime,
-                                lastSubTime: lastSubTime,
-                                toggleTimer: timerManager.toggleTimer,
-                                jumpBack30: { timerManager.adjustStartTime(by: -30) },
-                                jumpForward30: { timerManager.adjustStartTime(by: 30) },
-                                jumpToLastSub: timerManager.jumpToLastSub,
-                                jumpToNextSub: timerManager.jumpToNextSub
-                            )
-                            
+                            GameClockSection(handler: gameDayHandler.timeHandler)
                             OnFieldSection(players: currentPlayers)
                             NextOnSection(nextPlayers: nextPlayers, nextSubRelativeFormatted: nextSubRelativeFormatted)
-                        
+                            
                             if !benchPlayers.isEmpty {
                                 BenchSection(players: benchPlayers)
                             }
@@ -66,7 +59,7 @@ struct GameDayView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
-                        timerManager.endLiveActivity()
+                        gameDayHandler.endLiveActivity()
                         dismiss()
                     } label: {
                         Image(systemName: "chevron.backward.circle.fill")
@@ -82,9 +75,9 @@ struct GameDayView: View {
                         Button("Game Overview", systemImage: "list.bullet.rectangle") {
                             showingGameOverview = true
                         }
-                        
+
                         Button(role: .destructive) {
-                            timerManager.endLiveActivity()
+                            gameDayHandler.endLiveActivity()
                             shouldDeleteGame = true
                             dismiss()
                         } label: {
@@ -97,11 +90,10 @@ struct GameDayView: View {
                 }
             }
             .onAppear {
-                timerManager.updateSegments(game.buildSegments())
-                timerManager.configure(gameName: game.name, availablePlayers: game.availablePlayers)
+                gameDayHandler.startLiveActivityIfNeeded()
             }
-            .onChange(of: game) {
-                timerManager.updateSegments(game.buildSegments())
+            .onChange(of: game) { _ in
+                gameDayHandler.refreshSegments()
             }
             .onDisappear {
                 if shouldDeleteGame {
@@ -119,51 +111,30 @@ struct GameDayView: View {
     }
 
     // MARK: - Computed Properties
-    private var formattedElapsedTime: String {
-        let minutes = Int(timerManager.elapsedTime) / 60
-        let seconds = Int(timerManager.elapsedTime) % 60
-        return String(format: "%d:%02d", minutes, seconds)
-    }
-
     private var totalElapsedTime: TimeInterval {
-        timerManager.totalElapsedTime
+        gameDayHandler.totalElapsedTime
     }
 
     private var currentPlayers: [Player] {
-        if let current = timerManager.segments.last(where: { totalElapsedTime >= $0.on && totalElapsedTime < $0.off }) {
-            return current.players
-        }
-        return []
+        gameDayHandler.segmentsHandler.currentPlayers(totalElapsedTime: totalElapsedTime)
     }
 
     private var nextPlayers: [Player] {
-        if let next = timerManager.segments.first(where: { $0.on > totalElapsedTime }) {
-            return next.players
-        }
-        return []
+        gameDayHandler.segmentsHandler.nextPlayers(totalElapsedTime: totalElapsedTime)
     }
 
     private var benchPlayers: [Player] {
-        game.availablePlayers.filter { !currentPlayers.contains($0) && !nextPlayers.contains($0) }
+        gameDayHandler.segmentsHandler.benchPlayers(current: currentPlayers, next: nextPlayers)
     }
 
     private var nextSubRelativeFormatted: String {
-        if let next = timerManager.segments.first(where: { $0.on > totalElapsedTime }) {
-            let remaining = next.on - totalElapsedTime
+        if let next = gameDayHandler.segmentsHandler.nextSubTime(totalElapsedTime: totalElapsedTime) {
+            let remaining = next - totalElapsedTime
             return remaining.timeFormatted
         }
         return "End"
     }
-
-    private var nextSubTime: TimeInterval? {
-        timerManager.segments.first(where: { $0.on > totalElapsedTime })?.on
-    }
-
-    private var lastSubTime: TimeInterval? {
-        timerManager.segments.last(where: { $0.on < totalElapsedTime })?.on
-    }
 }
-
 
 #Preview {
     @Previewable @State var game = Coach.previewCoach.teams.first!.games.first!

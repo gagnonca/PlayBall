@@ -12,6 +12,7 @@
 		4EC1F7642DC2D6680057BD60 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4EC1F7632DC2D6680057BD60 /* WidgetKit.framework */; };
 		4EC1F7662DC2D6680057BD60 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4EC1F7652DC2D6680057BD60 /* SwiftUI.framework */; };
 		4EC1F7772DC2D66A0057BD60 /* PlayBallWidgetExtensionExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 4EC1F7612DC2D6680057BD60 /* PlayBallWidgetExtensionExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		4EE54AB82DC6644B00934E35 /* MijickTimer in Frameworks */ = {isa = PBXBuildFile; productRef = 4EE54AB72DC6644B00934E35 /* MijickTimer */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -131,6 +132,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4E2879CC2DB0923D00042201 /* ElegantEmojiPicker in Frameworks */,
+				4EE54AB82DC6644B00934E35 /* MijickTimer in Frameworks */,
 				4E2879D32DB094BA00042201 /* EmojiPicker in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -217,6 +219,7 @@
 			packageProductDependencies = (
 				4E2879CB2DB0923D00042201 /* ElegantEmojiPicker */,
 				4E2879D22DB094BA00042201 /* EmojiPicker */,
+				4EE54AB72DC6644B00934E35 /* MijickTimer */,
 			);
 			productName = PlayBall;
 			productReference = 4E2879802DAFD63300042201 /* PlayBall.app */;
@@ -328,6 +331,7 @@
 			packageReferences = (
 				4E2879CA2DB0923D00042201 /* XCRemoteSwiftPackageReference "Elegant-Emoji-Picker" */,
 				4E2879D12DB094BA00042201 /* XCRemoteSwiftPackageReference "EmojiPicker" */,
+				4EE54AB62DC6644B00934E35 /* XCRemoteSwiftPackageReference "Timer" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 4E2879812DAFD63300042201 /* Products */;
@@ -807,6 +811,14 @@
 				minimumVersion = 1.0.1;
 			};
 		};
+		4EE54AB62DC6644B00934E35 /* XCRemoteSwiftPackageReference "Timer" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Mijick/Timer";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -819,6 +831,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 4E2879D12DB094BA00042201 /* XCRemoteSwiftPackageReference "EmojiPicker" */;
 			productName = EmojiPicker;
+		};
+		4EE54AB72DC6644B00934E35 /* MijickTimer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4EE54AB62DC6644B00934E35 /* XCRemoteSwiftPackageReference "Timer" */;
+			productName = MijickTimer;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
