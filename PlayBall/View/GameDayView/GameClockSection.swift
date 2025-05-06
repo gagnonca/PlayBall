@@ -27,18 +27,18 @@ struct GameClockSection: View {
 
                 HStack(spacing: 24) {
                     Button(action: handler.jumpBackward30) {
-                        Image(systemName: "30.arrow.trianglehead.counterclockwise")
+                        Image(.jumpBackward30)
                     }
 
                     Button(action: handler.togglePlayPause) {
-                        Image(systemName: handler.clockState == .running ? "pause.fill" : "play.fill")
+                        Image( handler.clockState == .running ? .pause : .play)
                             .padding(12)
                             .background(.regularMaterial, in: Circle())
                     }
                     .disabled(handler.clockState == .gameEnd)
 
                     Button(action: handler.jumpForward30) {
-                        Image(systemName: "30.arrow.trianglehead.clockwise")
+                        Image(.jumpForward30)
                     }
                 }
                 .font(.title2)

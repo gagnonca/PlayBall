@@ -10,7 +10,7 @@ struct SaveButton: View {
                 action()
             }
         }) {
-            Image(systemName: "checkmark.circle.fill")
+            Image(.save)
                 .foregroundStyle(Color.primary)
         }
         .disabled(!isEnabled)

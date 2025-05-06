@@ -37,7 +37,7 @@ struct RosterSelectionSection: View {
                             Button {
                                 addPlayer(player)
                             } label: {
-                                Image(systemName: "plus.circle.fill")
+                                Image(.add)
                                     .foregroundStyle(player.tint)
                             }
                         }

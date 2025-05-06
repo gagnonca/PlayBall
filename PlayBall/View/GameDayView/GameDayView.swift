@@ -62,7 +62,7 @@ struct GameDayView: View {
                         gameDayHandler.endLiveActivity()
                         dismiss()
                     } label: {
-                        Image(systemName: "chevron.backward.circle.fill")
+                        Image(.back)
                             .foregroundStyle(.white)
                     }
                 }
@@ -84,7 +84,7 @@ struct GameDayView: View {
                             Label("Delete Game", systemImage: "trash")
                         }
                     } label: {
-                        Image(systemName: "slider.horizontal.3")
+                        Image(.edit)
                             .foregroundStyle(.white)
                     }
                 }

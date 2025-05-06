@@ -34,7 +34,7 @@ struct AddPlayerSection: View {
                     Button(action: {
                         addPlayer()
                     }) {
-                        Image(systemName: "plus.circle.fill")
+                        Image(.add)
                             .foregroundStyle(isAddEnabled ? .green : .secondary)
                     }
                     .disabled(newPlayerName.trimmingCharacters(in: .whitespaces).isEmpty)
@@ -54,7 +54,7 @@ struct AddPlayerSection: View {
                                 players.remove(at: index)
                             }
                         } label: {
-                            Image(systemName: "minus.circle.fill")
+                            Image(.remove)
                                 .foregroundStyle(.red)
                         }
                     }

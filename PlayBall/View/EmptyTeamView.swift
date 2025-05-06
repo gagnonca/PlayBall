@@ -16,7 +16,7 @@ struct EmptyTeamView: View {
 
             VStack(spacing: 30) {
                 // Icon
-                Image(systemName: "person.3.fill")
+                Image(.team)
                     .font(.largeTitle)
                     .foregroundStyle(.primary.opacity(0.8))
 

@@ -20,7 +20,7 @@ struct GameRow: View {
                     .foregroundStyle(.secondary)
             }
             Spacer()
-            Image(systemName: "chevron.right")
+            Image(.chevronRight)
                 .font(.subheadline)
                 .foregroundStyle(.white.opacity(0.5))
 

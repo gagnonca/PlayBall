@@ -39,7 +39,7 @@ struct GameEditorForm: View {
                                     Text("\(index + 1). \(player.name)")
                                         .foregroundStyle(player.tint)
                                     Spacer()
-                                    Image(systemName: "line.3.horizontal")
+                                    Image(.reorder)
                                         .foregroundStyle(.secondary)
                                 }
                             }
@@ -58,7 +58,7 @@ struct GameEditorForm: View {
                                 Button {
                                     availablePlayers.append(player)
                                 } label: {
-                                    Image(systemName: "plus.circle.fill")
+                                    Image(.add)
                                         .foregroundStyle(player.tint)
                                 }
                                 .buttonStyle(.borderless)

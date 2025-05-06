@@ -51,7 +51,7 @@ struct ContentView: View {
                                 .font(.title.bold())
                                 .foregroundStyle(.white)
 
-                            Image(systemName: "chevron.down")
+                            Image(.menu)
                                 .font(.subheadline.bold())
                                 .foregroundStyle(.white.opacity(0.7))
                                 .offset(y: 1)
@@ -74,7 +74,7 @@ struct ContentView: View {
                                 Label("Delete Team", systemImage: "trash")
                             }
                         } label: {
-                            Image(systemName: "slider.horizontal.3")
+                            Image(.edit)
                                 .foregroundStyle(.white)
                         }
                     }

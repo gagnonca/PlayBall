@@ -13,7 +13,7 @@ struct DismissButton: View {
 
     var body: some View {
         Button(action: action) {
-            Image(systemName: "xmark.circle.fill")
+            Image(.dismiss)
                 .foregroundStyle(Color.primary.opacity(0.9))
         }
     }

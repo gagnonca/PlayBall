@@ -31,7 +31,7 @@ struct AvailablePlayersSection: View {
                             Button {
                                 removePlayer(player)
                             } label: {
-                                Image(systemName: "minus.circle.fill")
+                                Image(.remove)
                                     .foregroundStyle(.red)
                             }
                             .buttonStyle(.borderless)
