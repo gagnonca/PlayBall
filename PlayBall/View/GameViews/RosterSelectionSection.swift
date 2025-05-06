@@ -30,7 +30,7 @@ struct RosterSelectionSection: View {
                     ForEach(rosterPlayers) { player in
                         HStack {
                             Text(player.name)
-                                .foregroundStyle(.white)
+                                .foregroundStyle(.primary)
 
                             Spacer()
 
