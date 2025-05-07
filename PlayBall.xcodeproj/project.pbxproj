@@ -85,9 +85,9 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Assets/Assets.xcassets,
+				"View/Colors/Color+Theme.swift",
+				View/Colors/PlayerPalette.swift,
 				View/Components/ColorGradient.swift,
-				"View/UX/Color+Theme.swift",
-				View/UX/PlayerPalette.swift,
 			);
 			target = 4EC1F7602DC2D6680057BD60 /* PlayBallWidgetExtensionExtension */;
 		};
