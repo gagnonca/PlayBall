@@ -10,17 +10,24 @@ final class GameDayHandler: ObservableObject {
     @Published var timeHandler = GameTimeHandler()
     @Published var segmentsHandler = GameSegmentsHandler()
     let liveActivityHandler = GameLiveActivityHandler()
-
+    
     let team: Team
     let game: Game
-
+    
     init(game: Game, team: Team) {
         self.game = game
         self.team = team
+        
+        timeHandler.onTick = { [weak self] in
+            guard let self = self else { return }
+            if self.timeHandler.clockState == .running {
+                self.updateLiveActivity()
+            }
+        }
 
         configure()
     }
-
+    
     private func configure() {
         segmentsHandler.configure(
             gameName: game.name,
@@ -28,26 +35,26 @@ final class GameDayHandler: ObservableObject {
         )
         segmentsHandler.updateSegments(game.buildSegments())
     }
-
+    
     func refreshSegments() {
         segmentsHandler.updateSegments(game.buildSegments())
     }
-
+    
     var totalElapsedTime: TimeInterval {
         (Double(timeHandler.currentQuarter - 1) * 600) + timeHandler.elapsedTime
     }
+}
 
-    // MARK: - Live Activity Actions
-
+// MARK: - Live Activity Actions
+extension GameDayHandler {
     func startLiveActivityIfNeeded() {
         guard !liveActivityHandler.isActive else { return }
         liveActivityHandler.startLiveActivity(
-            gameName: game.name,
             currentTime: timeHandler.elapsedTime,
             currentQuarter: timeHandler.currentQuarter,
             isRunning: timeHandler.clockState == .running,
             nextPlayers: segmentsHandler.nextPlayers(totalElapsedTime: totalElapsedTime),
-            nextSubCountdown: segmentsHandler.nextSubTime(totalElapsedTime: totalElapsedTime)
+            nextSubCountdown: segmentsHandler.nextSubCountdown(totalElapsedTime: totalElapsedTime)
         )
     }
 
@@ -58,7 +65,7 @@ final class GameDayHandler: ObservableObject {
             currentQuarter: timeHandler.currentQuarter,
             isRunning: timeHandler.clockState == .running,
             nextPlayers: segmentsHandler.nextPlayers(totalElapsedTime: totalElapsedTime),
-            nextSubCountdown: segmentsHandler.nextSubTime(totalElapsedTime: totalElapsedTime)
+            nextSubCountdown: segmentsHandler.nextSubCountdown(totalElapsedTime: totalElapsedTime)
         )
     }
 

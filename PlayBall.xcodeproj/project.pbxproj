@@ -7,12 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4E2879CC2DB0923D00042201 /* ElegantEmojiPicker in Frameworks */ = {isa = PBXBuildFile; productRef = 4E2879CB2DB0923D00042201 /* ElegantEmojiPicker */; };
-		4E2879D32DB094BA00042201 /* EmojiPicker in Frameworks */ = {isa = PBXBuildFile; productRef = 4E2879D22DB094BA00042201 /* EmojiPicker */; };
 		4EC1F7642DC2D6680057BD60 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4EC1F7632DC2D6680057BD60 /* WidgetKit.framework */; };
 		4EC1F7662DC2D6680057BD60 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4EC1F7652DC2D6680057BD60 /* SwiftUI.framework */; };
 		4EC1F7772DC2D66A0057BD60 /* PlayBallWidgetExtensionExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 4EC1F7612DC2D6680057BD60 /* PlayBallWidgetExtensionExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		4EE54AB82DC6644B00934E35 /* MijickTimer in Frameworks */ = {isa = PBXBuildFile; productRef = 4EE54AB72DC6644B00934E35 /* MijickTimer */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,7 +63,6 @@
 		4EC1F75C2DC2D1AE0057BD60 /* Exceptions for "PlayBall" folder in "PlayBall" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Assets/Assets.xcassets,
 				Info.plist,
 			);
 			target = 4E28797F2DAFD63300042201 /* PlayBall */;
@@ -133,9 +129,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4E2879CC2DB0923D00042201 /* ElegantEmojiPicker in Frameworks */,
-				4EE54AB82DC6644B00934E35 /* MijickTimer in Frameworks */,
-				4E2879D32DB094BA00042201 /* EmojiPicker in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -219,9 +212,6 @@
 			);
 			name = PlayBall;
 			packageProductDependencies = (
-				4E2879CB2DB0923D00042201 /* ElegantEmojiPicker */,
-				4E2879D22DB094BA00042201 /* EmojiPicker */,
-				4EE54AB72DC6644B00934E35 /* MijickTimer */,
 			);
 			productName = PlayBall;
 			productReference = 4E2879802DAFD63300042201 /* PlayBall.app */;
@@ -331,9 +321,6 @@
 			mainGroup = 4E2879772DAFD63300042201;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				4E2879CA2DB0923D00042201 /* XCRemoteSwiftPackageReference "Elegant-Emoji-Picker" */,
-				4E2879D12DB094BA00042201 /* XCRemoteSwiftPackageReference "EmojiPicker" */,
-				4EE54AB62DC6644B00934E35 /* XCRemoteSwiftPackageReference "Timer" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 4E2879812DAFD63300042201 /* Products */;
@@ -795,51 +782,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		4E2879CA2DB0923D00042201 /* XCRemoteSwiftPackageReference "Elegant-Emoji-Picker" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Finalet/Elegant-Emoji-Picker.git";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
-		};
-		4E2879D12DB094BA00042201 /* XCRemoteSwiftPackageReference "EmojiPicker" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Kelvas09/EmojiPicker.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.1;
-			};
-		};
-		4EE54AB62DC6644B00934E35 /* XCRemoteSwiftPackageReference "Timer" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Mijick/Timer";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		4E2879CB2DB0923D00042201 /* ElegantEmojiPicker */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 4E2879CA2DB0923D00042201 /* XCRemoteSwiftPackageReference "Elegant-Emoji-Picker" */;
-			productName = ElegantEmojiPicker;
-		};
-		4E2879D22DB094BA00042201 /* EmojiPicker */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 4E2879D12DB094BA00042201 /* XCRemoteSwiftPackageReference "EmojiPicker" */;
-			productName = EmojiPicker;
-		};
-		4EE54AB72DC6644B00934E35 /* MijickTimer */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 4EE54AB62DC6644B00934E35 /* XCRemoteSwiftPackageReference "Timer" */;
-			productName = MijickTimer;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 4E2879782DAFD63300042201 /* Project object */;
 }

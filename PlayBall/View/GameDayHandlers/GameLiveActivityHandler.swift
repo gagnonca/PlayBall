@@ -22,8 +22,8 @@ final class GameLiveActivityHandler {
         liveActivity != nil
     }
 
-    func startLiveActivity(gameName: String, currentTime: TimeInterval, currentQuarter: Int, isRunning: Bool, nextPlayers: [Player], nextSubCountdown: TimeInterval?) {
-        let attributes = PlayBallWidgetLiveActivityAttributes(gameName: gameName)
+    func startLiveActivity(currentTime: TimeInterval, currentQuarter: Int, isRunning: Bool, nextPlayers: [Player], nextSubCountdown: TimeInterval?) {
+        let attributes = PlayBallWidgetLiveActivityAttributes()
 
         let livePlayers = nextPlayers.enumerated().map { (index, player) in
             LivePlayer(

@@ -16,7 +16,6 @@ struct PlayBallWidgetLiveActivityAttributes: ActivityAttributes {
         var nextPlayers: [LivePlayer]
         var nextSubCountdown: TimeInterval?
     }
-    var gameName: String
 }
 
 struct LivePlayer: Codable, Hashable {

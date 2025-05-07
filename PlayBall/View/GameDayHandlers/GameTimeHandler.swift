@@ -26,6 +26,8 @@ final class GameTimeHandler: ObservableObject {
     private let quarterLength: TimeInterval = 600 // 10 minutes
     private var cancellable: AnyCancellable?
 
+    var onTick: (() -> Void)?
+
     init() {}
 }
 
@@ -33,6 +35,8 @@ final class GameTimeHandler: ObservableObject {
 extension GameTimeHandler {
     private func tick() {
         elapsedTime += 1
+        onTick?()
+        
         if elapsedTime >= quarterLength {
             advanceQuarter()
         }

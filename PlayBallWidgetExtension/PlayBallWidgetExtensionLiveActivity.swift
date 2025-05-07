@@ -87,7 +87,7 @@ extension TimeInterval {
     }
 }
 
-#Preview("Lock Screen", as: .content, using: PlayBallWidgetLiveActivityAttributes(gameName: "Cheetahs vs Tigers")) {
+#Preview("Lock Screen", as: .content, using: PlayBallWidgetLiveActivityAttributes()) {
     PlayBallWidgetExtensionLiveActivity()
 } contentStates: {
     PlayBallWidgetLiveActivityAttributes.ContentState(
@@ -104,7 +104,7 @@ extension TimeInterval {
     )
 }
 
-#Preview("Dynamic Island", as: .dynamicIsland(.compact), using: PlayBallWidgetLiveActivityAttributes(gameName: "Cheetahs vs Tigers")) {
+#Preview("Dynamic Island", as: .dynamicIsland(.compact), using: PlayBallWidgetLiveActivityAttributes()) {
     PlayBallWidgetExtensionLiveActivity()
 } contentStates: {
     PlayBallWidgetLiveActivityAttributes.ContentState(

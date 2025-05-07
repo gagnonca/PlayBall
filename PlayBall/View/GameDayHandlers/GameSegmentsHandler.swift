@@ -43,6 +43,11 @@ final class GameSegmentsHandler: ObservableObject {
     func nextSubTime(totalElapsedTime: TimeInterval) -> TimeInterval? {
         segments.first(where: { $0.on > totalElapsedTime })?.on
     }
+    
+    func nextSubCountdown(totalElapsedTime: TimeInterval) -> TimeInterval? {
+        guard let nextOn = segments.first(where: { $0.on > totalElapsedTime })?.on else { return nil }
+        return nextOn - totalElapsedTime
+    }
 
     func lastSubTime(totalElapsedTime: TimeInterval) -> TimeInterval? {
         segments.last(where: { $0.on < totalElapsedTime })?.on
