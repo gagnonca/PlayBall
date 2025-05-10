@@ -13,6 +13,9 @@ struct TeamEditorForm: View {
     @Binding var players: [Player]
     @State private var newPlayerName: String = ""
     @Environment(\.dismiss) private var dismiss
+    
+    @Binding var gameFormat: GameFormat
+    @Binding var periodLengthMinutes: Int
 
     let title: String
     let showDelete: Bool
@@ -36,6 +39,9 @@ struct TeamEditorForm: View {
                                 players: $players,
                                 addPlayer: addPlayer
                             )
+                            
+                            LeagueRulesSection(gameFormat: $gameFormat, periodLengthMinutes: $periodLengthMinutes)
+
 
                             if showDelete, let onDelete {
                                 DeleteButton(title: "Delete Team") {
@@ -79,10 +85,14 @@ struct TeamEditorForm: View {
 #Preview("Team Editor Form") {
     @Previewable @State var teamName = "Mock Team"
     @Previewable @State var players = Array(Coach.previewCoach.teams.first!.players.prefix(3))
+    @Previewable @State var gameFormat = GameFormat.quarters
+    @Previewable @State var periodLengthMinutes = 10
 
-    return TeamEditorForm(
+    TeamEditorForm(
         teamName: $teamName,
         players: $players,
+        gameFormat: $gameFormat,
+        periodLengthMinutes: $periodLengthMinutes,
         title: "Create/Edit Team",
         showDelete: true,
         onSave: { print("Saved!") },

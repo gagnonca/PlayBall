@@ -13,6 +13,10 @@ class Team: Identifiable {
     var name: String
     var players: [Player]
     var games: [Game]
+    
+    // League rules
+    var gameFormat: GameFormat = .quarters
+    var periodLength: TimeInterval = 600
 
     init(name: String, players: [Player] = [], games: [Game] = []) {
         self.name = name

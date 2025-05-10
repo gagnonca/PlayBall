@@ -185,5 +185,4 @@ extension Coach {
         guard let data = try? Data(contentsOf: url) else { return }
         decodeTeams(from: data)
     }
-
 }
