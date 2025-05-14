@@ -22,7 +22,7 @@ struct TeamData: Codable {
     func toTeam() -> Team {
         var players = self.players.map { $0.toPlayer() }
         for (index, _) in players.enumerated() {
-            players[index].tint = PlayerPalette.color(for: index)
+            players[index].tintHex = PlayerPalette.hexCode(for: index)
         }
         let games = self.games.map { $0.toGame(withPlayers: players) }
         return Team(name: name, players: players, games: games)

@@ -93,7 +93,7 @@ private struct AddPlayerSectionPreviewWrapper: View {
                     addPlayer: {
                         let trimmed = newPlayerName.trimmingCharacters(in: .whitespaces)
                         guard !trimmed.isEmpty else { return }
-                        players.append(Player(name: trimmed, tint: .blue))
+                        players.append(Player(name: trimmed, tintHex:"8839ef"))
                         newPlayerName = ""
                     }
                 )

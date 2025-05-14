@@ -8,45 +8,32 @@
 import SwiftUI
 
 struct GameOverviewView: View {
-    let game: Game
-    private var segments: [SubSegment] {
-        game.buildSegments()
-    }
-
-    private let timeColumnWidth: CGFloat = 50
+    let plan: SubstitutionPlan
+    private var segments: [SubSegment] { plan.segments }
 
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
-                // Header row
+                // Header
                 HStack {
-                    Text("Players").bold()
+                    Text("Substitution Plan").bold()
                         .frame(maxWidth: .infinity, alignment: .center)
-                        .padding(.horizontal, 4)
-
-                    Text("Off").bold()
-                        .frame(width: timeColumnWidth, alignment: .center)
-                        .padding(.horizontal, 4)
+                        .padding(.vertical, 8)
                 }
-                .padding(.vertical, 8)
                 .background(Color.green.opacity(0.25))
 
-                // Segment rows
-                ForEach(segments) { segment in
-                    HStack(alignment: .top, spacing: 8) {
-                        FlowLayout(items: segment.players, spacing: 4) { player in
+                // Each segment row
+                ForEach(Array(segments.enumerated()), id: \..offset) { index, segment in
+                    HStack(spacing: 8) {
+                        FlowLayout(items: segment.players, spacing: 8) { player in
                             PlayerBadge(player: player)
                         }
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .padding(.horizontal, 4)
-
-                        Text(segment.offFormatted)
-                            .monospacedDigit()
-                            .frame(width: timeColumnWidth, alignment: .center)
-                            .padding(.top, 4)
-                            .padding(.horizontal, 4)
+                        
+                        Text(plan.timeString(forSegment: index + 1))
+                            .foregroundStyle(.secondary)
                     }
-                    .padding(.vertical, 10)
+                    .padding()
+                    .frame(maxWidth: .infinity)
                     .background(Color.green.opacity(0.15))
                 }
             }
@@ -54,19 +41,12 @@ struct GameOverviewView: View {
     }
 }
 
-#Preview {
-    PreviewSheetContainer()
-}
-
-private struct PreviewSheetContainer: View {
-    @State private var showingSheet = true
-
-    var body: some View {
-        Color.clear // background doesn't matter
-            .sheet(isPresented: $showingSheet) {
-                let coach = Coach.previewCoach
-                let game = coach.teams.first!.games.first!
-                GameOverviewView(game: game)
-            }
+extension SubstitutionPlan {
+    /// Converts a segment index to a readable timestamp string based on the subDuration.
+    func timeString(forSegment index: Int) -> String {
+        let totalSeconds = Int(Double(index) * subDuration)
+        let minutes = totalSeconds / 60
+        let seconds = totalSeconds % 60
+        return String(format: "%d:%02d", minutes, seconds)
     }
 }

@@ -9,10 +9,6 @@ import SwiftUI
 
 struct SelectedTeamView: View {
     @Binding var team: Team
-//    @State private var selectedGame: Game?
-//    @State private var showingGameDay = false
-    
-    // Game Creation States
     @State private var showingGameCreation = false
 
     var body: some View {
@@ -25,7 +21,7 @@ struct SelectedTeamView: View {
                     },
                     destination: { game in
                         AnyView(
-                            GameDayView(
+                            GameDayViewNew(
                                 game: bindingForGame(game),
                                 team: team
                             )
@@ -36,8 +32,6 @@ struct SelectedTeamView: View {
             }
         }
         .fullScreenCover(isPresented: $showingGameCreation) {
-            // not using this yet
-//            GameCreationView(team: $team)
             GameAddView(team: team)
         }
     }

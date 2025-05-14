@@ -76,8 +76,8 @@ struct TeamEditorForm: View {
     private func addPlayer() {
         let trimmed = newPlayerName.trimmingCharacters(in: .whitespaces)
         guard !trimmed.isEmpty else { return }
-        let tint = PlayerPalette.color(for: players.count)
-        players.append(Player(name: trimmed, tint: tint))
+        let tint = PlayerPalette.hexCode(for: players.count)
+        players.append(Player(name: trimmed, tintHex: tint))
         newPlayerName = ""
     }
 }

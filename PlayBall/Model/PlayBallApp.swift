@@ -12,6 +12,10 @@ import SwiftData
 struct PlayBallApp: App {
     var body: some Scene {
         WindowGroup {
+//            var quarterHandler: QuarterHandler = .init()
+//            var substitutionHandler: SubstitutionHandler = .init()
+//            TimerTestView(quarterTimer: quarterHandler.timer, substitutionTimer: substitutionHandler.timer)
+            
             ContentView()
                 .onOpenURL { url in
                     if url.pathExtension == "json" {

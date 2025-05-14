@@ -7,9 +7,19 @@
 
 import SwiftUI
 
-struct Player: Identifiable, Hashable {
-    let id = UUID()
+struct Player: Identifiable, Hashable, Codable {
+    let id: UUID
     var name: String
-    var tint: Color = .rosewater
+    var tintHex: String
+    
+    var tint: Color {
+        Color(hex: tintHex)
+    }
+
+    init(id: UUID = UUID(), name: String, tintHex: String = "#f5e0dc") {
+        self.id = id
+        self.name = name
+        self.tintHex = tintHex
+    }
 }
 

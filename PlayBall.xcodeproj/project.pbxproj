@@ -10,6 +10,7 @@
 		4EC1F7642DC2D6680057BD60 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4EC1F7632DC2D6680057BD60 /* WidgetKit.framework */; };
 		4EC1F7662DC2D6680057BD60 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4EC1F7652DC2D6680057BD60 /* SwiftUI.framework */; };
 		4EC1F7772DC2D66A0057BD60 /* PlayBallWidgetExtensionExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 4EC1F7612DC2D6680057BD60 /* PlayBallWidgetExtensionExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		4EC37A402DCFE8E1007B56CB /* MijickTimer in Frameworks */ = {isa = PBXBuildFile; productRef = 4EC37A3F2DCFE8E1007B56CB /* MijickTimer */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -129,6 +130,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4EC37A402DCFE8E1007B56CB /* MijickTimer in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -212,6 +214,7 @@
 			);
 			name = PlayBall;
 			packageProductDependencies = (
+				4EC37A3F2DCFE8E1007B56CB /* MijickTimer */,
 			);
 			productName = PlayBall;
 			productReference = 4E2879802DAFD63300042201 /* PlayBall.app */;
@@ -321,6 +324,7 @@
 			mainGroup = 4E2879772DAFD63300042201;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				4EC37A3E2DCFE8E1007B56CB /* XCRemoteSwiftPackageReference "Timer" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 4E2879812DAFD63300042201 /* Products */;
@@ -782,6 +786,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		4EC37A3E2DCFE8E1007B56CB /* XCRemoteSwiftPackageReference "Timer" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Mijick/Timer";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		4EC37A3F2DCFE8E1007B56CB /* MijickTimer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4EC37A3E2DCFE8E1007B56CB /* XCRemoteSwiftPackageReference "Timer" */;
+			productName = MijickTimer;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 4E2879782DAFD63300042201 /* Project object */;
 }

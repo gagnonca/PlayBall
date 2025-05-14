@@ -7,41 +7,45 @@
 
 import Foundation
 
-enum SubstitutionStyle {
+enum PeriodStyle: Int, Codable, Hashable {
+    case quarter = 4
+    case half = 2
+}
+
+enum SubstitutionStyle: String, Codable {
     case long
     case short
 }
 
 extension Game {
-    func buildSegments(style: SubstitutionStyle = .short, onField: Int = 4, periodLengthMinutes: Int = 10, numberOfPeriods: Int = 4) -> [SubSegment] {
+    func buildSubstitutionPlan() -> SubstitutionPlan {
         let players = availablePlayers
-        guard !players.isEmpty else { return [] }
+        guard !players.isEmpty else {
+            return SubstitutionPlan(subDuration: 0, segments: [], availablePlayers: [])
+        }
 
+        let numberOfPeriods = self.numberOfPeriods.rawValue
         let totalGameMinutes = Double(periodLengthMinutes * numberOfPeriods)
-        let totalPlayerMinutes = totalGameMinutes * Double(onField)
+        let totalPlayerMinutes = totalGameMinutes * Double(playersOnField)
         let minutesPerPlayer = totalPlayerMinutes / Double(players.count)
 
         let baseSegmentLength = minutesPerPlayer / Double(numberOfPeriods)
-        let segmentLength = style == .short ? baseSegmentLength / 1.5 : baseSegmentLength
-        let totalSegments = Int(round(totalGameMinutes / segmentLength))
+        let segmentLength = substitutionStyle == .short ? baseSegmentLength / 1.5 : baseSegmentLength
+        let segmentLengthSeconds = segmentLength * 60
+
+        let totalSegments = Int(round(totalGameMinutes * 60 / segmentLengthSeconds))
 
         var segments: [SubSegment] = []
-        var time: TimeInterval = 0
         var index = 0
 
         for _ in 0..<totalSegments {
-            let group = (0..<onField).map { offset in
+            let group = (0..<playersOnField).map { offset in
                 players[(index + offset) % players.count]
             }
-
-            let endTime = time + segmentLength * 60
-            segments.append(SubSegment(on: time, off: endTime, players: group))
-
-            time = endTime
-            index = (index + onField) % players.count
+            segments.append(SubSegment(players: group))
+            index = (index + playersOnField) % players.count
         }
 
-        return segments
+        return SubstitutionPlan(subDuration: segmentLengthSeconds, segments: segments, availablePlayers: players)
     }
 }
-

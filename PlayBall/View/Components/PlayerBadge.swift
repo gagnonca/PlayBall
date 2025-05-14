@@ -29,7 +29,7 @@ struct PlayerBadge: View {
             ForEach(PlayerPalette.colors.indices, id: \.self) { index in
                 PlayerBadge(player:Player(
                     name: "Haley",
-                    tint: PlayerPalette.color(for: index))
+                    tintHex: PlayerPalette.hexCode(for: index))
                 )
             }
         }
