@@ -1,7 +1,7 @@
 import SwiftUI
 import MijickTimer
 
-struct GameDayViewNew: View {
+struct GameDayView: View {
     @Binding var game: Game
     let team: Team
     
@@ -239,7 +239,7 @@ private struct GameDayToolbar: ToolbarContent {
 
 #Preview {
     @Previewable @State var game = Coach.previewCoach.teams.first!.games.first!
-    GameDayViewNew(
+    GameDayView(
         game: $game,
         team: Coach.previewCoach.teams.first!
     )

@@ -21,7 +21,7 @@ struct SelectedTeamView: View {
                     },
                     destination: { game in
                         AnyView(
-                            GameDayViewNew(
+                            GameDayView(
                                 game: bindingForGame(game),
                                 team: team
                             )
