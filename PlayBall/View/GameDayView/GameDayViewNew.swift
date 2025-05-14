@@ -39,9 +39,12 @@ struct GameDayView: View {
                     VStack(spacing: 12) {
                         GameClockSection(coordinator: session.timerCoordinator, timer: session.timerCoordinator.quarterTimer)
                         OnFieldSection(state: session.substitutionState)
-                        NextOnSection(state: session.substitutionState, timer: session.timerCoordinator.quarterTimer)
-                        BenchSection(state: session.substitutionState)
-                    }
+                        if !session.substitutionState.nextPlayers.isEmpty {
+                            NextOnSection(state: session.substitutionState, timer: session.timerCoordinator.quarterTimer)
+                        }
+                        if !session.substitutionState.benchPlayers.isEmpty {
+                            BenchSection(state: session.substitutionState)
+                        }                    }
                 }
             }
             .navigationBarBackButtonHidden(true)

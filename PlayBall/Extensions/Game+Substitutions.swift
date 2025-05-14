@@ -23,6 +23,14 @@ extension Game {
         guard !players.isEmpty else {
             return SubstitutionPlan(subDuration: 0, segments: [], availablePlayers: [])
         }
+        
+        if players.count <= playersOnField {
+            return SubstitutionPlan(
+                subDuration: Double(periodLengthMinutes * numberOfPeriods.rawValue * 60),
+                segments: [SubSegment(players: players)],
+                availablePlayers: players
+            )
+        }
 
         let numberOfPeriods = self.numberOfPeriods.rawValue
         let totalGameMinutes = Double(periodLengthMinutes * numberOfPeriods)
