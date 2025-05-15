@@ -11,14 +11,15 @@ import Foundation
 struct PlayBallWidgetLiveActivityAttributes: ActivityAttributes {
     public struct ContentState: Codable, Hashable {
         var currentTime: TimeInterval
+        var periodLength: TimeInterval
         var quarter: Int
-        var isRunning: Bool
-        var nextPlayers: [LivePlayer]
+        var nextPlayers: [Player]
         var nextSubCountdown: TimeInterval?
     }
 }
 
-struct LivePlayer: Codable, Hashable {
-    let name: String
-    let tintHex: String
+extension PlayBallWidgetLiveActivityAttributes {
+    static var preview: PlayBallWidgetLiveActivityAttributes {
+        PlayBallWidgetLiveActivityAttributes()
+    }
 }

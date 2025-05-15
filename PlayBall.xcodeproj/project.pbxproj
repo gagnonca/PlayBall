@@ -86,6 +86,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Assets/Assets.xcassets,
+				Model/Player.swift,
 				"View/Colors/Color+Theme.swift",
 				View/Colors/PlayerPalette.swift,
 				View/Components/ColorGradient.swift,

@@ -6,11 +6,6 @@
 //
 
 
-//
-//  GameLiveActivityHandler.swift
-//  PlayBall
-//
-
 import ActivityKit
 import SwiftUI
 
@@ -22,11 +17,11 @@ final class GameLiveActivityHandler {
         liveActivity != nil
     }
 
-    func startLiveActivity(currentTime: TimeInterval, currentQuarter: Int, isRunning: Bool, nextPlayers: [Player], nextSubCountdown: TimeInterval?) {
+    func startLiveActivity(currentTime: TimeInterval, periodLength: TimeInterval, currentQuarter: Int, nextPlayers: [Player], nextSubCountdown: TimeInterval?) {
         let attributes = PlayBallWidgetLiveActivityAttributes()
 
-        let livePlayers = nextPlayers.enumerated().map { (index, player) in
-            LivePlayer(
+        let players = nextPlayers.enumerated().map { (index, player) in
+            Player(
                 name: player.name,
                 tintHex: PlayerPalette.hexCode(for: index)
             )
@@ -34,9 +29,9 @@ final class GameLiveActivityHandler {
 
         let state = PlayBallWidgetLiveActivityAttributes.ContentState(
             currentTime: currentTime,
+            periodLength: periodLength,
             quarter: currentQuarter,
-            isRunning: isRunning,
-            nextPlayers: livePlayers,
+            nextPlayers: players,
             nextSubCountdown: nextSubCountdown
         )
 
@@ -53,9 +48,9 @@ final class GameLiveActivityHandler {
         }
     }
 
-    func updateLiveActivity(currentTime: TimeInterval, currentQuarter: Int, isRunning: Bool, nextPlayers: [Player], nextSubCountdown: TimeInterval?) {
-        let livePlayers = nextPlayers.enumerated().map { (index, player) in
-            LivePlayer(
+    func updateLiveActivity(currentTime: TimeInterval, periodLength: TimeInterval, currentQuarter: Int, nextPlayers: [Player], nextSubCountdown: TimeInterval?) {
+        let players = nextPlayers.enumerated().map { (index, player) in
+            Player(
                 name: player.name,
                 tintHex: PlayerPalette.hexCode(for: index)
             )
@@ -64,9 +59,9 @@ final class GameLiveActivityHandler {
         Task {
             let state = PlayBallWidgetLiveActivityAttributes.ContentState(
                 currentTime: currentTime,
+                periodLength: periodLength,
                 quarter: currentQuarter,
-                isRunning: isRunning,
-                nextPlayers: livePlayers,
+                nextPlayers: players,
                 nextSubCountdown: nextSubCountdown
             )
 
@@ -79,8 +74,8 @@ final class GameLiveActivityHandler {
     func endLiveActivity(currentTime: TimeInterval, currentQuarter: Int) {
         let state = PlayBallWidgetLiveActivityAttributes.ContentState(
             currentTime: currentTime,
+            periodLength: currentTime,
             quarter: currentQuarter,
-            isRunning: false,
             nextPlayers: []
         )
         let content = ActivityContent(state: state, staleDate: nil)

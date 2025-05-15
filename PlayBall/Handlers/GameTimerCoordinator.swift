@@ -14,9 +14,9 @@ import MijickTimer
     @Published var subTimer = MTimer(.sub)
     @Published var currentQuarter = 0
 
-    private let totalPeriods: Int
-    private let periodLength: TimeInterval
-    private let substitutionInterval: TimeInterval
+    let totalPeriods: Int
+    let periodLength: TimeInterval
+    let substitutionInterval: TimeInterval
     
     var onSubTimerFinish: (() -> Void)?
 

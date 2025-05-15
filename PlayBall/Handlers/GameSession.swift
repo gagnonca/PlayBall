@@ -73,3 +73,36 @@ extension GameSession {
         timerCoordinator.restartSubTimer(remaining: remaining)
     }
 }
+
+
+// MARK: - Live Activity Actions
+extension GameSession {
+    func startLiveActivityIfNeeded() {
+        guard !liveActivityHandler.isActive else { return }
+        liveActivityHandler.startLiveActivity(
+            currentTime: totalElapsedTime,
+            periodLength: timerCoordinator.periodLength,
+            currentQuarter: timerCoordinator.currentQuarter,
+            nextPlayers: nextPlayers,
+            nextSubCountdown: timerCoordinator.subTimer.timerTime.totalSeconds
+        )
+    }
+
+    func updateLiveActivity() {
+        guard liveActivityHandler.isActive else { return }
+        liveActivityHandler.updateLiveActivity(
+            currentTime: totalElapsedTime,
+            periodLength: timerCoordinator.periodLength,
+            currentQuarter: timerCoordinator.currentQuarter,
+            nextPlayers: nextPlayers,
+            nextSubCountdown: timerCoordinator.subTimer.timerTime.totalSeconds
+        )
+    }
+
+    func endLiveActivity() {
+        liveActivityHandler.endLiveActivity(
+            currentTime: totalElapsedTime,
+            currentQuarter: timerCoordinator.currentQuarter
+        )
+    }
+}

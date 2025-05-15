@@ -12,48 +12,12 @@ import SwiftUI
 struct PlayBallWidgetExtensionLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: PlayBallWidgetLiveActivityAttributes.self) { context in
-            VStack(spacing: 16) {
-                // Quarter & Time Section
-                HStack(spacing: 32) {
-                    VStack(spacing: 4) {
-                        Text("Quarter")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                        Text("Q\(context.state.quarter)")
-                            .font(.title2.bold())
-                    }
-
-                    VStack(spacing: 4) {
-                        Text("Time")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                        Text(context.state.currentTime.formattedTime)
-                            .monospacedDigit()
-                            .font(.title2.bold())
-                    }
-                }
-
-                if let countdown = context.state.nextSubCountdown {
-                    VStack(spacing: 8) {
-                        Text("Next on in \(countdown.formattedTime)")
-                            .font(.title3)
-                            .foregroundStyle(.secondary)
-
-                        HStack(spacing: 6) {
-                            ForEach(context.state.nextPlayers, id: \.self) { player in
-                                StaticPlayerBadge(name: player.name, tint: Color(hex: player.tintHex))
-                            }
-                        }
-                    }
-                    .frame(maxWidth: .infinity, alignment: .center)
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .center)
-            .padding()
-            .background {
-                ColorGradient()
-                    .opacity(0.3)
-            }
+            LiveActivityContent(
+                period: context.state.quarter,
+                currentTime: context.state.currentTime,
+                periodLength: context.state.periodLength,
+                nextOn: context.state.nextPlayers,
+                subCountdown: context.state.nextSubCountdown!)
         }
         dynamicIsland: { context in
             DynamicIsland {
@@ -87,34 +51,32 @@ extension TimeInterval {
     }
 }
 
-#Preview("Lock Screen", as: .content, using: PlayBallWidgetLiveActivityAttributes()) {
-    PlayBallWidgetExtensionLiveActivity()
-} contentStates: {
-    PlayBallWidgetLiveActivityAttributes.ContentState(
-        currentTime: 102,
-        quarter: 2,
-        isRunning: true,
-        nextPlayers: [
-            LivePlayer(name: "Addy", tintHex: "dc8a78"),    // rosewater
-            LivePlayer(name: "Lucy", tintHex: "dd7878"),    // flamingo
-            LivePlayer(name: "Haley", tintHex: "ea76cb"),   // pink
-            LivePlayer(name: "Brooke", tintHex: "8839ef")   // mauve
-        ],
-        nextSubCountdown: 120
-    )
-}
-
-#Preview("Dynamic Island", as: .dynamicIsland(.compact), using: PlayBallWidgetLiveActivityAttributes()) {
-    PlayBallWidgetExtensionLiveActivity()
-} contentStates: {
-    PlayBallWidgetLiveActivityAttributes.ContentState(
-        currentTime: 102,
-        quarter: 2,
-        isRunning: true,
-        nextPlayers: [
-            LivePlayer(name: "Addy", tintHex: "dc8a78"),
-            LivePlayer(name: "Lucy", tintHex: "dd7878"),
-            LivePlayer(name: "Haley", tintHex: "ea76cb")
-        ]
-    )
-}
+//#Preview("Lock Screen", as: .content, using: PlayBallWidgetLiveActivityAttributes()) {
+//    PlayBallWidgetExtensionLiveActivity()
+//} contentStates: {
+//    PlayBallWidgetLiveActivityAttributes.ContentState(
+//        currentTime: 102,
+//        quarter: 2,
+//        nextPlayers: [
+//            Player(name: "Addy", tintHex: "dc8a78"),    // rosewater
+//            Player(name: "Lucy", tintHex: "dd7878"),    // flamingo
+//            Player(name: "Haley", tintHex: "ea76cb"),   // pink
+//            Player(name: "Brooke", tintHex: "8839ef")   // mauve
+//        ],
+//        nextSubCountdown: 120
+//    )
+//}
+//
+//#Preview("Dynamic Island", as: .dynamicIsland(.compact), using: PlayBallWidgetLiveActivityAttributes()) {
+//    PlayBallWidgetExtensionLiveActivity()
+//} contentStates: {
+//    PlayBallWidgetLiveActivityAttributes.ContentState(
+//        currentTime: 102,
+//        quarter: 2,
+//        nextPlayers: [
+//            Player(name: "Addy", tintHex: "dc8a78"),
+//            Player(name: "Lucy", tintHex: "dd7878"),
+//            Player(name: "Haley", tintHex: "ea76cb")
+//        ]
+//    )
+//}
