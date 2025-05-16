@@ -15,8 +15,8 @@ class Team: Identifiable, Codable {
     var games: [Game]
     
     // League rules
-    var gameFormat: GameFormat = .quarters
-    var periodLength: TimeInterval = 600
+    var gameFormat: GameFormat
+    var periodLengthMinutes: Int
 
     init(
         id: UUID = UUID(),
@@ -24,14 +24,14 @@ class Team: Identifiable, Codable {
         players: [Player] = [],
         games: [Game] = [],
         gameFormat: GameFormat = .quarters,
-        periodLength: TimeInterval = 600
+        periodLengthMinutes: Int = 10
     ) {
         self.id = id
         self.name = name
         self.players = players
         self.games = games
         self.gameFormat = gameFormat
-        self.periodLength = periodLength
+        self.periodLengthMinutes = periodLengthMinutes
     }
 
     func addPlayer(_ player: Player) {

@@ -12,19 +12,6 @@ struct GameEditView: View {
     @Binding var game: Game
     @Bindable var team: Team
 
-//    init(game: Binding<Game>, team: Team) {
-//        _game = game
-//        _gameName = State(initialValue: game.wrappedValue.name)
-//        _gameDate = State(initialValue: game.wrappedValue.date)
-//        _availablePlayers = State(initialValue: game.wrappedValue.availablePlayers)
-//        _substitutionStyle = State(initialValue: game.wrappedValue.substitutionStyle)
-//        _playersOnField = State(initialValue: game.wrappedValue.playersOnField)
-//        _periodLengthMinutes = State(initialValue: game.wrappedValue.periodLengthMinutes)
-//        _numberOfPeriods = State(initialValue: game.wrappedValue.numberOfPeriods)
-//
-//        self.team = team
-//    }
-
     var body: some View {
         GameEditorForm(
             game: $game,
