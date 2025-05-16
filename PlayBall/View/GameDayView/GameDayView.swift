@@ -37,7 +37,11 @@ struct GameDayView: View {
                     .padding(.top, 12)
                     
                     VStack(spacing: 12) {
-                        GameClockSection(coordinator: session.timerCoordinator, timer: session.timerCoordinator.quarterTimer)
+                        GameClockSection(
+                            coordinator: session.timerCoordinator,
+                            timer: session.timerCoordinator.quarterTimer,
+                            numberOfPeriods: session.game.numberOfPeriods
+                        )
                         OnFieldSection(state: session.substitutionState)
                         if !session.substitutionState.nextPlayers.isEmpty {
                             NextOnSection(state: session.substitutionState, timer: session.timerCoordinator.subTimer)
@@ -81,34 +85,41 @@ struct GameDayView: View {
 struct GameClockSection: View {
     @StateObject var coordinator: GameTimerCoordinator
     @ObservedObject var timer: MTimer
+    let numberOfPeriods: PeriodStyle
 
     var body: some View {
         let timer = coordinator.quarterTimer
 
         GlassCard(title: "Game Clock", sfSymbol: "timer") {
-            VStack(spacing: 16) {
+            HStack(spacing: 64) {
                 VStack {
+                    Text(numberOfPeriods == .quarter ? "Quarter" : "Half")
+                        .font(.callout.bold())
+                        .foregroundStyle(.secondary)
+                    Text("\(coordinator.currentQuarter)")
+                        .font(.largeTitle.bold())
+                        .foregroundStyle(.primary)
+                }
+
+                VStack {
+                    Text("Time")
+                        .font(.callout.bold())
+                        .foregroundStyle(.secondary)
                     Text(timer.timerTime.toString(getFormatter))
                         .font(.largeTitle.bold())
                         .foregroundStyle(.primary)
-
-                    Text("Quarter \(coordinator.currentQuarter)")
-                        .font(.subheadline.bold())
-                        .foregroundStyle(.primary)
                 }
-                .frame(maxWidth: .infinity, alignment: .center)
-
-                HStack(spacing: 24) {
-                    Button(action: coordinator.togglePlayPause) {
-                        Image(timer.timerStatus == .running ? .pause : .play)
-                            .padding(12)
-                            .background(.regularMaterial, in: Circle())
-                    }
-                    .disabled(coordinator.isGameOver)
+                
+                Button(action: coordinator.togglePlayPause) {
+                    Image(timer.timerStatus == .running ? .pause : .play)
+                        .padding(12)
+                        .background(.regularMaterial, in: Circle())
                 }
+                .disabled(coordinator.isGameOver)
                 .font(.title2)
                 .foregroundStyle(.primary)
             }
+            .frame(maxWidth: .infinity, alignment: .center)
         }
     }
 }

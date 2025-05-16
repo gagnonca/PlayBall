@@ -12,7 +12,6 @@ struct GameEditorForm: View {
     @Binding var gameName: String
     @Binding var gameDate: Date
     @Binding var availablePlayers: [Player]
-    
     @Binding var substitutionStyle: SubstitutionStyle
     @Binding var playersOnField: Int
     @Binding var periodLengthMinutes: Int
@@ -30,64 +29,16 @@ struct GameEditorForm: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Game Details") {
-                    TextField("Game Name", text: $gameName)
-                    DatePicker("Date", selection: $gameDate, displayedComponents: [.date])
-                }
+                GameDetailsSection(gameName: $gameName, gameDate: $gameDate)
 
-                Section("Available Players") {
-                    if availablePlayers.isEmpty {
-                        Text("No players selected").foregroundStyle(.secondary)
-                    } else {
-                        ForEach(Array(availablePlayers.enumerated()), id: \.element.id) { index, player in
-                            VStack(spacing: 0) {
-                                HStack {
-                                    Text("\(index + 1). \(player.name)")
-                                        .foregroundStyle(player.tint)
-                                    Spacer()
-                                    Image(.reorder)
-                                        .foregroundStyle(.secondary)
-                                }
-                            }
-                        }
-                        .onDelete { availablePlayers.remove(atOffsets: $0) }
-                        .onMove { availablePlayers.move(fromOffsets: $0, toOffset: $1) }
-                    }
-                }
+                GameSettingsSection(
+                    substitutionStyle: $substitutionStyle,
+                    playersOnField: $playersOnField,
+                    periodLengthMinutes: $periodLengthMinutes,
+                    numberOfPeriods: $numberOfPeriods
+                )
 
-                if availablePlayers.count < team.players.count {
-                    Section("Team Roster") {
-                        ForEach(team.players.filter { !availablePlayers.contains($0) }) { player in
-                            HStack {
-                                Text(player.name)
-                                Spacer()
-                                Button {
-                                    availablePlayers.append(player)
-                                } label: {
-                                    Image(.add)
-                                        .foregroundStyle(player.tint)
-                                }
-                                .buttonStyle(.borderless)
-                            }
-                        }
-                    }
-                }
-                
-                Section("Game Settings") {
-                    Picker("Substitution Style", selection: $substitutionStyle) {
-                        ForEach(SubstitutionStyle.allCases, id: \.self) { style in
-                            Text(style.displayName).tag(style)
-                        }
-                    }
-                    Stepper("Players on Field: \(playersOnField)", value: $playersOnField, in: 1...11)
-                    Stepper("Minutes per Period: \(periodLengthMinutes)", value: $periodLengthMinutes, in: 1...60)
-                    Picker("Period Style", selection: $numberOfPeriods) {
-                        ForEach(PeriodStyle.allCases, id: \.self) { style in
-                            Text(style.displayName).tag(style)
-                        }
-                    }
-                }
-
+                AvailablePlayersGameSection(availablePlayers: $availablePlayers, fullRoster: team.players)
             }
             .navigationTitle(title)
             .toolbar {
@@ -103,6 +54,7 @@ struct GameEditorForm: View {
                     }
                 }
             }
+
             if showDelete, let onDelete = onDelete {
                 DeleteButton(title: "Delete Game") {
                     onDelete()
@@ -111,11 +63,94 @@ struct GameEditorForm: View {
             }
         }
     }
-    
+
     private var isSaveEnabled: Bool {
         !gameName.trimmingCharacters(in: .whitespaces).isEmpty && !availablePlayers.isEmpty
     }
 }
+
+
+private struct GameDetailsSection: View {
+    @Binding var gameName: String
+    @Binding var gameDate: Date
+
+    var body: some View {
+        Section("Game Details") {
+            TextField("Game Name", text: $gameName)
+            DatePicker("Date", selection: $gameDate, displayedComponents: [.date])
+        }
+    }
+}
+
+private struct AvailablePlayersGameSection: View {
+    @Binding var availablePlayers: [Player]
+    let fullRoster: [Player]
+
+    var body: some View {
+        Section("Available Players") {
+            if availablePlayers.isEmpty {
+                Text("No players selected").foregroundStyle(.secondary)
+            } else {
+                ForEach(Array(availablePlayers.enumerated()), id: \.element.id) { index, player in
+                    VStack(spacing: 0) {
+                        HStack {
+                            Text("\(index + 1). \(player.name)")
+                                .foregroundStyle(player.tint)
+                            Spacer()
+                            Image(.reorder)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+                .onDelete { availablePlayers.remove(atOffsets: $0) }
+                .onMove { availablePlayers.move(fromOffsets: $0, toOffset: $1) }
+            }
+        }
+
+        if availablePlayers.count < fullRoster.count {
+            Section("Team Roster") {
+                ForEach(fullRoster.filter { !availablePlayers.contains($0) }) { player in
+                    HStack {
+                        Text(player.name)
+                        Spacer()
+                        Button {
+                            availablePlayers.append(player)
+                        } label: {
+                            Image(.add)
+                                .foregroundStyle(player.tint)
+                        }
+                        .buttonStyle(.borderless)
+                    }
+                }
+            }
+        }
+    }
+}
+
+private struct GameSettingsSection: View {
+    @Binding var substitutionStyle: SubstitutionStyle
+    @Binding var playersOnField: Int
+    @Binding var periodLengthMinutes: Int
+    @Binding var numberOfPeriods: PeriodStyle
+
+    var body: some View {
+        Section {
+            Picker("Substitution Style", selection: $substitutionStyle) {
+                Text("Long").tag(SubstitutionStyle.long)
+                Text("Short").tag(SubstitutionStyle.short)
+            }
+            Stepper("Players on Field: \(playersOnField)", value: $playersOnField, in: 1...11)
+            Stepper("Minutes per Period: \(periodLengthMinutes)", value: $periodLengthMinutes, in: 1...60)
+            Picker("Period Style", selection: $numberOfPeriods) {
+                Text("4 Quarters").tag(PeriodStyle.quarter)
+                Text("2 Halves").tag(PeriodStyle.half)
+            }
+        } header: {
+            Text("Game Settings")
+        }
+    }
+}
+
 
 #Preview("Game Editor Form") {
     @Previewable @State var gameName = "Saturday Match"
