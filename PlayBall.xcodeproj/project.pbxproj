@@ -85,8 +85,8 @@
 		4EC1F80E2DC443380057BD60 /* Exceptions for "PlayBall" folder in "PlayBallWidgetExtensionExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				"Extensions/Color+Theme.swift",
 				Model/Player.swift,
-				"View/Colors/Color+Theme.swift",
 				View/Colors/PlayerPalette.swift,
 				View/Components/ColorGradient.swift,
 			);
