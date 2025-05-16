@@ -78,6 +78,7 @@ extension GameTimerCoordinator {
             .start(from: substitutionInterval, to: 0)
     }
     func restartSubTimer(remaining: TimeInterval) {
+        if subTimer.timerStatus != .notStarted { return }
         subTimer.cancel()
         try? subTimer
             .publish(every: 1)

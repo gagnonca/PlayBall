@@ -206,8 +206,8 @@
             filePath = "PlayBall/Handlers/GameTimerCoordinator.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "81"
-            endingLineNumber = "81"
+            startingLineNumber = "82"
+            endingLineNumber = "82"
             landmarkName = "restartSubTimer(remaining:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -226,36 +226,6 @@
             endingLineNumber = "50"
             landmarkName = "timeString(forSegment:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "EEC626FD-95B5-423B-BE25-5E075A97C5DA - 8c3d8b2f2797192b"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "PlayBall.SubstitutionPlan.timeString(forSegment: Swift.Int) -&gt; Swift.String"
-                  moduleName = "PlayBall.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/cgagnon/Desktop/PlayBall/PlayBall/View/GameDayView/GameOverviewView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "50"
-                  endingLineNumber = "50">
-               </Location>
-               <Location
-                  uuid = "EEC626FD-95B5-423B-BE25-5E075A97C5DA - 8c3d8b2f2797192b"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "PlayBall.SubstitutionPlan.timeString(forSegment: Swift.Int) -&gt; Swift.String"
-                  moduleName = "PlayBall.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/cgagnon/Desktop/PlayBall/PlayBall/View/GameDayView/GameOverviewView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "50"
-                  endingLineNumber = "50">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

@@ -90,7 +90,7 @@ struct RosterSection: View {
                     Text("No players yet.")
                         .foregroundStyle(.white.opacity(0.7))
                 } else {
-                    FlowLayout(items: players, spacing: 8) { player in
+                    FlowLayout(items: players.sortedByName, spacing: 8) { player in
                         PlayerBadge(player: player)
                     }
                 }

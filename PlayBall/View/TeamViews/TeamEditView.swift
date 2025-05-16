@@ -36,7 +36,6 @@ struct TeamEditView: View {
             onSave: {
                 team.name = teamName
                 team.players = players
-                team.sortPlayers()
                 Coach.shared.updateTeam(team)
                 dismiss()
             },

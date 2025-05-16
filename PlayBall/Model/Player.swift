@@ -23,3 +23,8 @@ struct Player: Identifiable, Hashable, Codable {
     }
 }
 
+extension Array where Element == Player {
+    var sortedByName: [Player] {
+        self.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+    }
+}

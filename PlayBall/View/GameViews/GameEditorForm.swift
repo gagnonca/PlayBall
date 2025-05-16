@@ -93,7 +93,7 @@ private struct AvailablePlayersGameSection: View {
 
         if availablePlayers.count < fullRoster.count {
             Section("Team Roster") {
-                ForEach(fullRoster.filter { !availablePlayers.contains($0) }) { player in
+                ForEach(fullRoster.sortedByName.filter { !availablePlayers.contains($0) }) { player in
                     HStack {
                         Text(player.name)
                         Spacer()
