@@ -23,8 +23,8 @@ struct GameEditorForm: View {
         NavigationStack {
             Form {
                 GameDetailsSection(game: $game)
-                GameSettingsSection(game: $game)
                 AvailablePlayersGameSection(availablePlayers: $game.availablePlayers, fullRoster: team.players)
+                GameSettingsSection(game: $game)
             }
             .navigationTitle(title)
             .toolbar {
