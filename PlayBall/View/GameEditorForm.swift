@@ -280,8 +280,8 @@ private struct GameSettingsSection: View {
     var body: some View {
         DisclosureGroup("Advanced Settings") {
             Picker("Period Style", selection: $game.numberOfPeriods) {
-                Text("4 Quarters").tag(PeriodStyle.quarter)
-                Text("2 Halves").tag(PeriodStyle.half)
+                Text("Quarters").tag(GameFormat.quarter)
+                Text("Halves").tag(GameFormat.half)
             }
             .pickerStyle(.segmented)
             VStack(alignment: .leading) {
@@ -292,9 +292,17 @@ private struct GameSettingsSection: View {
                     game.periodLengthMinutes = Int($0)
                 }), in: 1...60, step: 1)
             }
-            Picker("Substitution Frequency", selection: $game.substitutionStyle) {
-                Text("Long").tag(SubstitutionStyle.long)
-                Text("Short").tag(SubstitutionStyle.short)
+            VStack(alignment: .leading, spacing: 8) {
+                Picker("Substitution Frequency", selection: $game.substitutionStyle) {
+                    Text("Long").tag(SubstitutionStyle.long)
+                    Text("Short").tag(SubstitutionStyle.short)
+                }
+
+                Text(game.substitutionStyle == .long
+                     ? "Players rotate fewer times, with longer shifts."
+                     : "Players rotate more frequently, with shorter shifts.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
         }
     }

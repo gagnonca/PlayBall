@@ -15,6 +15,7 @@ class Team: Identifiable, Codable {
     var games: [Game]
     
     // League rules
+    var matchFormat: MatchFormat
     var gameFormat: GameFormat
     var periodLengthMinutes: Int
 
@@ -23,13 +24,15 @@ class Team: Identifiable, Codable {
         name: String,
         players: [Player] = [],
         games: [Game] = [],
-        gameFormat: GameFormat = .quarters,
+        matchFormat: MatchFormat = .fourVFour,
+        gameFormat: GameFormat = .quarter,
         periodLengthMinutes: Int = 10
     ) {
         self.id = id
         self.name = name
         self.players = players
         self.games = games
+        self.matchFormat = matchFormat
         self.gameFormat = gameFormat
         self.periodLengthMinutes = periodLengthMinutes
     }

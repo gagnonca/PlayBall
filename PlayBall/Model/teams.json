@@ -221,7 +221,8 @@
         "substitutionStyle" : "short"
       }
     ],
-    "_gameFormat" : "quarters",
+    "_matchFormat" : 4,
+    "_gameFormat" : 4,
     "_name" : "Cheetahs",
     "_players" : [
       {
@@ -280,7 +281,8 @@
 
     ],
     "id" : "3B59E94B-D2C9-442C-9AB0-CFE00365175D",
-    "_gameFormat" : "halves",
+    "_matchFormat" : 4,
+    "_gameFormat" : 4,
     "_name" : "Lightning",
     "_players" : [
       {

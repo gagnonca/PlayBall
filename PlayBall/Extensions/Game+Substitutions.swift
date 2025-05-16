@@ -7,30 +7,6 @@
 
 import Foundation
 
-enum PeriodStyle: Int, Codable, CaseIterable {
-    case quarter = 4
-    case half = 2
-    
-    var displayName: String {
-        switch self {
-        case .quarter: "Quarter"
-        case .half: "Half"
-        }
-    }
-}
-
-enum SubstitutionStyle: String, Codable, CaseIterable {
-    case long
-    case short
-
-    var displayName: String {
-        switch self {
-        case .long: "Long"
-        case .short: "Short"
-        }
-    }
-}
-
 extension Game {
     func buildSubstitutionPlan() -> SubstitutionPlan {
         let players = availablePlayers

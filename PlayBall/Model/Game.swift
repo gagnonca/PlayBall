@@ -16,7 +16,7 @@ struct Game: Identifiable, Hashable, Codable {
     var substitutionStyle: SubstitutionStyle // .short or .long
     var playersOnField: Int                 // number of players on the field (e.g. 4 for 4v4)
     var periodLengthMinutes: Int            // length of each "period" of a game
-    var numberOfPeriods: PeriodStyle    // .quarter = 4, .half = 2
+    var numberOfPeriods: GameFormat    // .quarter = 4, .half = 2
     
     init(
         id: UUID = UUID(),
@@ -26,7 +26,7 @@ struct Game: Identifiable, Hashable, Codable {
         substitutionStyle: SubstitutionStyle = .short,
         playersOnField: Int = 4,
         periodLengthMinutes: Int = 10,
-        numberOfPeriods: PeriodStyle = .quarter,
+        numberOfPeriods: GameFormat = .quarter,
     ) {
         self.id = id
         self.name = name

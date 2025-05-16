@@ -85,7 +85,7 @@ struct GameDayView: View {
 struct GameClockSection: View {
     @StateObject var coordinator: GameTimerCoordinator
     @ObservedObject var timer: MTimer
-    let numberOfPeriods: PeriodStyle
+    let numberOfPeriods: GameFormat
 
     var body: some View {
         let timer = coordinator.quarterTimer
