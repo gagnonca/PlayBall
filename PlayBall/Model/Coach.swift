@@ -49,58 +49,21 @@ extension Coach {
         return documents.appendingPathComponent("teams.json")
     }
 
-//    func loadTeams() {
-//        let url = teamsFileURL
-//        print(teamsFileURL)
-//        if !FileManager.default.fileExists(atPath: url.path) {
-//            copyInitialTeamsFromBundle()
-//            return
-//        }
-//
-//        guard let data = try? Data(contentsOf: url) else {
-//            print("Failed to load data from documents.")
-//            return
-//        }
-//        decodeTeams(from: data)
-//    }
-
     func saveTeamsToJson() {
         DataModel.shared.save(teams: teams)
     }
 
     func loadTeams() {
-        self.teams = DataModel.shared.loadTeams()
-    }
-    
-//    private func copyInitialTeamsFromBundle() {
-//        guard let bundleURL = Bundle.main.url(forResource: "teams", withExtension: "json"),
-//              let data = try? Data(contentsOf: bundleURL) else {
-//            print("Failed to copy initial teams.")
-//            return
-//        }
-//
-//        try? data.write(to: teamsFileURL, options: [.atomic])
-//        decodeTeams(from: data)
-//    }
+        let url = teamsFileURL
+        if !FileManager.default.fileExists(atPath: url.path) {
+            teams = DataModel.shared.loadTeamsFromBundle()
+            DataModel.shared.save(teams: teams)
+            return
+        }
 
-//    private func decodeTeams(from data: Data) {
-//        let decoder = JSONDecoder()
-//        decoder.dateDecodingStrategy = .iso8601
-//        do {
-//            let teamsData = try decoder.decode([TeamData].self, from: data)
-//            teams = teamsData.map { $0.toTeam() }
-//        } catch let DecodingError.dataCorrupted(context) {
-//            print("Data corrupted: \(context.debugDescription)")
-//        } catch let DecodingError.keyNotFound(key, context) {
-//            print("Key '\(key)' not found: \(context.debugDescription)")
-//        } catch let DecodingError.typeMismatch(type, context) {
-//            print("Type '\(type)' mismatch: \(context.debugDescription)")
-//        } catch let DecodingError.valueNotFound(value, context) {
-//            print("Value '\(value)' not found: \(context.debugDescription)")
-//        } catch {
-//            print("Generic decoding error: \(error.localizedDescription)")
-//        }
-//    }
+        teams = DataModel.shared.loadTeams()
+    }
+
 }
 
 /// Preview Coach for UI Previews
@@ -110,24 +73,6 @@ extension Coach {
         coach.teams = DataModel.shared.loadTeams()
         return coach
     }
-
-//    static func loadTeamsFromBundle() -> [Team] {
-//        guard let url = Bundle.main.url(forResource: "teams", withExtension: "json"),
-//              let data = try? Data(contentsOf: url) else {
-//            return []
-//        }
-//
-//        let decoder = JSONDecoder()
-//        decoder.dateDecodingStrategy = .iso8601
-//
-//        do {
-//            let teams = try decoder.decode([TeamData].self, from: data)
-//            return teams.map { $0.toTeam() }
-//        } catch {
-//            print("❌ Failed to decode preview teams: \(error)")
-//            return []
-//        }
-//    }
 }
 
 /// Preview Coach for UI Previews

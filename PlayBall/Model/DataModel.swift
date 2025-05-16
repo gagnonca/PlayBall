@@ -10,10 +10,12 @@ import Foundation
 
 final class DataModel {
     static let shared = DataModel()
-
+    
     private init() {}
+}
 
-    // MARK: - Save / Load Teams to local file system
+// MARK: - Save / Load Teams to local file system
+extension DataModel {
     func save(teams: [Team]) {
         do {
             let url = teamsFileURL
@@ -46,11 +48,31 @@ final class DataModel {
     }
 
     // MARK: - File URL
-
     private var teamsFileURL: URL {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
             .appendingPathComponent("teams.json")
     }
+}
+
+// MARK: - Helper for testing
+extension DataModel {
+    func loadTeamsFromBundle() -> [Team] {
+        guard let url = Bundle.main.url(forResource: "teams", withExtension: "json"),
+              let data = try? Data(contentsOf: url) else {
+            print("📦 No bundled teams.json found.")
+            return []
+        }
+
+        do {
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .iso8601
+            return try decoder.decode([Team].self, from: data)
+        } catch {
+            print("❌ Failed to decode bundled teams.json:", error)
+            return []
+        }
+    }
+
 }
 
 /// File Sharing Helpers
@@ -85,5 +107,4 @@ extension DataModel {
             return nil
         }
     }
-
 }

@@ -1,59 +1,337 @@
 [
   {
-    "name" : "Cheetahs",
-    "games" : [
+    "_periodLengthMinutes" : 10,
+    "_$observationRegistrar" : {
+
+    },
+    "id" : "2008641C-415A-4990-AE89-D2A252E88EB9",
+    "_games" : [
       {
-        "name" : "Game 1",
+        "periodLengthMinutes" : 10,
+        "substitutionStyle" : "short",
         "availablePlayers" : [
-          "Alana",
-          "Brooke",
-          "Haley",
-          "Elaina",
-          "Lucy",
-          "Eliza",
-          "Amelia",
-          "Addy",
-          "Aaradhya"
+          {
+            "id" : "247D8DDC-C5A0-42B5-BFB1-1145BE5EBF3C",
+            "tintHex" : "#8839ef",
+            "name" : "Alana"
+          },
+          {
+            "id" : "F1D93502-EF30-4771-B1F9-062A0E62F78E",
+            "tintHex" : "#df8e1d",
+            "name" : "Elaina"
+          },
+          {
+            "id" : "22DE1FF2-5D2C-4DBF-9248-21F0D0CF1194",
+            "tintHex" : "#1e66f5",
+            "name" : "Brooke"
+          },
+          {
+            "id" : "9F02D1B4-1BFF-458C-9438-328C01BA6EF1",
+            "tintHex" : "#dc8a78",
+            "name" : "Haley"
+          },
+          {
+            "id" : "6AB7B536-F940-4387-B56A-143EC9550E91",
+            "tintHex" : "#ea76cb",
+            "name" : "Lucy"
+          },
+          {
+            "id" : "715D3F5E-FD54-40E2-97F2-D8882A40CDB7",
+            "tintHex" : "#fe640b",
+            "name" : "Eliza"
+          },
+          {
+            "id" : "998934DB-C3F9-4F39-A4EB-1B1A2466137A",
+            "tintHex" : "#40a02b",
+            "name" : "Amelia"
+          },
+          {
+            "id" : "089C1096-2AD7-4B64-985A-EA3061537D27",
+            "tintHex" : "#d20f39",
+            "name" : "Addy"
+          },
+          {
+            "id" : "7D9ADA94-BB15-4F31-84F6-6FC4DE3917EA",
+            "tintHex" : "#04a5e5",
+            "name" : "Aaradhya"
+          }
         ],
-        "date" : "2025-04-06T01:52:00Z"
+        "id" : "6018FF24-8F5A-405B-816D-A15747506298",
+        "name" : "Game 1",
+        "numberOfPeriods" : 4,
+        "date" : "2025-04-05T14:18:00Z",
+        "playersOnField" : 4
+      },
+      {
+        "playersOnField" : 4,
+        "name" : "Game 2",
+        "id" : "ABF1CF9D-095A-4269-903D-7792BB6B1036",
+        "numberOfPeriods" : 4,
+        "availablePlayers" : [
+          {
+            "id" : "089C1096-2AD7-4B64-985A-EA3061537D27",
+            "tintHex" : "#d20f39",
+            "name" : "Addy"
+          },
+          {
+            "id" : "247D8DDC-C5A0-42B5-BFB1-1145BE5EBF3C",
+            "tintHex" : "#8839ef",
+            "name" : "Alana"
+          },
+          {
+            "id" : "998934DB-C3F9-4F39-A4EB-1B1A2466137A",
+            "tintHex" : "#40a02b",
+            "name" : "Amelia"
+          },
+          {
+            "id" : "22DE1FF2-5D2C-4DBF-9248-21F0D0CF1194",
+            "tintHex" : "#1e66f5",
+            "name" : "Brooke"
+          },
+          {
+            "id" : "7D9ADA94-BB15-4F31-84F6-6FC4DE3917EA",
+            "tintHex" : "#04a5e5",
+            "name" : "Aaradhya"
+          },
+          {
+            "id" : "F1D93502-EF30-4771-B1F9-062A0E62F78E",
+            "tintHex" : "#df8e1d",
+            "name" : "Elaina"
+          },
+          {
+            "id" : "6AB7B536-F940-4387-B56A-143EC9550E91",
+            "tintHex" : "#ea76cb",
+            "name" : "Lucy"
+          }
+        ],
+        "periodLengthMinutes" : 10,
+        "date" : "2025-04-26T14:19:00Z",
+        "substitutionStyle" : "short"
+      },
+      {
+        "availablePlayers" : [
+          {
+            "name" : "Aaradhya",
+            "id" : "7D9ADA94-BB15-4F31-84F6-6FC4DE3917EA",
+            "tintHex" : "#04a5e5"
+          },
+          {
+            "name" : "Eliza",
+            "id" : "715D3F5E-FD54-40E2-97F2-D8882A40CDB7",
+            "tintHex" : "#fe640b"
+          },
+          {
+            "name" : "Haley",
+            "id" : "9F02D1B4-1BFF-458C-9438-328C01BA6EF1",
+            "tintHex" : "#dc8a78"
+          },
+          {
+            "name" : "Lucy",
+            "id" : "6AB7B536-F940-4387-B56A-143EC9550E91",
+            "tintHex" : "#ea76cb"
+          },
+          {
+            "name" : "Elaina",
+            "id" : "F1D93502-EF30-4771-B1F9-062A0E62F78E",
+            "tintHex" : "#df8e1d"
+          },
+          {
+            "name" : "Brooke",
+            "id" : "22DE1FF2-5D2C-4DBF-9248-21F0D0CF1194",
+            "tintHex" : "#1e66f5"
+          },
+          {
+            "name" : "Amelia",
+            "id" : "998934DB-C3F9-4F39-A4EB-1B1A2466137A",
+            "tintHex" : "#40a02b"
+          },
+          {
+            "name" : "Alana",
+            "id" : "247D8DDC-C5A0-42B5-BFB1-1145BE5EBF3C",
+            "tintHex" : "#8839ef"
+          },
+          {
+            "name" : "Addy",
+            "id" : "089C1096-2AD7-4B64-985A-EA3061537D27",
+            "tintHex" : "#d20f39"
+          }
+        ],
+        "substitutionStyle" : "short",
+        "name" : "Game 3",
+        "playersOnField" : 4,
+        "periodLengthMinutes" : 10,
+        "numberOfPeriods" : 4,
+        "id" : "36B88F7C-25AD-437F-9C9C-FCDF4B48C9D6",
+        "date" : "2025-05-03T14:19:00Z"
+      },
+      {
+        "periodLengthMinutes" : 10,
+        "date" : "2025-05-10T14:20:00Z",
+        "numberOfPeriods" : 4,
+        "id" : "F4440FEB-0A09-4070-B957-C980D06D2456",
+        "playersOnField" : 4,
+        "name" : "Game 4",
+        "availablePlayers" : [
+          {
+            "name" : "Aaradhya",
+            "id" : "7D9ADA94-BB15-4F31-84F6-6FC4DE3917EA",
+            "tintHex" : "#04a5e5"
+          },
+          {
+            "name" : "Amelia",
+            "id" : "998934DB-C3F9-4F39-A4EB-1B1A2466137A",
+            "tintHex" : "#40a02b"
+          },
+          {
+            "name" : "Elaina",
+            "id" : "F1D93502-EF30-4771-B1F9-062A0E62F78E",
+            "tintHex" : "#df8e1d"
+          },
+          {
+            "name" : "Lucy",
+            "id" : "6AB7B536-F940-4387-B56A-143EC9550E91",
+            "tintHex" : "#ea76cb"
+          },
+          {
+            "name" : "Haley",
+            "id" : "9F02D1B4-1BFF-458C-9438-328C01BA6EF1",
+            "tintHex" : "#dc8a78"
+          },
+          {
+            "name" : "Eliza",
+            "id" : "715D3F5E-FD54-40E2-97F2-D8882A40CDB7",
+            "tintHex" : "#fe640b"
+          },
+          {
+            "name" : "Brooke",
+            "id" : "22DE1FF2-5D2C-4DBF-9248-21F0D0CF1194",
+            "tintHex" : "#1e66f5"
+          },
+          {
+            "name" : "Alana",
+            "id" : "247D8DDC-C5A0-42B5-BFB1-1145BE5EBF3C",
+            "tintHex" : "#8839ef"
+          },
+          {
+            "name" : "Addy",
+            "id" : "089C1096-2AD7-4B64-985A-EA3061537D27",
+            "tintHex" : "#d20f39"
+          }
+        ],
+        "substitutionStyle" : "short"
       }
     ],
-    "players" : [
-      {
-        "name" : "Aaradhya",
-        "tint" : "red"
-      },
-      {
-        "name" : "Addy",
-        "tint" : "orange"
-      },
-      {
-        "name" : "Alana",
-        "tint" : "yellow"
-      },
-      {
-        "name" : "Amelia",
-        "tint" : "green"
-      },
-      {
-        "name" : "Brooke",
-        "tint" : "teal"
-      },
-      {
-        "name" : "Elaina",
-        "tint" : "blue"
-      },
-      {
-        "name" : "Eliza",
-        "tint" : "indigo"
-      },
+    "_gameFormat" : "quarters",
+    "_name" : "Cheetahs",
+    "_players" : [
       {
         "name" : "Haley",
-        "tint" : "purple"
+        "id" : "9F02D1B4-1BFF-458C-9438-328C01BA6EF1",
+        "tintHex" : "#dc8a78"
       },
       {
         "name" : "Lucy",
-        "tint" : "pink"
+        "id" : "6AB7B536-F940-4387-B56A-143EC9550E91",
+        "tintHex" : "#ea76cb"
+      },
+      {
+        "name" : "Alana",
+        "id" : "247D8DDC-C5A0-42B5-BFB1-1145BE5EBF3C",
+        "tintHex" : "#8839ef"
+      },
+      {
+        "name" : "Addy",
+        "id" : "089C1096-2AD7-4B64-985A-EA3061537D27",
+        "tintHex" : "#d20f39"
+      },
+      {
+        "name" : "Eliza",
+        "id" : "715D3F5E-FD54-40E2-97F2-D8882A40CDB7",
+        "tintHex" : "#fe640b"
+      },
+      {
+        "name" : "Elaina",
+        "id" : "F1D93502-EF30-4771-B1F9-062A0E62F78E",
+        "tintHex" : "#df8e1d"
+      },
+      {
+        "name" : "Amelia",
+        "id" : "998934DB-C3F9-4F39-A4EB-1B1A2466137A",
+        "tintHex" : "#40a02b"
+      },
+      {
+        "name" : "Aaradhya",
+        "id" : "7D9ADA94-BB15-4F31-84F6-6FC4DE3917EA",
+        "tintHex" : "#04a5e5"
+      },
+      {
+        "name" : "Brooke",
+        "id" : "22DE1FF2-5D2C-4DBF-9248-21F0D0CF1194",
+        "tintHex" : "#1e66f5"
+      }
+    ]
+  },
+  {
+    "_periodLengthMinutes" : 25,
+    "_$observationRegistrar" : {
+
+    },
+    "_games" : [
+
+    ],
+    "id" : "3B59E94B-D2C9-442C-9AB0-CFE00365175D",
+    "_gameFormat" : "halves",
+    "_name" : "Lightning",
+    "_players" : [
+      {
+        "tintHex" : "#dc8a78",
+        "id" : "3C9F41D0-9C7F-451D-BAC0-C29DC593C5AE",
+        "name" : "A"
+      },
+      {
+        "tintHex" : "#ea76cb",
+        "id" : "D6DE252B-012A-455F-B626-C75CACD1034A",
+        "name" : "B"
+      },
+      {
+        "tintHex" : "#8839ef",
+        "id" : "9DE70706-8E39-43F1-9D32-E97372F27EFD",
+        "name" : "C"
+      },
+      {
+        "tintHex" : "#d20f39",
+        "id" : "5DA4C7E2-0EBB-4176-B1A7-919773E347C4",
+        "name" : "D"
+      },
+      {
+        "tintHex" : "#fe640b",
+        "id" : "DD53B3EC-2DC0-4527-859B-EEC1A31C1A6F",
+        "name" : "E"
+      },
+      {
+        "tintHex" : "#df8e1d",
+        "id" : "0505215D-730A-47F1-A915-471F4325DC12",
+        "name" : "F"
+      },
+      {
+        "tintHex" : "#40a02b",
+        "id" : "189C08C3-905B-4776-9AF7-36602393B236",
+        "name" : "G"
+      },
+      {
+        "tintHex" : "#04a5e5",
+        "id" : "9258031E-B038-435D-A0C2-C379CC4700B7",
+        "name" : "H"
+      },
+      {
+        "tintHex" : "#1e66f5",
+        "id" : "DAA4F291-02DD-4B72-977C-4E4274DA730F",
+        "name" : "I"
+      },
+      {
+        "tintHex" : "#7287fd",
+        "id" : "57D90892-7040-4734-A5D3-39C0029A8C67",
+        "name" : "J"
       }
     ]
   }
