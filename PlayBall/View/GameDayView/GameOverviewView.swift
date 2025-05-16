@@ -32,7 +32,7 @@ struct GameOverviewView: View {
                         Text(plan.timeString(forSegment: index + 1))
                             .foregroundStyle(.secondary)
                     }
-                    .padding()
+                    .padding(8)
                     .frame(maxWidth: .infinity)
                     .background(Color.green.opacity(0.15))
                 }
@@ -44,7 +44,7 @@ struct GameOverviewView: View {
 extension SubstitutionPlan {
     /// Converts a segment index to a readable timestamp string based on the subDuration.
     func timeString(forSegment index: Int) -> String {
-        let totalSeconds = Int(Double(index) * subDuration)
+        let totalSeconds = Int((Double(index) * subDuration).rounded())
         let minutes = totalSeconds / 60
         let seconds = totalSeconds % 60
         return String(format: "%d:%02d", minutes, seconds)

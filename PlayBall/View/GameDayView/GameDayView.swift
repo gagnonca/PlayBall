@@ -40,7 +40,7 @@ struct GameDayView: View {
                         GameClockSection(coordinator: session.timerCoordinator, timer: session.timerCoordinator.quarterTimer)
                         OnFieldSection(state: session.substitutionState)
                         if !session.substitutionState.nextPlayers.isEmpty {
-                            NextOnSection(state: session.substitutionState, timer: session.timerCoordinator.quarterTimer)
+                            NextOnSection(state: session.substitutionState, timer: session.timerCoordinator.subTimer)
                         }
                         if !session.substitutionState.benchPlayers.isEmpty {
                             BenchSection(state: session.substitutionState)
@@ -68,7 +68,7 @@ struct GameDayView: View {
                 GameOverviewView(plan: session.substitutionState.plan)
             }
             .onDisappear {
-                session.cleanup()
+//                session.cleanup()
                 if shouldDeleteGame {
                     session.team.removeGame(session.game)
                     Coach.shared.updateTeam(session.team)
@@ -111,16 +111,10 @@ struct GameClockSection: View {
             }
         }
     }
-
-    func getFormatter(_ formatter: DateComponentsFormatter) -> DateComponentsFormatter {
-        formatter.allowedUnits = [.minute, .second]
-        return formatter
-    }
 }
 
 struct OnFieldSection: View {
     @ObservedObject var state: SubstitutionState
-//    let players: [Player]
 
     var body: some View {
         GlassCard(title: "On Field", sfSymbol: "sportscourt") {
@@ -151,7 +145,7 @@ struct NextOnSection: View {
                         .foregroundStyle(.secondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 } else {
-                    Text("Next Sub In: \(formatTime(remainingTime))")
+                    Text("Next Sub In: \(timer.timerTime.toString(getFormatter))")
                         .foregroundStyle(.secondary)
                         .padding(.bottom, 8)
 
@@ -162,18 +156,12 @@ struct NextOnSection: View {
             }
         }
     }
+}
 
-    private var remainingTime: TimeInterval {
-        let elapsed = timer.timerTime.totalSeconds
-        let cycle = state.plan.subDuration
-        let timeIntoCycle = elapsed.truncatingRemainder(dividingBy: cycle)
-        return max(cycle - timeIntoCycle, 0)
-    }
-
-    private func formatTime(_ interval: TimeInterval) -> String {
-        let minutes = Int(interval) / 60
-        let seconds = Int(interval) % 60
-        return String(format: "%d:%02d", minutes, seconds)
+extension View {
+    func getFormatter(_ formatter: DateComponentsFormatter) -> DateComponentsFormatter {
+        formatter.allowedUnits = [.minute, .second]
+        return formatter
     }
 }
 

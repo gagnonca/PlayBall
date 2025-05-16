@@ -10,10 +10,12 @@ import SwiftUI
 import MijickTimer
 
 @MainActor class GameTimerCoordinator: ObservableObject {
-    @Published var quarterTimer = MTimer(.game)
-    @Published var subTimer = MTimer(.sub)
+    @Published var quarterTimer: MTimer
+    @Published var subTimer: MTimer
+    let quarterTimerID: String
+    let subTimerID: String
+    
     @Published var currentQuarter = 0
-
     let totalPeriods: Int
     let periodLength: TimeInterval
     let substitutionInterval: TimeInterval
@@ -24,11 +26,15 @@ import MijickTimer
         currentQuarter >= totalPeriods
     }
     
-    init(totalPeriods: Int = 4, periodLength: TimeInterval = 600, substitutionInterval: TimeInterval = 240) {
-        // cancel any subTimer that might exist
+    init(totalPeriods: Int, periodLength: TimeInterval, substitutionInterval: TimeInterval, quarterTimerID: String, subTimerID: String) {
         self.totalPeriods = totalPeriods
         self.periodLength = periodLength
         self.substitutionInterval = substitutionInterval
+        self.quarterTimerID = quarterTimerID
+        self.subTimerID = subTimerID
+
+        self.quarterTimer = MTimer(MTimerID(rawValue: quarterTimerID))
+        self.subTimer = MTimer(MTimerID(rawValue: subTimerID))
     }
 }
 
@@ -99,9 +105,4 @@ extension GameTimerCoordinator {
         default: break
         }
     }
-}
-
-private extension MTimerID {
-    static let game = MTimerID(rawValue: "Quarter Timer")
-    static let sub = MTimerID(rawValue: "Substitution Timer")
 }

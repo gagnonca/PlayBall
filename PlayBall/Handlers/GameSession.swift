@@ -33,7 +33,9 @@ final class GameSession: ObservableObject, Identifiable {
         self.timerCoordinator = GameTimerCoordinator(
             totalPeriods: game.numberOfPeriods.rawValue,
             periodLength: TimeInterval(game.periodLengthMinutes * 60),
-            substitutionInterval: plan.subDuration
+            substitutionInterval: plan.subDuration,
+            quarterTimerID: "\(game.id)-QuarterTimer",
+            subTimerID: "\(game.id)-SubTimer"
         )
 
         self.timerCoordinator.onSubTimerFinish = { [weak self] in
@@ -59,8 +61,9 @@ final class GameSession: ObservableObject, Identifiable {
 
 extension GameSession {
     func cleanup() {
-        timerCoordinator.quarterTimer.cancel()
-        timerCoordinator.subTimer.cancel()
+        timerCoordinator.currentQuarter = 0
+        try? timerCoordinator.quarterTimer.skip()
+        try? timerCoordinator.subTimer.skip()
     }
 }
 

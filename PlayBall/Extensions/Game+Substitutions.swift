@@ -31,21 +31,17 @@ extension Game {
                 availablePlayers: players
             )
         }
-
-        let numberOfPeriods = self.numberOfPeriods.rawValue
-        let totalGameMinutes = Double(periodLengthMinutes * numberOfPeriods)
-        let totalPlayerMinutes = totalGameMinutes * Double(playersOnField)
-        let minutesPerPlayer = totalPlayerMinutes / Double(players.count)
-
-        let baseSegmentLength = minutesPerPlayer / Double(numberOfPeriods)
-        let segmentLength = substitutionStyle == .short ? baseSegmentLength / 1.5 : baseSegmentLength
-        let segmentLengthSeconds = segmentLength * 60
-
-        let totalSegments = Int(round(totalGameMinutes * 60 / segmentLengthSeconds))
-
+        
+        let totalGameSeconds = Double(self.numberOfPeriods.rawValue * periodLengthMinutes * 60)
+        
+        // Calculate total segments as a multiple of player count to preserve fairness
+        let rotationsPerPlayer = substitutionStyle == .short ? 2 : 1
+        let totalSegments = players.count * rotationsPerPlayer
+        let segmentLengthSeconds = totalGameSeconds / Double(totalSegments)
+        
         var segments: [SubSegment] = []
         var index = 0
-
+        
         for _ in 0..<totalSegments {
             let group = (0..<playersOnField).map { offset in
                 players[(index + offset) % players.count]
@@ -53,7 +49,7 @@ extension Game {
             segments.append(SubSegment(players: group))
             index = (index + playersOnField) % players.count
         }
-
+        
         return SubstitutionPlan(subDuration: segmentLengthSeconds, segments: segments, availablePlayers: players)
     }
 }
