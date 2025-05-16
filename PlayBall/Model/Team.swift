@@ -8,8 +8,8 @@
 import Foundation
 
 @Observable
-class Team: Identifiable {
-    let id = UUID()
+class Team: Identifiable, Codable {
+    let id: UUID
     var name: String
     var players: [Player]
     var games: [Game]
@@ -18,22 +18,29 @@ class Team: Identifiable {
     var gameFormat: GameFormat = .quarters
     var periodLength: TimeInterval = 600
 
-    init(name: String, players: [Player] = [], games: [Game] = []) {
+    init(
+        id: UUID = UUID(),
+        name: String,
+        players: [Player] = [],
+        games: [Game] = [],
+        gameFormat: GameFormat = .quarters,
+        periodLength: TimeInterval = 600
+    ) {
+        self.id = id
         self.name = name
         self.players = players
         self.games = games
-        sortPlayers()
+        self.gameFormat = gameFormat
+        self.periodLength = periodLength
     }
 
     func addPlayer(_ player: Player) {
         players.append(player)
-        self.sortPlayers()
         Coach.shared.saveTeamsToJson()
     }
 
     func removePlayer(_ player: Player) {
         players.removeAll { $0.id == player.id }
-        self.sortPlayers()
         Coach.shared.saveTeamsToJson()
     }
 
@@ -45,11 +52,5 @@ class Team: Identifiable {
     func removeGame(_ game: Game) {
         games.removeAll { $0.id == game.id }
         Coach.shared.saveTeamsToJson()
-    }
-}
-
-extension Team {
-    func sortPlayers() {
-        players.sort { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
     }
 }

@@ -6,55 +6,84 @@
 //
 
 
-import SwiftUI
+import Foundation
 
-struct TeamData: Codable {
-    let name: String
-    let players: [PlayerData]
-    let games: [GameData]
+final class DataModel {
+    static let shared = DataModel()
 
-    init(from team: Team) {
-        self.name = team.name
-        self.players = team.players.map { PlayerData(from: $0) }
-        self.games = team.games.map { GameData(from: $0) }
-    }
+    private init() {}
 
-    func toTeam() -> Team {
-        var players = self.players.map { $0.toPlayer() }
-        for (index, _) in players.enumerated() {
-            players[index].tintHex = PlayerPalette.hexCode(for: index)
+    // MARK: - Save / Load Teams to local file system
+    func save(teams: [Team]) {
+        do {
+            let url = teamsFileURL
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = .prettyPrinted
+            encoder.dateEncodingStrategy = .iso8601
+
+            let data = try encoder.encode(teams)
+            try data.write(to: url, options: .atomic)
+        } catch {
+            print("❌ Failed to save teams:", error)
         }
-        let games = self.games.map { $0.toGame(withPlayers: players) }
-        return Team(name: name, players: players, games: games)
+    }
+
+    func loadTeams() -> [Team] {
+        let url = teamsFileURL
+        guard FileManager.default.fileExists(atPath: url.path),
+              let data = try? Data(contentsOf: url) else {
+            return []
+        }
+
+        do {
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .iso8601
+            return try decoder.decode([Team].self, from: data)
+        } catch {
+            print("❌ Failed to load teams:", error)
+            return []
+        }
+    }
+
+    // MARK: - File URL
+
+    private var teamsFileURL: URL {
+        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+            .appendingPathComponent("teams.json")
     }
 }
 
-struct PlayerData: Codable {
-    let name: String
+/// File Sharing Helpers
+extension DataModel {
+    func export(team: Team) -> URL? {
+        let url = FileManager.default.temporaryDirectory
+            .appendingPathComponent("PlayBall_\(team.name).json")
 
-    init(from player: Player) {
-        self.name = player.name
+        do {
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.prettyPrinted]
+            encoder.dateEncodingStrategy = .iso8601
+            let data = try encoder.encode(team)
+            try data.write(to: url, options: [.atomic])
+            return url
+        } catch {
+            print("Export failed:", error)
+            return nil
+        }
     }
 
-    func toPlayer() -> Player {
-        Player(name: name)
+    func importTeam(from url: URL) -> Team? {
+        guard let data = try? Data(contentsOf: url) else { return nil }
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+
+        do {
+            return try decoder.decode(Team.self, from: data)
+        } catch {
+            print("❌ Failed to import team:", error)
+            return nil
+        }
     }
+
 }
-
-struct GameData: Codable {
-    let name: String
-    let date: Date
-    let availablePlayers: [String]
-
-    init(from game: Game) {
-        self.name = game.name
-        self.date = game.date
-        self.availablePlayers = game.availablePlayers.map(\.name)
-    }
-
-    func toGame(withPlayers allPlayers: [Player]) -> Game {
-        let matchedPlayers = allPlayers.filter { availablePlayers.contains($0.name) }
-        return Game(name: name, date: date, availablePlayers: matchedPlayers)
-    }
-}
-
