@@ -12,6 +12,12 @@ struct GameEditorForm: View {
     @Binding var gameName: String
     @Binding var gameDate: Date
     @Binding var availablePlayers: [Player]
+    
+    @Binding var substitutionStyle: SubstitutionStyle
+    @Binding var playersOnField: Int
+    @Binding var periodLengthMinutes: Int
+    @Binding var numberOfPeriods: PeriodStyle
+
     @Environment(\.dismiss) private var dismiss
 
     let team: Team
@@ -66,6 +72,22 @@ struct GameEditorForm: View {
                         }
                     }
                 }
+                
+                Section("Game Settings") {
+                    Picker("Substitution Style", selection: $substitutionStyle) {
+                        ForEach(SubstitutionStyle.allCases, id: \.self) { style in
+                            Text(style.displayName).tag(style)
+                        }
+                    }
+                    Stepper("Players on Field: \(playersOnField)", value: $playersOnField, in: 1...11)
+                    Stepper("Minutes per Period: \(periodLengthMinutes)", value: $periodLengthMinutes, in: 1...60)
+                    Picker("Period Style", selection: $numberOfPeriods) {
+                        ForEach(PeriodStyle.allCases, id: \.self) { style in
+                            Text(style.displayName).tag(style)
+                        }
+                    }
+                }
+
             }
             .navigationTitle(title)
             .toolbar {
@@ -99,11 +121,19 @@ struct GameEditorForm: View {
     @Previewable @State var gameName = "Saturday Match"
     @Previewable @State var gameDate = Date()
     @Previewable @State var availablePlayers = Array(Coach.previewCoach.teams.first!.players.prefix(5))
-    
-    GameEditorForm(
+    @Previewable @State var substitutionStyle = SubstitutionStyle.short
+    @Previewable @State var playersOnField = 4
+    @Previewable @State var periodLengthMinutes = 10
+    @Previewable @State var numberOfPeriods = PeriodStyle.quarter
+
+    return GameEditorForm(
         gameName: $gameName,
         gameDate: $gameDate,
         availablePlayers: $availablePlayers,
+        substitutionStyle: $substitutionStyle,
+        playersOnField: $playersOnField,
+        periodLengthMinutes: $periodLengthMinutes,
+        numberOfPeriods: $numberOfPeriods,
         team: Coach.previewCoach.teams.first!,
         title: "Edit Game",
         showDelete: true,
