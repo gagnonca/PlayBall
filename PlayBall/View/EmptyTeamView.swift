@@ -37,7 +37,7 @@ struct EmptyTeamView: View {
                 } label: {
                     Text("Create Team")
                         .font(.headline)
-                        .foregroundColor(.primary)
+                        .foregroundColor(.black)
                         .padding()
                         .frame(maxWidth: .infinity)
                         .background(.white)

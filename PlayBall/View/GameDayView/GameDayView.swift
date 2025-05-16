@@ -91,7 +91,7 @@ struct GameClockSection: View {
         let timer = coordinator.quarterTimer
 
         GlassCard(title: "Game Clock", sfSymbol: "timer") {
-            HStack(spacing: 64) {
+            HStack(spacing: 50) {
                 VStack {
                     Text(numberOfPeriods == .quarter ? "Quarter" : "Half")
                         .font(.callout.bold())
