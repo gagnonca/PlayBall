@@ -21,10 +21,7 @@ struct SelectedTeamView: View {
                     },
                     destination: { game in
                         AnyView(
-                            GameDayView(
-                                game: bindingForGame(game),
-                                team: team
-                            )
+                            GameDayViewWrapper(gameID: game.id, team: $team)
                         )
                     }
                 )
@@ -34,13 +31,6 @@ struct SelectedTeamView: View {
         .fullScreenCover(isPresented: $showingGameCreation) {
             GameAddView(team: team)
         }
-    }
-    
-    private func bindingForGame(_ game: Game) -> Binding<Game> {
-        guard let index = team.games.firstIndex(where: { $0.id == game.id }) else {
-            fatalError("Game not found!")
-        }
-        return $team.games[index]
     }
 }
 

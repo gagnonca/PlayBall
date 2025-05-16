@@ -239,6 +239,20 @@ private struct GameDayToolbar: ToolbarContent {
     }
 }
 
+struct GameDayViewWrapper: View {
+    let gameID: UUID
+    @Binding var team: Team
+
+    var body: some View {
+        if let index = team.games.firstIndex(where: { $0.id == gameID }) {
+            GameDayView(game: $team.games[index], team: team)
+        } else {
+            Text("Game not found or deleted.")
+                .foregroundStyle(.secondary)
+        }
+    }
+}
+
 #Preview {
     @Previewable @State var game = Coach.previewCoach.teams.first!.games.first!
     GameDayView(
