@@ -14,3 +14,10 @@ extension MTime {
         return TimeInterval(hours * 3600 + minutes * 60 + seconds) + TimeInterval(milliseconds) / 1000.0
     }
 }
+
+extension TimeInterval {
+    func timeRemaining(in cycle: TimeInterval) -> TimeInterval {
+        let intoCycle = self.truncatingRemainder(dividingBy: cycle)
+        return max(cycle - intoCycle, 0)
+    }
+}

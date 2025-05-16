@@ -15,11 +15,13 @@ extension Game {
         }
         
         if players.count <= playersOnField {
-            return SubstitutionPlan(
-                subDuration: Double(periodLengthMinutes * numberOfPeriods.rawValue * 60),
-                segments: [SubSegment(players: players)],
-                availablePlayers: players
+            let fullGameDuration = Double(periodLengthMinutes * numberOfPeriods.rawValue * 60)
+            let segment = SubSegment(
+                players: players,
+                onTime: 0,
+                offTime: fullGameDuration
             )
+            return SubstitutionPlan(subDuration: fullGameDuration, segments: [segment], availablePlayers: players)
         }
         
         let totalGameSeconds = Double(self.numberOfPeriods.rawValue * periodLengthMinutes * 60)
@@ -32,11 +34,15 @@ extension Game {
         var segments: [SubSegment] = []
         var index = 0
         
-        for _ in 0..<totalSegments {
+        for i in 0..<totalSegments {
             let group = (0..<playersOnField).map { offset in
                 players[(index + offset) % players.count]
             }
-            segments.append(SubSegment(players: group))
+            
+            let onTime = Double(i) * segmentLengthSeconds
+            let offTime = onTime + segmentLengthSeconds
+
+            segments.append(SubSegment(players: group, onTime: onTime, offTime: offTime))
             index = (index + playersOnField) % players.count
         }
         

@@ -8,46 +8,65 @@
 
 import Foundation
 
-/// Manages dynamic substitution state during a live game using a static SubstitutionPlan.
 @MainActor
 final class SubstitutionState: ObservableObject {
-    @Published var currentIndex: Int = 0 {
-        didSet { updateDerivedPlayers() }
-    }
-
-    @Published private(set) var currentPlayers: [Player] = []
-    @Published private(set) var nextPlayers: [Player] = []
-    @Published private(set) var benchPlayers: [Player] = []
-
+    @Published var currentIndex: Int = 0
     let plan: SubstitutionPlan
-
-    init(plan: SubstitutionPlan) {
+    let gameStartDate: Date
+    
+    init(plan: SubstitutionPlan, gameStartDate: Date) {
         self.plan = plan
-        updateDerivedPlayers()
-    }
-
-    /// Advances to the next substitution segment if not already at the end.
-    func advance() {
-        if currentIndex + 1 < plan.segments.count {
-            currentIndex += 1
-        }
-    }
-
-    /// Returns true if the current segment is the final one in the plan.
-    var isFinalSegment: Bool {
-        currentIndex + 1 == plan.segments.count
-    }
-
-    /// Updates the published player groups based on the current index.
-    private func updateDerivedPlayers() {
-        currentPlayers = plan.segments[safe: currentIndex]?.players ?? []
-        nextPlayers = plan.segments[safe: currentIndex + 1]?.players ?? []
-        let active = Set(currentPlayers + nextPlayers)
-        benchPlayers = plan.availablePlayers.filter { !active.contains($0) }
+        self.gameStartDate = gameStartDate
     }
 }
 
-// MARK: - Safe Array Access Extension
+// MARK: - Segment Access
+extension SubstitutionState {
+    var currentSegment: SubSegment? {
+        plan.segments[safe: currentIndex]
+    }
+    
+    var nextSegment: SubSegment? {
+        guard currentIndex + 1 < plan.segments.count else { return nil }
+        return plan.segments[currentIndex + 1]
+    }
+}
+
+// MARK: - Player Access
+extension SubstitutionState {
+    var currentPlayers: [Player] {
+        currentSegment?.players ?? []
+    }
+    
+    var nextPlayers: [Player] {
+        nextSegment?.players ?? []
+    }
+    
+    var benchPlayers: [Player] {
+        let active = Set(currentPlayers + nextPlayers)
+        return plan.availablePlayers.filter { !active.contains($0) }
+    }
+}
+
+// MARK: - Countdown Support
+extension SubstitutionState {
+    var currentSegmentEndDate: Date? {
+        guard let segment = currentSegment else { return nil }
+        return gameStartDate.addingTimeInterval(segment.offTime)
+    }
+}
+ 
+// MARK: - Time Sync
+extension SubstitutionState {
+    func update(to time: TimeInterval) {
+        if let index = plan.segments.firstIndex(where: { time >= $0.onTime && time < $0.offTime }),
+           index != currentIndex {
+            currentIndex = index
+        }
+    }
+}
+
+// MARK: - Safe Array Access
 private extension Array {
     subscript(safe index: Int) -> Element? {
         guard indices.contains(index) else { return nil }

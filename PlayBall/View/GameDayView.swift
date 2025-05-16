@@ -5,7 +5,8 @@ struct GameDayView: View {
     @Binding var game: Game
     let team: Team
     
-    @State private var session: GameSession
+//    @State private var session: GameSession
+    @StateObject private var session: GameSession
 
     @State private var showingGameEditor = false
     @State private var showingGameOverview = false
@@ -16,7 +17,7 @@ struct GameDayView: View {
     init(game: Binding<Game>, team: Team) {
         _game = game
         self.team = team
-        _session = State(wrappedValue: GameSession(game: game.wrappedValue, team: team))
+        _session = StateObject(wrappedValue: GameSession(game: game.wrappedValue, team: team))
     }
 
     var body: some View {
@@ -42,13 +43,19 @@ struct GameDayView: View {
                             timer: session.timerCoordinator.quarterTimer,
                             numberOfPeriods: session.game.numberOfPeriods
                         )
-                        OnFieldSection(state: session.substitutionState)
-                        if !session.substitutionState.nextPlayers.isEmpty {
-                            NextOnSection(state: session.substitutionState, timer: session.timerCoordinator.subTimer)
+                        OnFieldSection(players: session.currentPlayers)
+                        if let countDown = session.nextSubstitutionCountdown
+                        {
+//                        if !session.nextPlayers.isEmpty {
+                            NextOnSection(
+                                players: session.nextPlayers,
+                                countdownTarget:countDown
+                            )
                         }
-                        if !session.substitutionState.benchPlayers.isEmpty {
-                            BenchSection(state: session.substitutionState)
-                        }                    }
+                        if !session.benchPlayers.isEmpty {
+                            BenchSection(players: session.benchPlayers)
+                        }
+                    }
                 }
             }
             .navigationBarBackButtonHidden(true)
@@ -61,15 +68,30 @@ struct GameDayView: View {
                     shouldDeleteGame: $shouldDeleteGame
                 )
             }
+
+//            .onReceive(session.timerCoordinator.quarterTimer.$timerTime) { time in
+////                session.checkForSubstitutionAdvance(elapsed: time.totalSeconds)
+//            }
+//            .onReceive(session.timerCoordinator.$elapsedTime) { seconds in
+//                session.updateSubstitutionState(elapsed: seconds)
+//            }
+            .onReceive(session.timerCoordinator.$elapsedTime) { seconds in
+                session.currentElapsedTime = seconds
+                session.updateSubstitutionState(elapsed: seconds)
+            }
+
+//            .onChange(of: game) {
+//                session = GameSession(game: game, team: team)
+////                session.restartSubTimer()
+//            }
             .onChange(of: game) {
-                session = GameSession(game: game, team: team)
-                session.restartSubTimer()
+                session.update(from: game)
             }
             .fullScreenCover(isPresented: $showingGameEditor) {
                 GameEditView(game: $game, team: team)
             }
             .sheet(isPresented: $showingGameOverview) {
-                GameOverviewView(plan: session.substitutionState.plan)
+                GameOverviewView(plan: session.substitutionPlan)
             }
             .onDisappear {
 //                session.cleanup()
@@ -81,6 +103,14 @@ struct GameDayView: View {
         }
     }
 }
+
+//extension GameSession {
+//    var nextSubstitutionCountdown: TimeInterval {
+//        let cycle = substitutionState.plan.subDuration
+//        let intoCycle = totalElapsedTime.truncatingRemainder(dividingBy: cycle)
+//        return max(cycle - intoCycle, 0)
+//    }
+//}
 
 struct GameClockSection: View {
     @StateObject var coordinator: GameTimerCoordinator
@@ -125,17 +155,17 @@ struct GameClockSection: View {
 }
 
 struct OnFieldSection: View {
-    @ObservedObject var state: SubstitutionState
+    let players: [Player]
 
     var body: some View {
         GlassCard(title: "On Field", sfSymbol: "sportscourt") {
             VStack {
-                if state.currentPlayers.isEmpty {
+                if players.isEmpty {
                     Text("No players on field")
                         .foregroundStyle(.secondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 } else {
-                    FlowLayout(items: state.currentPlayers, spacing: 8) { player in
+                    FlowLayout(items: players, spacing: 8) { player in
                         PlayerBadge(player: player)
                     }
                 }
@@ -145,22 +175,32 @@ struct OnFieldSection: View {
 }
 
 struct NextOnSection: View {
-    @ObservedObject var state: SubstitutionState
-    @ObservedObject var timer: MTimer
+    let players: [Player]
+    let countdownTarget: TimeInterval
 
     var body: some View {
         GlassCard(title: "Next On", sfSymbol: "arrow.right.circle") {
             VStack(alignment: .leading, spacing: 8) {
-                if state.nextPlayers.isEmpty {
+                if players.isEmpty {
                     Text("No more substitutions")
                         .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
                 } else {
-                    Text("Next Sub In: \(timer.timerTime.toString(getFormatter))")
-                        .foregroundStyle(.secondary)
-                        .padding(.bottom, 8)
+//                    if let countdown = countdownTarget, countdown > 0 {
+//                        let targetDate = Date().addingTimeInterval(countdown)
+                        Text(countdownTarget.timeFormatted)
+                            .monospacedDigit()
+                            .foregroundStyle(.secondary)
+//                    }
 
-                    FlowLayout(items: state.nextPlayers, spacing: 8) { player in
+//                    if let offTime = countdownTarget {
+//                        let targetDate = Date().addingTimeInterval(offTime - GameSession.nowElapsed)
+//                        Text(timerInterval: Date()...targetDate, countsDown: true)
+//                            .monospacedDigit()
+//                            .foregroundStyle(.secondary)
+//                            .padding(.bottom, 8)
+//                    }
+
+                    FlowLayout(items: players, spacing: 8) { player in
                         PlayerBadge(player: player)
                     }
                 }
@@ -177,17 +217,17 @@ extension View {
 }
 
 struct BenchSection: View {
-    @ObservedObject var state: SubstitutionState
+    let players: [Player]
 
     var body: some View {
         GlassCard(title: "Bench", sfSymbol: "chair.lounge") {
             VStack {
-                if state.benchPlayers.isEmpty {
+                if players.isEmpty {
                     Text("No players on bench")
                         .foregroundStyle(.secondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 } else {
-                    FlowLayout(items: state.benchPlayers, spacing: 8) { player in
+                    FlowLayout(items: players, spacing: 8) { player in
                         PlayerBadge(player: player)
                     }
                 }

@@ -14,3 +14,13 @@ extension TimeInterval {
         return String(format: "%d:%02d", minutes, seconds)
     }
 }
+
+//extension TimeInterval {
+//    func timeFormatted() -> String {
+//        let formatter = DateComponentsFormatter()
+//        formatter.allowedUnits = [.minute, .second]
+//        formatter.zeroFormattingBehavior = .pad
+//        return formatter.string(from: self) ?? "--:--"
+//    }
+//}
+

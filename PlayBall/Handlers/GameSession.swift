@@ -14,48 +14,94 @@ import SwiftUI
 @MainActor
 final class GameSession: ObservableObject, Identifiable {
     let id = UUID()
-
+    
     let game: Game
     let team: Team
     let liveActivityHandler = GameLiveActivityHandler()
-
-    @Published var substitutionState: SubstitutionState
+    
+//    @Published var substitutionState: SubstitutionState
+    @Published var substitutionPlan: SubstitutionPlan
     @Published var timerCoordinator: GameTimerCoordinator
+//    @Published var lastSubIndex: Int = 0
+    @Published var currentSubIndex: Int = 0
+    @Published var currentElapsedTime: TimeInterval = 0
 
+    
     init(game: Game, team: Team) {
         self.game = game
         self.team = team
-
+        
         // Regenerate substitution plan every time the session is created
-        let plan = game.buildSubstitutionPlan()
-
-        self.substitutionState = SubstitutionState(plan: plan)
+//        self.gameStartDate = Date()
+        self.substitutionPlan = game.buildSubstitutionPlan()
+//        self.substitutionState = SubstitutionState(plan: plan, gameStartDate: gameStartDate)
+        
         self.timerCoordinator = GameTimerCoordinator(
             totalPeriods: game.numberOfPeriods.rawValue,
             periodLength: TimeInterval(game.periodLengthMinutes * 60),
-            substitutionInterval: plan.subDuration,
             quarterTimerID: "\(game.id)-QuarterTimer",
-            subTimerID: "\(game.id)-SubTimer"
+//            subTimerID: "\(game.id)-SubTimer"
         )
+        
+        //        self.timerCoordinator.onSubTimerFinish = { [weak self] in
+        //            self?.substitutionState.advance()
+        //        }
+    }
+}
 
-        self.timerCoordinator.onSubTimerFinish = { [weak self] in
-            self?.substitutionState.advance()
+extension GameSession {
+    /// Total game time elapsed based on the timer.
+//    var totalElapsedTime: TimeInterval {
+//        timerCoordinator.elapsedTime
+//    }
+    var totalElapsedTime: TimeInterval {
+        currentElapsedTime
+    }
+
+//    var nextSubstitutionCountdown: TimeInterval? {
+//        guard let segment = currentSegment else { return nil }
+//        return max(segment.offTime - totalElapsedTime, 0)
+//    }
+    var nextSubstitutionCountdown: TimeInterval? {
+        guard let off = currentSegment?.offTime else { return nil }
+        return max(off - timerCoordinator.elapsedTime, 0)
+    }
+
+    static var nowElapsed: TimeInterval {
+        Date().timeIntervalSinceReferenceDate
+    }
+}
+
+extension GameSession {
+    func updateSubstitutionState(elapsed: TimeInterval) {
+        if let index = substitutionPlan.segments.firstIndex(where: { elapsed >= $0.onTime && elapsed < $0.offTime }),
+           index != currentSubIndex {
+            currentSubIndex = index
         }
     }
+}
 
-    /// Total game time elapsed based on the timer.
-    var totalElapsedTime: TimeInterval {
-        timerCoordinator.quarterTimer.timerTime.totalSeconds
+extension GameSession {
+    var currentSegment: SubSegment? {
+        substitutionPlan.segment(at: totalElapsedTime)
     }
 
-    /// Convenience accessors to current rotation state.
-    var currentPlayers: [Player] { substitutionState.currentPlayers }
-    var nextPlayers: [Player] { substitutionState.nextPlayers }
-    var benchPlayers: [Player] { substitutionState.benchPlayers }
+    var currentPlayers: [Player] {
+        currentSegment?.players ?? []
+    }
 
-    /// Advance substitution manually (e.g. for testing or debugging).
-    func advanceSubstitution() {
-        substitutionState.advance()
+    var nextPlayers: [Player] {
+        guard let current = currentSegment,
+              let i = substitutionPlan.segments.firstIndex(of: current),
+              i + 1 < substitutionPlan.segments.count
+        else { return [] }
+
+        return substitutionPlan.segments[i + 1].players
+    }
+
+    var benchPlayers: [Player] {
+        let active = Set(currentPlayers + nextPlayers)
+        return substitutionPlan.availablePlayers.filter { !active.contains($0) }
     }
 }
 
@@ -63,20 +109,14 @@ extension GameSession {
     func cleanup() {
         timerCoordinator.currentQuarter = 0
         try? timerCoordinator.quarterTimer.skip()
-        try? timerCoordinator.subTimer.skip()
     }
 }
 
 extension GameSession {
-    func restartSubTimer() {
-        let elapsed = totalElapsedTime
-        let cycle = substitutionState.plan.subDuration
-        let timeIntoCycle = elapsed.truncatingRemainder(dividingBy: cycle)
-        let remaining = max(cycle - timeIntoCycle, 0)
-        timerCoordinator.restartSubTimer(remaining: remaining)
+    func update(from game: Game) {
+        self.substitutionPlan = game.buildSubstitutionPlan()
     }
 }
-
 
 // MARK: - Live Activity Actions
 extension GameSession {
@@ -87,7 +127,7 @@ extension GameSession {
             periodLength: timerCoordinator.periodLength,
             currentQuarter: timerCoordinator.currentQuarter,
             nextPlayers: nextPlayers,
-            nextSubCountdown: timerCoordinator.subTimer.timerTime.totalSeconds
+            nextSubCountdown: nextSubstitutionCountdown
         )
     }
 
@@ -98,7 +138,7 @@ extension GameSession {
             periodLength: timerCoordinator.periodLength,
             currentQuarter: timerCoordinator.currentQuarter,
             nextPlayers: nextPlayers,
-            nextSubCountdown: timerCoordinator.subTimer.timerTime.totalSeconds
+            nextSubCountdown: nextSubstitutionCountdown
         )
     }
 
