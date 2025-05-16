@@ -9,14 +9,7 @@
 import SwiftUI
 
 struct GameEditorForm: View {
-    @Binding var gameName: String
-    @Binding var gameDate: Date
-    @Binding var availablePlayers: [Player]
-    @Binding var substitutionStyle: SubstitutionStyle
-    @Binding var playersOnField: Int
-    @Binding var periodLengthMinutes: Int
-    @Binding var numberOfPeriods: PeriodStyle
-
+    @Binding var game: Game
     @Environment(\.dismiss) private var dismiss
 
     let team: Team
@@ -29,16 +22,9 @@ struct GameEditorForm: View {
     var body: some View {
         NavigationStack {
             Form {
-                GameDetailsSection(gameName: $gameName, gameDate: $gameDate)
-
-                GameSettingsSection(
-                    substitutionStyle: $substitutionStyle,
-                    playersOnField: $playersOnField,
-                    periodLengthMinutes: $periodLengthMinutes,
-                    numberOfPeriods: $numberOfPeriods
-                )
-
-                AvailablePlayersGameSection(availablePlayers: $availablePlayers, fullRoster: team.players)
+                GameDetailsSection(game: $game)
+                GameSettingsSection(game: $game)
+                AvailablePlayersGameSection(availablePlayers: $game.availablePlayers, fullRoster: team.players)
             }
             .navigationTitle(title)
             .toolbar {
@@ -65,19 +51,19 @@ struct GameEditorForm: View {
     }
 
     private var isSaveEnabled: Bool {
-        !gameName.trimmingCharacters(in: .whitespaces).isEmpty && !availablePlayers.isEmpty
+        !game.name.trimmingCharacters(in: .whitespaces).isEmpty && !game.availablePlayers.isEmpty
     }
 }
 
-
 private struct GameDetailsSection: View {
-    @Binding var gameName: String
-    @Binding var gameDate: Date
+    @Binding var game: Game
 
     var body: some View {
-        Section("Game Details") {
-            TextField("Game Name", text: $gameName)
-            DatePicker("Date", selection: $gameDate, displayedComponents: [.date])
+        Section {
+            TextField("Game Name", text: $game.name)
+            DatePicker("Date", selection: $game.date, displayedComponents: [.date])
+        } header: {
+            Text("Game Details")
         }
     }
 }
@@ -92,14 +78,12 @@ private struct AvailablePlayersGameSection: View {
                 Text("No players selected").foregroundStyle(.secondary)
             } else {
                 ForEach(Array(availablePlayers.enumerated()), id: \.element.id) { index, player in
-                    VStack(spacing: 0) {
-                        HStack {
-                            Text("\(index + 1). \(player.name)")
-                                .foregroundStyle(player.tint)
-                            Spacer()
-                            Image(.reorder)
-                                .foregroundStyle(.secondary)
-                        }
+                    HStack {
+                        Text("\(index + 1). \(player.name)")
+                            .foregroundStyle(player.tint)
+                        Spacer()
+                        Image(.reorder)
+                            .foregroundStyle(.secondary)
                     }
                 }
                 .onDelete { availablePlayers.remove(atOffsets: $0) }
@@ -127,48 +111,38 @@ private struct AvailablePlayersGameSection: View {
     }
 }
 
+
 private struct GameSettingsSection: View {
-    @Binding var substitutionStyle: SubstitutionStyle
-    @Binding var playersOnField: Int
-    @Binding var periodLengthMinutes: Int
-    @Binding var numberOfPeriods: PeriodStyle
+    @Binding var game: Game
 
     var body: some View {
-        Section {
-            Picker("Substitution Style", selection: $substitutionStyle) {
-                Text("Long").tag(SubstitutionStyle.long)
-                Text("Short").tag(SubstitutionStyle.short)
-            }
-            Stepper("Players on Field: \(playersOnField)", value: $playersOnField, in: 1...11)
-            Stepper("Minutes per Period: \(periodLengthMinutes)", value: $periodLengthMinutes, in: 1...60)
-            Picker("Period Style", selection: $numberOfPeriods) {
+        DisclosureGroup("Advanced Settings") {
+            Picker("Period Style", selection: $game.numberOfPeriods) {
                 Text("4 Quarters").tag(PeriodStyle.quarter)
                 Text("2 Halves").tag(PeriodStyle.half)
             }
-        } header: {
-            Text("Game Settings")
+            .pickerStyle(.segmented)
+            VStack(alignment: .leading) {
+                Text("Minutes per \(game.numberOfPeriods.displayName): \(game.periodLengthMinutes)")
+                Slider(value: Binding(get: {
+                    Double(game.periodLengthMinutes)
+                }, set: {
+                    game.periodLengthMinutes = Int($0)
+                }), in: 1...60, step: 1)
+            }
+            Picker("Substitution Frequency", selection: $game.substitutionStyle) {
+                Text("Long").tag(SubstitutionStyle.long)
+                Text("Short").tag(SubstitutionStyle.short)
+            }
         }
     }
 }
 
-
 #Preview("Game Editor Form") {
-    @Previewable @State var gameName = "Saturday Match"
-    @Previewable @State var gameDate = Date()
-    @Previewable @State var availablePlayers = Array(Coach.previewCoach.teams.first!.players.prefix(5))
-    @Previewable @State var substitutionStyle = SubstitutionStyle.short
-    @Previewable @State var playersOnField = 4
-    @Previewable @State var periodLengthMinutes = 10
-    @Previewable @State var numberOfPeriods = PeriodStyle.quarter
+    @Previewable @State var game = Coach.shared.teams.first!.games.first!
 
-    return GameEditorForm(
-        gameName: $gameName,
-        gameDate: $gameDate,
-        availablePlayers: $availablePlayers,
-        substitutionStyle: $substitutionStyle,
-        playersOnField: $playersOnField,
-        periodLengthMinutes: $periodLengthMinutes,
-        numberOfPeriods: $numberOfPeriods,
+    GameEditorForm(
+        game: $game,
         team: Coach.previewCoach.teams.first!,
         title: "Edit Game",
         showDelete: true,
