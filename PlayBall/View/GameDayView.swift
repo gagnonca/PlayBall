@@ -213,17 +213,17 @@ private struct GameDayToolbar: ToolbarContent {
                     .foregroundStyle(.white)
             }
         }
-
+        ToolbarItem(placement: .topBarTrailing) {
+            Button("Game Overview", systemImage: "list.bullet.rectangle") {
+                showingGameOverview = true
+            }
+            .tint(.white)
+        }
         ToolbarItem(placement: .topBarTrailing) {
             Menu {
                 Button("Edit Game", systemImage: "pencil") {
                     showingGameEditor = true
                 }
-
-                Button("Game Overview", systemImage: "list.bullet.rectangle") {
-                    showingGameOverview = true
-                }
-
                 Button(role: .destructive) {
 //                    session.liveActivityHandler.endLiveActivity()
                     shouldDeleteGame = true
