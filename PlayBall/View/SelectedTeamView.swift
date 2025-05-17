@@ -13,7 +13,7 @@ struct SelectedTeamView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 24) {
+            VStack(spacing: 16) {
                 GamesSection(
                     games: team.games,
                     addNewGame: {
@@ -46,7 +46,7 @@ struct GamesSection: View {
             buttonSymbol: "plus.circle.fill",
             onButtonTap: addNewGame
         ) {
-            VStack(alignment: .leading, spacing: 8) {
+            VStack() {
                 if games.isEmpty {
                     Text("No games yet.")
                         .foregroundStyle(.white.opacity(0.7))
@@ -75,7 +75,7 @@ struct RosterSection: View {
             title: "Roster",
             sfSymbol: "person.3.fill"
         ) {
-            VStack(alignment: .leading, spacing: 8) {     
+            VStack() {     
                 if players.isEmpty {
                     Text("No players yet.")
                         .foregroundStyle(.white.opacity(0.7))

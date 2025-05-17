@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var coach = Coach.shared
+//    @State private var coach = Coach.shared
+    @State private var coach = Coach.previewCoach
     @State private var selectedTeam: Team?
     @State private var showingEditTeam = false
     @State private var showingTeamCreation = false
@@ -44,7 +45,6 @@ struct ContentView: View {
                         } label: {
                             Label("Add New Team", systemImage: "plus")
                         }
-
                     } label: {
                         HStack(spacing: 4) {
                             Text(selectedTeam?.name ?? "Select Team")
