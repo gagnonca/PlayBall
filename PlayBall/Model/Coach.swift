@@ -70,13 +70,9 @@ extension Coach {
 extension Coach {
     static var previewCoach: Coach {
         let coach = Coach()
-        coach.teams = DataModel.shared.loadTeams()
+        coach.teams = DataModel.shared.loadTeamsFromBundle()
         return coach
     }
-}
-
-/// Preview Coach for UI Previews
-extension Coach {
     static var previewEmptyCoach: Coach {
         let coach = Coach()
         return coach
