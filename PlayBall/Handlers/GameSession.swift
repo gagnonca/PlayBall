@@ -17,10 +17,11 @@ final class GameSession: ObservableObject, Identifiable {
 
     let game: Game
     let team: Team
-    let liveActivityHandler = GameLiveActivityHandler()
 
     @Published var substitutionState: SubstitutionState
     @Published var timerCoordinator: GameTimerCoordinator
+    
+    let liveActivityHandler = GameLiveActivityHandler()
 
     init(game: Game, team: Team) {
         self.game = game
@@ -40,6 +41,18 @@ final class GameSession: ObservableObject, Identifiable {
 
         self.timerCoordinator.onSubTimerFinish = { [weak self] in
             self?.substitutionState.advance()
+        }
+        
+        self.timerCoordinator.onGameStart = { [weak self] in
+            self?.startLiveActivityIfNeeded()
+        }
+        
+        self.timerCoordinator.onSubTimerRestarted = { [weak self] in
+            self?.updateLiveActivity()
+        }
+
+        self.timerCoordinator.onGameEnd = { [weak self] in
+            self?.endLiveActivity()
         }
     }
 

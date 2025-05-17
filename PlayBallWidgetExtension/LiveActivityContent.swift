@@ -53,7 +53,6 @@ struct LiveActivityContent: View {
                     }
                 }
             }
-//            .frame(maxWidth: .infinity, alignment: .center)
         }
         .frame(maxWidth: .infinity, alignment: .center)
         .padding()

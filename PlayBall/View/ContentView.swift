@@ -8,8 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-//    @State private var coach = Coach.shared
-    @State private var coach = Coach.previewCoach
+    @State private var coach = Coach.shared
     @State private var selectedTeam: Team?
     @State private var showingEditTeam = false
     @State private var showingTeamCreation = false

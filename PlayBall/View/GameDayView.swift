@@ -34,7 +34,7 @@ struct GameDayView: View {
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
-                    .padding(.top, 12)
+//                    .padding(.top, 12)
                     
                     VStack(spacing: 12) {
                         GameClockSection(
@@ -48,7 +48,8 @@ struct GameDayView: View {
                         }
                         if !session.substitutionState.benchPlayers.isEmpty {
                             BenchSection(state: session.substitutionState)
-                        }                    }
+                        }
+                    }
                 }
             }
             .navigationBarBackButtonHidden(true)

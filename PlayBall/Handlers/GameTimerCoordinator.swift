@@ -20,6 +20,9 @@ import MijickTimer
     let periodLength: TimeInterval
     let substitutionInterval: TimeInterval
     
+    var onGameStart: (() -> Void)?
+    var onGameEnd: (() -> Void)?
+    var onSubTimerRestarted: (() -> Void)?
     var onSubTimerFinish: (() -> Void)?
 
     var isGameOver: Bool {
@@ -40,7 +43,11 @@ import MijickTimer
 
 extension GameTimerCoordinator {
     func togglePlayPause() {
-        guard !isGameOver else { return }
+        guard !isGameOver else {
+            // callback that the game ended to kill live activity
+            onGameEnd?()
+            return
+        }
 
         switch quarterTimer.timerStatus {
         case .notStarted, .finished:
@@ -70,12 +77,18 @@ extension GameTimerCoordinator {
             .publish(every: 1)
             .onTimerStatusChange { [weak self] in self?.onQuarterChange($0) }
             .start(from: 0, to: periodLength)
+        
+        // callback that the game started to start live activity
+        onGameStart?()
     }
     func startSubstitution() {
         try? subTimer
             .publish(every: 1)
             .onTimerStatusChange { [weak self] in self?.onSubstitutionChange($0) }
             .start(from: substitutionInterval, to: 0)
+        
+        // callback that the sub restarted to update live activity
+        onSubTimerRestarted?()
     }
     func restartSubTimer(remaining: TimeInterval) {
         if subTimer.timerStatus != .notStarted { return }

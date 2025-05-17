@@ -20,18 +20,11 @@ final class GameLiveActivityHandler {
     func startLiveActivity(currentTime: TimeInterval, periodLength: TimeInterval, currentQuarter: Int, nextPlayers: [Player], nextSubCountdown: TimeInterval?) {
         let attributes = PlayBallWidgetLiveActivityAttributes()
 
-        let players = nextPlayers.enumerated().map { (index, player) in
-            Player(
-                name: player.name,
-                tintHex: PlayerPalette.hexCode(for: index)
-            )
-        }
-
         let state = PlayBallWidgetLiveActivityAttributes.ContentState(
             currentTime: currentTime,
             periodLength: periodLength,
             quarter: currentQuarter,
-            nextPlayers: players,
+            nextPlayers: nextPlayers,
             nextSubCountdown: nextSubCountdown
         )
 
@@ -49,19 +42,12 @@ final class GameLiveActivityHandler {
     }
 
     func updateLiveActivity(currentTime: TimeInterval, periodLength: TimeInterval, currentQuarter: Int, nextPlayers: [Player], nextSubCountdown: TimeInterval?) {
-        let players = nextPlayers.enumerated().map { (index, player) in
-            Player(
-                name: player.name,
-                tintHex: PlayerPalette.hexCode(for: index)
-            )
-        }
-
         Task {
             let state = PlayBallWidgetLiveActivityAttributes.ContentState(
                 currentTime: currentTime,
                 periodLength: periodLength,
                 quarter: currentQuarter,
-                nextPlayers: players,
+                nextPlayers: nextPlayers,
                 nextSubCountdown: nextSubCountdown
             )
 
