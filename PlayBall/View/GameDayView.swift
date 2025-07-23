@@ -28,13 +28,13 @@ struct GameDayView: View {
                     VStack {
                         Text(session.game.name)
                             .font(.title.bold())
-                            .foregroundStyle(.primary)
+                            .foregroundStyle(.white)
                         
                         Text(session.game.date, style: .date)
                             .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(.white)
                     }
-//                    .padding(.top, 12)
+                    .padding(.bottom, 12)
                     
                     VStack(spacing: 12) {
                         GameClockSection(
