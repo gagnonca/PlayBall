@@ -29,10 +29,13 @@ struct ContentView: View {
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Menu {
-                        // List existing teams
-                        ForEach(coach.teams) { team in
-                            Button(team.name) {
-                                selectedTeam = team
+                        Section("Teams") {
+                            ForEach(coach.teams, id: \.id) { team in
+                                Button {
+                                    selectedTeam = team
+                                } label: {
+                                    Label(team.name, systemImage: team.id == selectedTeam?.id ? "checkmark" : "")
+                                }
                             }
                         }
 
@@ -44,6 +47,19 @@ struct ContentView: View {
                         } label: {
                             Label("Add New Team", systemImage: "plus")
                         }
+                        
+                        // Edit selected Team
+                        Button("Edit Team", systemImage: "pencil") {
+                            showingEditTeam = true
+                        }
+                        .disabled(selectedTeam == nil)
+                        
+                        // Delete Team
+                        Button(role: .destructive) {
+                            deleteSelectedTeam()
+                        } label: {
+                            Label("Delete Team", systemImage: "trash")
+                        }
                     } label: {
                         HStack(spacing: 4) {
                             Text(selectedTeam?.name ?? "Select Team")
@@ -54,27 +70,6 @@ struct ContentView: View {
                                 .font(.subheadline.bold())
                                 .foregroundStyle(.white.opacity(0.7))
                                 .offset(y: 1)
-                        }
-                    }
-                }
-                
-                ToolbarItem(placement: .topBarTrailing) {
-                    if selectedTeam != nil {
-                        Menu {
-                            Button {
-                                showingEditTeam = true
-                            } label: {
-                                Label("Edit Team", systemImage: "pencil")
-                            }
-
-                            Button(role: .destructive) {
-                                deleteSelectedTeam()
-                            } label: {
-                                Label("Delete Team", systemImage: "trash")
-                            }
-                        } label: {
-                            Image(.edit)
-                                .foregroundStyle(.white)
                         }
                     }
                 }
