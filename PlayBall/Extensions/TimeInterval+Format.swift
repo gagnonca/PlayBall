@@ -14,3 +14,11 @@ extension TimeInterval {
         return String(format: "%d:%02d", minutes, seconds)
     }
 }
+
+extension Int {
+    var timeFormatted: String {
+        let minutes = self / 60
+        let seconds = self % 60
+        return String(format: "%d:%02d", minutes, seconds)
+    }
+}

@@ -38,13 +38,12 @@ struct GameDayView: View {
                     
                     VStack(spacing: 12) {
                         GameClockSection(
-                            coordinator: session.timerCoordinator,
-                            timer: session.timerCoordinator.quarterTimer,
+                            clock: session.clockManager,
                             numberOfPeriods: session.game.numberOfPeriods
                         )
                         OnFieldSection(state: session.substitutionState)
                         if !session.substitutionState.nextPlayers.isEmpty {
-                            NextOnSection(state: session.substitutionState, timer: session.timerCoordinator.subTimer)
+                            NextOnSection(state: session.substitutionState, clock: session.clockManager)
                         }
                         if !session.substitutionState.benchPlayers.isEmpty {
                             BenchSection(state: session.substitutionState)
@@ -84,20 +83,17 @@ struct GameDayView: View {
 }
 
 struct GameClockSection: View {
-    @StateObject var coordinator: GameTimerCoordinator
-    @ObservedObject var timer: MTimer
+    @ObservedObject var clock: GameClockManager
     let numberOfPeriods: GameFormat
 
     var body: some View {
-        let timer = coordinator.quarterTimer
-
         GlassCard(title: "Game Clock", sfSymbol: "timer") {
             HStack(spacing: 50) {
                 VStack {
                     Text(numberOfPeriods == .quarter ? "Quarter" : "Half")
                         .font(.callout.bold())
                         .foregroundStyle(.secondary)
-                    Text("\(coordinator.currentQuarter)")
+                    Text("\(clock.currentQuarter == 0 ? 1 : clock.currentQuarter)")
                         .font(.largeTitle.bold())
                         .foregroundStyle(.primary)
                 }
@@ -106,17 +102,17 @@ struct GameClockSection: View {
                     Text("Time")
                         .font(.callout.bold())
                         .foregroundStyle(.secondary)
-                    Text(timer.timerTime.toString(getFormatter))
+                    Text(clock.elapsedSeconds.timeFormatted)
                         .font(.largeTitle.bold())
                         .foregroundStyle(.primary)
                 }
                 
-                Button(action: coordinator.togglePlayPause) {
-                    Image(timer.timerStatus == .running ? .pause : .play)
+                Button(action: clock.togglePlayPause) {
+                    Image(clock.isRunning ? .pause : .play)
                         .padding(12)
                         .background(.regularMaterial, in: Circle())
                 }
-                .disabled(coordinator.isGameOver)
+                .disabled(clock.isGameOver)
                 .font(.title2)
                 .foregroundStyle(.primary)
             }
@@ -147,7 +143,7 @@ struct OnFieldSection: View {
 
 struct NextOnSection: View {
     @ObservedObject var state: SubstitutionState
-    @ObservedObject var timer: MTimer
+    @ObservedObject var clock: GameClockManager
 
     var body: some View {
         GlassCard(title: "Next On", sfSymbol: "arrow.right.circle") {
@@ -157,7 +153,7 @@ struct NextOnSection: View {
                         .foregroundStyle(.secondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 } else {
-                    Text("Next Sub In: \(timer.timerTime.toString(getFormatter))")
+                    Text("Next Sub In: \(clock.subRemainingSeconds.timeFormatted)")
                         .foregroundStyle(.secondary)
                         .padding(.bottom, 8)
 

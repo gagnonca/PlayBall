@@ -5,7 +5,6 @@
 //  Created by Corey Gagnon on 5/14/25.
 //
 
-
 import Foundation
 import SwiftUI
 
@@ -19,47 +18,47 @@ final class GameSession: ObservableObject, Identifiable {
     let team: Team
 
     @Published var substitutionState: SubstitutionState
-    @Published var timerCoordinator: GameTimerCoordinator
-    
+    @Published var clockManager: GameClockManager
+
     let liveActivityHandler = GameLiveActivityHandler()
 
     init(game: Game, team: Team) {
         self.game = game
         self.team = team
 
-        // Regenerate substitution plan every time the session is created
         let plan = game.buildSubstitutionPlan()
-
         self.substitutionState = SubstitutionState(plan: plan)
-        self.timerCoordinator = GameTimerCoordinator(
+
+        self.clockManager = GameClockManager(
             totalPeriods: game.numberOfPeriods.rawValue,
             periodLength: TimeInterval(game.periodLengthMinutes * 60),
-            substitutionInterval: plan.subDuration,
-            quarterTimerID: "\(game.id)-QuarterTimer",
-            subTimerID: "\(game.id)-SubTimer"
+            substitutionInterval: plan.subDuration
         )
 
-        self.timerCoordinator.onSubTimerFinish = { [weak self] in
-            self?.substitutionState.advance()
-        }
-        
-        self.timerCoordinator.onGameStart = { [weak self] in
+        // Wire callbacks
+        clockManager.onGameStart = { [weak self] in
             self?.startLiveActivityIfNeeded()
+            self?.updateLiveActivity() // push initial state for the period
         }
-        
-        self.timerCoordinator.onSubTimerRestarted = { [weak self] in
+        clockManager.onSubTimerFinish = { [weak self] in
+            self?.substitutionState.advance()
             self?.updateLiveActivity()
         }
-
-        self.timerCoordinator.onGameEnd = { [weak self] in
-            self?.endLiveActivity()
+        clockManager.onSubTimerRestarted = { [weak self] in
+            self?.updateLiveActivity()
+        }
+        clockManager.onGameEnd = { [weak self] in
+            // End of current period – do not auto-start next period
+            self?.updateLiveActivity() // final state for the period
         }
     }
 
-    /// Total game time elapsed based on the timer.
-    var totalElapsedTime: TimeInterval {
-        timerCoordinator.quarterTimer.timerTime.totalSeconds
-    }
+    // MARK: - Convenience
+
+    var totalElapsedTime: TimeInterval { TimeInterval(clockManager.elapsedSeconds) }
+    var periodLength: TimeInterval { TimeInterval(clockManager.periodLength) }
+    var currentQuarter: Int { clockManager.currentQuarter }
+    var nextSubCountdown: TimeInterval { TimeInterval(clockManager.subRemainingSeconds) }
 
     /// Convenience accessors to current rotation state.
     var currentPlayers: [Player] { substitutionState.currentPlayers }
@@ -69,38 +68,62 @@ final class GameSession: ObservableObject, Identifiable {
     /// Advance substitution manually (e.g. for testing or debugging).
     func advanceSubstitution() {
         substitutionState.advance()
+        updateLiveActivity()
     }
-}
 
-extension GameSession {
-    func cleanup() {
-        timerCoordinator.currentQuarter = 0
-        try? timerCoordinator.quarterTimer.skip()
-        try? timerCoordinator.subTimer.skip()
+    // MARK: - Controls
+
+    func togglePlayPause() {
+        clockManager.togglePlayPause()
+        updateLiveActivity()
     }
-}
 
-extension GameSession {
+    func startNextQuarter() {
+        clockManager.startNextQuarterManually()
+        updateLiveActivity()
+    }
+
+    /// Restart the sub-countdown based on current elapsed time (forces a fresh cycle).
     func restartSubTimer() {
         let elapsed = totalElapsedTime
         let cycle = substitutionState.plan.subDuration
         let timeIntoCycle = elapsed.truncatingRemainder(dividingBy: cycle)
         let remaining = max(cycle - timeIntoCycle, 0)
-        timerCoordinator.restartSubTimer(remaining: remaining)
+        clockManager.restartSubTimer(remaining: remaining)
+        updateLiveActivity()
+    }
+
+    /// Reset everything for a brand-new game session (same teams/game rules).
+    func cleanup() {
+        // Recreate plan to reset derived state
+        let newPlan = game.buildSubstitutionPlan()
+        substitutionState = SubstitutionState(plan: newPlan)
+
+        // Recreate clock so all anchors/tickers are brand new
+        clockManager = GameClockManager(
+            totalPeriods: game.numberOfPeriods.rawValue,
+            periodLength: TimeInterval(game.periodLengthMinutes * 60),
+            substitutionInterval: newPlan.subDuration
+        )
+        clockManager.onGameStart = { [weak self] in self?.startLiveActivityIfNeeded(); self?.updateLiveActivity() }
+        clockManager.onSubTimerFinish = { [weak self] in self?.substitutionState.advance(); self?.updateLiveActivity() }
+        clockManager.onSubTimerRestarted = { [weak self] in self?.updateLiveActivity() }
+        clockManager.onGameEnd = { [weak self] in self?.updateLiveActivity() }
+
+        endLiveActivity()
     }
 }
 
-
-// MARK: - Live Activity Actions
+// MARK: - Live Activity plumbing
 extension GameSession {
     func startLiveActivityIfNeeded() {
         guard !liveActivityHandler.isActive else { return }
         liveActivityHandler.startLiveActivity(
             currentTime: totalElapsedTime,
-            periodLength: timerCoordinator.periodLength,
-            currentQuarter: timerCoordinator.currentQuarter,
+            periodLength: periodLength,
+            currentQuarter: currentQuarter,
             nextPlayers: nextPlayers,
-            nextSubCountdown: timerCoordinator.subTimer.timerTime.totalSeconds
+            nextSubCountdown: nextSubCountdown
         )
     }
 
@@ -108,17 +131,17 @@ extension GameSession {
         guard liveActivityHandler.isActive else { return }
         liveActivityHandler.updateLiveActivity(
             currentTime: totalElapsedTime,
-            periodLength: timerCoordinator.periodLength,
-            currentQuarter: timerCoordinator.currentQuarter,
+            periodLength: periodLength,
+            currentQuarter: currentQuarter,
             nextPlayers: nextPlayers,
-            nextSubCountdown: timerCoordinator.subTimer.timerTime.totalSeconds
+            nextSubCountdown: nextSubCountdown
         )
     }
 
     func endLiveActivity() {
         liveActivityHandler.endLiveActivity(
             currentTime: totalElapsedTime,
-            currentQuarter: timerCoordinator.currentQuarter
+            currentQuarter: currentQuarter
         )
     }
 }
