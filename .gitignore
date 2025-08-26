@@ -1,0 +1,14 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Xcode user-specific junk
+xcuserdata/
+*.xcuserstate
+*.xcbkptlist
+*.xccheckout
+*.moved-aside
+DerivedData/
+*.xcworkspace/xcuserdata/
+.swiftpm/xcode/package.xcworkspace/xcuserdata/
