@@ -4,9 +4,5 @@
 <dict>
 	<key>NSSupportsLiveActivities</key>
 	<true/>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>processing</string>
-	</array>
 </dict>
 </plist>

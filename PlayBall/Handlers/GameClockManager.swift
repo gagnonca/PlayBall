@@ -32,6 +32,7 @@ final class GameClockManager: ObservableObject {
     private var periodStartAnchor: Date?   // when current period started/resumed
     private var pausedAccumulated: Int = 0 // seconds elapsed before last pause
     private var lastSubBoundaryAt: Int = 0 // elapsedSeconds when last sub fired
+    private var carryOverSubRemaining: Int? = nil // time remaining for sub at the end of a quarter
     
     init(totalPeriods: Int, periodLength: TimeInterval, substitutionInterval: TimeInterval) {
         self.totalPeriods = totalPeriods
@@ -92,13 +93,26 @@ final class GameClockManager: ObservableObject {
         currentQuarter += 1
         periodStartAnchor = Date()
         pausedAccumulated = 0
-        lastSubBoundaryAt = 0
         elapsedSeconds = 0
-        subRemainingSeconds = substitutionInterval
         isRunning = true
+
+        if let carry = carryOverSubRemaining, carry > 0, carry <= substitutionInterval {
+            // Set boundary "in the past" so remaining at elapsed=0 is the carried value.
+            // sinceLastSub = 0 - lastSubBoundaryAt = substitutionInterval - carry
+            // ⇒ remaining = carry
+            lastSubBoundaryAt = -(substitutionInterval - carry)
+            subRemainingSeconds = carry
+        } else {
+            // No carry or edge cases; start a fresh cycle
+            lastSubBoundaryAt = 0
+            subRemainingSeconds = substitutionInterval
+        }
+        carryOverSubRemaining = nil
+
         onGameStart?()
         startTickerIfNeeded()
     }
+
     
     private func clampedElapsed() -> Int {
         let base = pausedAccumulated + (periodStartAnchor.map { Int(Date().timeIntervalSince($0)) } ?? 0)
@@ -159,7 +173,9 @@ final class GameClockManager: ObservableObject {
         
         // 3) Handle period end AFTER processing any boundary exactly at the end.
         if rawElapsed >= periodLength {
-            // Snap UI to period end and pause
+            // Save remaining sub time to carry into the next period
+            carryOverSubRemaining = subRemainingSeconds
+
             elapsedSeconds = periodLength
             periodStartAnchor = nil
             isRunning = false
