@@ -10,13 +10,12 @@ import SwiftData
 
 @main
 struct PlayBallApp: App {
+    private let coach = Coach.shared
+
     var body: some Scene {
         WindowGroup {
-//            var quarterHandler: QuarterHandler = .init()
-//            var substitutionHandler: SubstitutionHandler = .init()
-//            TimerTestView(quarterTimer: quarterHandler.timer, substitutionTimer: substitutionHandler.timer)
-            
             ContentView()
+                .environment(coach)
                 .onOpenURL { url in
                     if url.pathExtension == "json" {
                         Coach.shared.importFrom(url: url)
