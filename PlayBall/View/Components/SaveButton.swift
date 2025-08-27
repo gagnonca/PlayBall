@@ -22,13 +22,8 @@ struct SaveButton: View {
     ZStack {
         ColorGradient()
         VStack(spacing: 32) {
-            SaveButton(isEnabled: true) {
-                print("Saved!")
-            }
-            
-            SaveButton(isEnabled: false) {
-                print("Shouldn't be tappable")
-            }
+            SaveButton(isEnabled: true) {}
+            SaveButton(isEnabled: false) {}
         }
     }
 }
@@ -39,13 +34,8 @@ struct SaveButton: View {
         ColorGradient()
             .opacity(0.3)
         VStack(spacing: 32) {
-            SaveButton(isEnabled: true) {
-                print("Saved!")
-            }
-            
-            SaveButton(isEnabled: false) {
-                print("Shouldn't be tappable")
-            }
+            SaveButton(isEnabled: true) {}
+            SaveButton(isEnabled: false) {}
         }
     }
 }

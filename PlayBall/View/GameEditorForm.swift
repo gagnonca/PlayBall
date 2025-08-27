@@ -325,8 +325,8 @@ private struct GameSettingsSection: View {
         team: Coach.previewCoach.teams.first!,
         title: "Edit Game",
         showDelete: true,
-        onSave: { print("Saved!") },
-        onCancel: { print("Canceled!") },
-        onDelete: { print("Deleted!") }
+        onSave: {},
+        onCancel: {},
+        onDelete: {}
     )
 }

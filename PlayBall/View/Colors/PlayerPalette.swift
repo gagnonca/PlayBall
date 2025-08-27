@@ -10,19 +10,19 @@ import SwiftUI
 struct PlayerPalette {
     static let colors: [Color] = [
         .rosewater,
-//        .flamingo,
         .pink,
         .mauve,
         .red,
-//        .maroon,
         .peach,
         .yellow,
         .green,
-//        .teal,
         .sky,
-//        .sapphire,
         .blue,
-        .lavender
+        .lavender,
+        .flamingo,
+        .maroon,
+        .teal,
+        .sapphire,
     ]
 
     static func color(for index: Int) -> Color {

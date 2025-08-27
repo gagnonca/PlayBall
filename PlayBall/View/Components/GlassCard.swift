@@ -92,9 +92,7 @@ struct GlassCard<Content: View>: View {
         title: "Games",
         sfSymbol: "calendar",
         buttonSymbol: "plus.circle.fill",
-        onButtonTap: {
-            print("Add Game tapped")
-        }
+        onButtonTap: {}
     ) {
         VStack(alignment: .leading) {
             Text("Game 1")

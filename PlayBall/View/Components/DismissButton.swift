@@ -22,9 +22,7 @@ struct DismissButton: View {
 #Preview("ColorGradient") {
     ZStack {
         ColorGradient()
-        DismissButton {
-            print("Dismiss tapped")
-        }
+        DismissButton {}
     }
 }
 
@@ -32,8 +30,6 @@ struct DismissButton: View {
     ZStack {
         ColorGradient()
             .opacity(0.3)
-        DismissButton {
-            print("Dismiss tapped")
-        }
+        DismissButton {}
     }
 }

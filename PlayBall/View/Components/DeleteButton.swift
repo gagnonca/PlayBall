@@ -36,11 +36,7 @@ struct DeleteButton: View {
 
 #Preview {
     VStack {
-        DeleteButton(title: "Delete Team") {
-            print("Team Deleted!")
-        }
-        DeleteButton(title: "Delete Game") {
-            print("Game Deleted!")
-        }
+        DeleteButton(title: "Delete Team") {}
+        DeleteButton(title: "Delete Game") {}
     }
 }

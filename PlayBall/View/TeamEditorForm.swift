@@ -260,8 +260,8 @@ struct LeagueRulesSection: View {
         team: $team,
         title: "Create/Edit Team",
         showDelete: true,
-        onSave: { print("Saved!") },
-        onCancel: { print("Canceled!") },
-        onDelete: { print("Deleted!") }
+        onSave: {},
+        onCancel: {},
+        onDelete: {}
     )
 }
