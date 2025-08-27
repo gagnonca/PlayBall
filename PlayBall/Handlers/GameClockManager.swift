@@ -15,6 +15,7 @@ final class GameClockManager: ObservableObject {
     @Published private(set) var elapsedSeconds: Int = 0        // 0...periodLength
     @Published private(set) var subRemainingSeconds: Int = 0   // substitution countdown
     @Published private(set) var currentQuarter: Int = 0
+    @Published private(set) var isRunning: Bool = false
     
     // MARK: - Config
     let totalPeriods: Int            // 2 for halves, 4 for quarters
@@ -42,8 +43,6 @@ final class GameClockManager: ObservableObject {
     }
     
     // MARK: - Public controls
-    @Published private(set) var isRunning: Bool = false
-    //    var isRunning: Bool { periodStartAnchor != nil }
     var isGameOver: Bool { currentQuarter >= totalPeriods }
     
     func togglePlayPause() {
@@ -51,7 +50,11 @@ final class GameClockManager: ObservableObject {
             onGameEnd?()
             return
         }
-        if isRunning { pause() } else { startOrResume() }
+        if isRunning {
+            pause()
+        } else {
+            startOrResume()
+        }
     }
     
     func startNextQuarterManually() {
@@ -66,7 +69,6 @@ final class GameClockManager: ObservableObject {
         lastSubBoundaryAt = clampedElapsed() - cyclePosition
         subRemainingSeconds = remainingInt
         onSubTimerRestarted?()
-        // UI will stay in sync on next tick
     }
     
     // MARK: - Private
@@ -75,7 +77,6 @@ final class GameClockManager: ObservableObject {
             beginNewPeriod()
             return
         }
-        // resume
         isRunning = true
         periodStartAnchor = Date()
         startTickerIfNeeded()
@@ -135,43 +136,44 @@ final class GameClockManager: ObservableObject {
     
     private func tick() {
         guard periodStartAnchor != nil else { return }
-        
+
         let rawElapsed = clampedElapsed()
-        if rawElapsed != elapsedSeconds {
-            elapsedSeconds = rawElapsed
-        }
-        
-        // We don’t advance subs beyond the end of the period.
+        if rawElapsed != elapsedSeconds { elapsedSeconds = rawElapsed }
+
         let cap = min(rawElapsed, periodLength)
-        
-        // 1) Advance every substitution boundary that has been crossed.
+
         if substitutionInterval > 0 {
             var advancedCount = 0
             var boundaryCursor = lastSubBoundaryAt
-            
-            // Advance while we have crossed one or more full intervals and haven’t passed the period end.
+
+            // Advance through all crossed intervals
             while boundaryCursor + substitutionInterval <= cap {
                 boundaryCursor += substitutionInterval
                 advancedCount += 1
             }
-            
+
+            // 1) Commit boundary first (if any)
             if advancedCount > 0 {
                 lastSubBoundaryAt = boundaryCursor
-                // Fire exactly as many substitution advances as we crossed
-                for _ in 0..<advancedCount {
-                    onSubTimerFinish?()
-                }
+            }
+
+            // 2) Compute/publish remaining AFTER boundary is updated
+            let sinceLastSub = cap - lastSubBoundaryAt
+            let newRemaining = max(substitutionInterval - sinceLastSub, 0)
+            if newRemaining != subRemainingSeconds {
+                subRemainingSeconds = newRemaining
+            }
+
+            // 3) NOW fire callbacks, so Live Activity sees the fresh value
+            if advancedCount > 0 {
+                for _ in 0..<advancedCount { onSubTimerFinish?() }
                 onSubTimerRestarted?()
             }
-            
-            // 2) Publish remaining time until next sub (clamped to period end).
-            let sinceLastSub = cap - lastSubBoundaryAt
-            subRemainingSeconds = max(substitutionInterval - sinceLastSub, 0)
         } else {
-            subRemainingSeconds = 0
+            if subRemainingSeconds != 0 { subRemainingSeconds = 0 }
         }
-        
-        // 3) Handle period end AFTER processing any boundary exactly at the end.
+
+        // Period end after sub handling
         if rawElapsed >= periodLength {
             // Save remaining sub time to carry into the next period
             carryOverSubRemaining = subRemainingSeconds
