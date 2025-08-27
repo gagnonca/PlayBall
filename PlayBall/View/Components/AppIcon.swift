@@ -30,10 +30,10 @@ enum AppIcon: String {
     
     // Settings / Misc
     case calendar = "calendar"
-    case dismiss = "xmark.circle.fill"
+    case dismiss = "xmark"
     case chevronRight = "chevron.right"
-    case save = "checkmark.circle.fill"
-    case back = "chevron.backward.circle.fill"
+    case save = "checkmark"
+    case back = "chevron.backward"
     case menu = "chevron.down"
 }
 

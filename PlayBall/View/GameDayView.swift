@@ -20,38 +20,36 @@ struct GameDayView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                ColorGradient()
-                
-                ScrollView {
-                    VStack {
-                        Text(session.game.name)
-                            .font(.title.bold())
-                            .foregroundStyle(.white)
-                        
-                        Text(session.game.date, style: .date)
-                            .font(.subheadline)
-                            .foregroundStyle(.white)
-                    }
-                    .padding(.bottom, 12)
+        ZStack {
+            ColorGradient()
+            
+            ScrollView {
+                VStack {
+                    Text(session.game.name)
+                        .font(.title.bold())
+                        .foregroundStyle(.white)
                     
-                    VStack(spacing: 12) {
-                        GameClockSection(
-                            clock: session.clockManager,
-                            numberOfPeriods: session.game.numberOfPeriods
-                        )
-                        OnFieldSection(state: session.substitutionState)
-                        if !session.substitutionState.nextPlayers.isEmpty {
-                            NextOnSection(state: session.substitutionState, clock: session.clockManager)
-                        }
-                        if !session.substitutionState.benchPlayers.isEmpty {
-                            BenchSection(state: session.substitutionState)
-                        }
+                    Text(session.game.date, style: .date)
+                        .font(.subheadline)
+                        .foregroundStyle(.white)
+                }
+                .padding(.bottom, 12)
+                
+                VStack(spacing: 12) {
+                    GameClockSection(
+                        clock: session.clockManager,
+                        numberOfPeriods: session.game.numberOfPeriods
+                    )
+                    OnFieldSection(state: session.substitutionState)
+                    if !session.substitutionState.nextPlayers.isEmpty {
+                        NextOnSection(state: session.substitutionState, clock: session.clockManager)
+                    }
+                    if !session.substitutionState.benchPlayers.isEmpty {
+                        BenchSection(state: session.substitutionState)
                     }
                 }
             }
-            .navigationBarBackButtonHidden(true)
+//            .navigationBarBackButtonHidden(true)
             .toolbar {
                 GameDayToolbar(
                     dismiss: dismiss,
@@ -201,20 +199,11 @@ private struct GameDayToolbar: ToolbarContent {
     @Binding var shouldDeleteGame: Bool
 
     var body: some ToolbarContent {
-        ToolbarItem(placement: .topBarLeading) {
-            Button {
-//                session.liveActivityHandler.endLiveActivity()
-                dismiss()
-            } label: {
-                Image(systemName: "chevron.left")
-                    .foregroundStyle(.white)
-            }
-        }
         ToolbarItem(placement: .topBarTrailing) {
             Button("Game Overview", systemImage: "list.bullet.rectangle") {
                 showingGameOverview = true
             }
-            .tint(.white)
+            .tint(.primary)
         }
         ToolbarItem(placement: .topBarTrailing) {
             Menu {
@@ -230,7 +219,7 @@ private struct GameDayToolbar: ToolbarContent {
                 }
             } label: {
                 Image(.edit)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.primary)
             }
         }
     }
