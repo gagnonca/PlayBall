@@ -5,6 +5,8 @@
 
 # Xcode user-specific junk
 xcuserdata/
+*.xcuserdatad/
+*.xcscmblueprint
 *.xcuserstate
 *.xcbkptlist
 *.xccheckout
