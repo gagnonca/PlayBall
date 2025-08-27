@@ -12,6 +12,8 @@ struct ContentView: View {
     @State private var selectedTeam: Team?
     @State private var showingEditTeam = false
     @State private var showingTeamCreation = false
+    
+    @AppStorage("lastSelectedTeamID") private var lastSelectedTeamID: String = ""
 
     var body: some View {
         NavigationStack {
@@ -33,6 +35,7 @@ struct ContentView: View {
                             ForEach(coach.teams, id: \.id) { team in
                                 Button {
                                     selectedTeam = team
+                                    lastSelectedTeamID = team.id.uuidString
                                 } label: {
                                     Label(team.name, systemImage: team.id == selectedTeam?.id ? "checkmark" : "")
                                 }
@@ -75,14 +78,20 @@ struct ContentView: View {
                 }
             }
             .onAppear {
-                if selectedTeam == nil, !coach.teams.isEmpty {
+                // Try to restore saved team; else default to first
+                if let saved = UUID(uuidString: lastSelectedTeamID),
+                   let match = coach.teams.first(where: { $0.id == saved }) {
+                    selectedTeam = match
+                } else if selectedTeam == nil, !coach.teams.isEmpty {
                     selectedTeam = coach.teams.first
+                    lastSelectedTeamID = coach.teams.first!.id.uuidString
                 }
             }
             .fullScreenCover(isPresented: $showingTeamCreation) {
                 TeamAddView { newTeam in
                     coach.saveTeam(newTeam)
                     selectedTeam = newTeam
+                    lastSelectedTeamID = newTeam.id.uuidString
                 }
             }
             .fullScreenCover(isPresented: $showingEditTeam) {
@@ -98,6 +107,7 @@ struct ContentView: View {
         if let selectedTeam {
             coach.deleteTeam(selectedTeam)
             self.selectedTeam = coach.teams.first
+            lastSelectedTeamID = coach.teams.first?.id.uuidString ?? ""
         }
     }
 }
