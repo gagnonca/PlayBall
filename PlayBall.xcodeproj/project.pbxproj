@@ -90,6 +90,7 @@
 				Model/teams.json,
 				View/Colors/PlayerPalette.swift,
 				View/Components/ColorGradient.swift,
+				View/Components/PlayerPill.swift,
 			);
 			target = 4EC1F7602DC2D6680057BD60 /* PlayBallWidgetExtensionExtension */;
 		};

@@ -1,5 +1,5 @@
 //
-//  PlayerBadge.swift
+//  PlayerPill.swift
 //  PlayBall
 //
 //  Created by Corey Gagnon on 4/16/25.
@@ -7,30 +7,32 @@
 
 import SwiftUI
 
-struct PlayerBadge: View {
-    let player: Player
-    
+struct PlayerPill: View {
+    let name: String
+    let tint: Color
+
     var body: some View {
-        Text(player.name)
+        Text(name)
             .font(.subheadline)
             .lineLimit(1)
             .padding(.horizontal, 12)
             .padding(.vertical, 4)
-            .background(player.tint.opacity(0.25), in: Capsule())
+            .background(tint.opacity(0.25), in: Capsule())
             .overlay(
-                Capsule().stroke(player.tint, lineWidth: 2)
+                Capsule().stroke(tint, lineWidth: 2)
             )
     }
 }
 
-#Preview("PlayerBadge Palette Preview") {
+#Preview("PlayerPill Palette Preview") {
     ScrollView(.horizontal, showsIndicators: false) {
         VStack(spacing: 12) {
             ForEach(PlayerPalette.colors.indices, id: \.self) { index in
-                PlayerBadge(player:Player(
+                let player = Player(
                     name: "Haley",
-                    tintHex: PlayerPalette.hexCode(for: index))
+                    tintHex: PlayerPalette.hexCode(for: index)
                 )
+                PlayerPill(name:player.name, tint: player.tint)
             }
         }
         .padding()

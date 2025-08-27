@@ -49,7 +49,7 @@ struct LiveActivityContent: View {
 
                 HStack(spacing: 6) {
                     ForEach(nextOn, id: \..self) { player in
-                        StaticPlayerBadge(name: player.name, tint: Color(hex: player.tintHex))
+                        PlayerPill(name: player.name, tint: Color(hex: player.tintHex))
                     }
                 }
             }

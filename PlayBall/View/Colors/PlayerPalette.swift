@@ -19,10 +19,6 @@ struct PlayerPalette {
         .sky,
         .blue,
         .lavender,
-        .flamingo,
-        .maroon,
-        .teal,
-        .sapphire,
     ]
 
     static func color(for index: Int) -> Color {

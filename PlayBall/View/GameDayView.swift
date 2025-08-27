@@ -131,7 +131,7 @@ struct OnFieldSection: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                 } else {
                     FlowLayout(items: state.currentPlayers, spacing: 8) { player in
-                        PlayerBadge(player: player)
+                        PlayerPill(name: player.name, tint: player.tint)
                     }
                 }
             }
@@ -156,7 +156,7 @@ struct NextOnSection: View {
                         .padding(.bottom, 8)
 
                     FlowLayout(items: state.nextPlayers, spacing: 8) { player in
-                        PlayerBadge(player: player)
+                        PlayerPill(name: player.name, tint: player.tint)
                     }
                 }
             }
@@ -183,7 +183,7 @@ struct BenchSection: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                 } else {
                     FlowLayout(items: state.benchPlayers, spacing: 8) { player in
-                        PlayerBadge(player: player)
+                        PlayerPill(name: player.name, tint: player.tint)
                     }
                 }
             }

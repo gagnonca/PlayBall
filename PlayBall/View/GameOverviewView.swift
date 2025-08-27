@@ -26,7 +26,7 @@ struct GameOverviewView: View {
                 ForEach(Array(segments.enumerated()), id: \..offset) { index, segment in
                     HStack(spacing: 8) {
                         FlowLayout(items: segment.players, spacing: 8) { player in
-                            PlayerBadge(player: player)
+                            PlayerPill(name: player.name, tint: player.tint)
                         }
                         
                         Text(plan.timeString(forSegment: index + 1))

@@ -81,7 +81,7 @@ struct RosterSection: View {
                         .foregroundStyle(.white.opacity(0.7))
                 } else {
                     FlowLayout(items: players.sortedByName, spacing: 8) { player in
-                        PlayerBadge(player: player)
+                        PlayerPill(name: player.name, tint: player.tint)
                     }
                 }
             }
