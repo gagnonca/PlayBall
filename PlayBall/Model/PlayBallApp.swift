@@ -10,12 +10,9 @@ import SwiftData
 
 @main
 struct PlayBallApp: App {
-    private let coach = Coach.shared
-
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environment(coach)
                 .onOpenURL { url in
                     if url.pathExtension == "json" {
                         Coach.shared.importFrom(url: url)
