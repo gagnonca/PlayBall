@@ -4,5 +4,5 @@ Need help? Email **gagnon.corey@gmail.com** (or your email) — we typically rep
 
 - **Report a bug:** Please include your device model, iOS version, and steps to reproduce.
 - **Feature requests:** We love ideas! Send them to **support@cgagnon.io**.
-- **Privacy:** PlayBall does not collect personal data. Read our [Privacy Policy](/privacy).
+- **Privacy:** PlayBall does not collect personal data. Read our [Privacy Policy](/privacy.md).
 - **Data & deletion:** PlayBall stores data on your device only. Delete the app to remove local data.
