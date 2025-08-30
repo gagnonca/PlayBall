@@ -49,7 +49,6 @@ struct GameDayView: View {
                     }
                 }
             }
-//            .navigationBarBackButtonHidden(true)
             .toolbar {
                 GameDayToolbar(
                     dismiss: dismiss,
@@ -70,7 +69,6 @@ struct GameDayView: View {
                 GameOverviewView(plan: session.substitutionState.plan)
             }
             .onDisappear {
-//                session.cleanup()
                 if shouldDeleteGame {
                     session.team.removeGame(session.game)
                     Coach.shared.updateTeam(session.team)
@@ -219,7 +217,7 @@ private struct GameDayToolbar: ToolbarContent {
                 }
             } label: {
                 Image(.edit)
-                    .foregroundStyle(.primary)
+                    .tint(.primary)
             }
         }
     }

@@ -25,11 +25,7 @@ struct ContentView: View {
 
                 if let id = selectedTeamID,
                    let idx = coach.teams.firstIndex(where: { $0.id == id }) {
-                    // Bind directly into the array element to keep identity stable
                     SelectedTeamView(team: $coach.teams[idx])
-                        // If you ever see lingering internal state when switching teams,
-                        // uncomment the next line to force a clean remount:
-                        //.id(id)
                 } else {
                     EmptyTeamView(showingTeamCreation: $showingTeamCreation)
                 }
@@ -96,7 +92,7 @@ struct ContentView: View {
                 }
             }
         }
-    }
+re    }
 
     // MARK: - Derived
 
