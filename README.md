@@ -22,4 +22,4 @@ Whether you’re coaching your first season or juggling multiple teams, PlayBall
 
 
 ## Dedication 
-PlayBall is built with love for everyone who volunteers their time to youth sports. The name *PlayBall* is a tribute to my dad, who coached me throughout my childhood and taught me the importance of fair play and equal playing time for every kid.
+PlayBall is built with love for everyone who dedicates their time to helping kids grow through sports. The name *PlayBall* is a tribute to my dad, who coached me throughout my childhood and taught me the importance of fair play and equal playing time for every kid.
