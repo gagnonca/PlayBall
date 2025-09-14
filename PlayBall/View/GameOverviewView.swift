@@ -10,8 +10,12 @@ import SwiftUI
 struct GameOverviewView: View {
     let plan: SubstitutionPlan
     private var segments: [SubSegment] { plan.segments }
+    
+    @Environment(\.teamTheme) private var theme
 
     var body: some View {
+        let home = theme.end
+        
         ScrollView {
             VStack(spacing: 0) {
                 // Header
@@ -20,27 +24,26 @@ struct GameOverviewView: View {
                         .frame(maxWidth: .infinity, alignment: .center)
                         .padding(.vertical, 8)
                 }
-                .background(Color.green.opacity(0.15))
+                .background(home.opacity(0.15))
 
                 // Each segment row
                 ForEach(Array(segments.enumerated()), id: \..offset) { index, segment in
-                    HStack(spacing: 8) {
-                        Text(plan.timeString(forSegment: index))
-                            .foregroundStyle(.secondary)
-                        
+                    HStack(spacing: 8) {                        
                         FlowLayout(items: segment.players, spacing: 8) { player in
                             PlayerPill(name: player.name, tint: player.tint)
                         }
                         
-                        Text(plan.timeString(forSegment: index + 1))
+                        let start = plan.timeString(forSegment: index)
+                        let end = plan.timeString(forSegment: index + 1)
+                        Text("\(start)-\(end)")
                             .foregroundStyle(.secondary)
                     }
                     .padding(8)
                     .frame(maxWidth: .infinity)
                     .background(
                         index.isMultiple(of: 2)
-                            ? Color.green.opacity(0.25)
-                            : Color.green.opacity(0.30)
+                            ? home.opacity(0.25)
+                            : home.opacity(0.30)
                     )
 
                 }
