@@ -20,11 +20,14 @@ struct GameOverviewView: View {
                         .frame(maxWidth: .infinity, alignment: .center)
                         .padding(.vertical, 8)
                 }
-                .background(Color.green.opacity(0.25))
+                .background(Color.green.opacity(0.15))
 
                 // Each segment row
                 ForEach(Array(segments.enumerated()), id: \..offset) { index, segment in
                     HStack(spacing: 8) {
+                        Text(plan.timeString(forSegment: index))
+                            .foregroundStyle(.secondary)
+                        
                         FlowLayout(items: segment.players, spacing: 8) { player in
                             PlayerPill(name: player.name, tint: player.tint)
                         }
@@ -34,7 +37,12 @@ struct GameOverviewView: View {
                     }
                     .padding(8)
                     .frame(maxWidth: .infinity)
-                    .background(Color.green.opacity(0.15))
+                    .background(
+                        index.isMultiple(of: 2)
+                            ? Color.green.opacity(0.25)
+                            : Color.green.opacity(0.30)
+                    )
+
                 }
             }
         }
@@ -49,4 +57,9 @@ extension SubstitutionPlan {
         let seconds = totalSeconds % 60
         return String(format: "%d:%02d", minutes, seconds)
     }
+}
+
+#Preview {
+    let plan = Coach.previewCoach.games[1].buildSubstitutionPlan()
+    GameOverviewView(plan:plan)
 }

@@ -23,7 +23,7 @@ struct Game: Identifiable, Hashable, Codable {
         name: String,
         date: Date,
         availablePlayers: [Player],
-        substitutionStyle: SubstitutionStyle = .short,
+        substitutionStyle: SubstitutionStyle = .long,
         playersOnField: Int = 4,
         periodLengthMinutes: Int = 10,
         numberOfPeriods: GameFormat = .quarter,

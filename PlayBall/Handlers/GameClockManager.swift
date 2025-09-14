@@ -20,7 +20,6 @@ final class GameClockManager: ObservableObject {
     // MARK: - Config
     let totalPeriods: Int            // 2 for halves, 4 for quarters
     let periodLength: Int            // seconds
-    let substitutionInterval: Int    // seconds
     
     // MARK: - Callbacks
     var onGameStart: (() -> Void)?
@@ -29,6 +28,7 @@ final class GameClockManager: ObservableObject {
     var onSubTimerRestarted: (() -> Void)?
     
     // MARK: - Internal clock state
+    private(set) var substitutionInterval: Int    // seconds
     private var ticker: DispatchSourceTimer?
     private var periodStartAnchor: Date?   // when current period started/resumed
     private var pausedAccumulated: Int = 0 // seconds elapsed before last pause
@@ -70,6 +70,23 @@ final class GameClockManager: ObservableObject {
         subRemainingSeconds = remainingInt
         onSubTimerRestarted?()
     }
+        
+    /// Update the substitution interval without resetting the game clock.
+    /// Realigns the sub-countdown to the current elapsed time.
+    func updateSubstitutionInterval(_ newInterval: Int) {
+        guard newInterval > 0 else { return }
+        substitutionInterval = newInterval
+        let elapsed = clampedElapsed()
+        let timeIntoCycle = elapsed % newInterval
+        let remaining = max(newInterval - timeIntoCycle, 0)
+        // place last boundary so "sinceLastSub" equals timeIntoCycle
+        lastSubBoundaryAt = elapsed - timeIntoCycle
+        if subRemainingSeconds != remaining {
+            subRemainingSeconds = remaining
+            onSubTimerRestarted?()
+        }
+    }
+
     
     // MARK: - Private
     private func startOrResume() {

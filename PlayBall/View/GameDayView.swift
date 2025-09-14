@@ -59,8 +59,7 @@ struct GameDayView: View {
                 )
             }
             .onChange(of: game) {
-                session = GameSession(game: game, team: team)
-                session.restartSubTimer()
+                session.applyGameChanges(game)
             }
             .fullScreenCover(isPresented: $showingGameEditor) {
                 GameEditView(game: $game, team: team)
@@ -69,6 +68,7 @@ struct GameDayView: View {
                 GameOverviewView(plan: session.substitutionState.plan)
             }
             .onDisappear {
+                session.endLiveActivity()
                 if shouldDeleteGame {
                     session.team.removeGame(session.game)
                     Coach.shared.updateTeam(session.team)
@@ -209,7 +209,7 @@ private struct GameDayToolbar: ToolbarContent {
                     showingGameEditor = true
                 }
                 Button(role: .destructive) {
-//                    session.liveActivityHandler.endLiveActivity()
+                    session.endLiveActivity()
                     shouldDeleteGame = true
                     dismiss()
                 } label: {

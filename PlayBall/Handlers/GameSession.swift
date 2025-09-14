@@ -13,28 +13,28 @@ import SwiftUI
 @MainActor
 final class GameSession: ObservableObject, Identifiable {
     let id = UUID()
-
-    let game: Game
+    
     let team: Team
-
+    var game: Game
+    
     @Published var substitutionState: SubstitutionState
     @Published var clockManager: GameClockManager
-
+    
     let liveActivityHandler = GameLiveActivityHandler()
-
+    
     init(game: Game, team: Team) {
         self.game = game
         self.team = team
-
+        
         let plan = game.buildSubstitutionPlan()
         self.substitutionState = SubstitutionState(plan: plan)
-
+        
         self.clockManager = GameClockManager(
             totalPeriods: game.numberOfPeriods.rawValue,
             periodLength: TimeInterval(game.periodLengthMinutes * 60),
             substitutionInterval: plan.subDuration
         )
-
+        
         // Wire callbacks
         clockManager.onGameStart = { [weak self] in
             self?.startLiveActivityIfNeeded()
@@ -52,27 +52,25 @@ final class GameSession: ObservableObject, Identifiable {
             self?.updateLiveActivity() // final state for the period
         }
     }
-
+    
     // MARK: - Convenience
-
     var totalElapsedTime: TimeInterval { TimeInterval(clockManager.elapsedSeconds) }
     var periodLength: TimeInterval { TimeInterval(clockManager.periodLength) }
     var currentQuarter: Int { clockManager.currentQuarter }
     var nextSubCountdown: TimeInterval { TimeInterval(clockManager.subRemainingSeconds) }
-
+    
     /// Convenience accessors to current rotation state.
     var currentPlayers: [Player] { substitutionState.currentPlayers }
     var nextPlayers: [Player] { substitutionState.nextPlayers }
     var benchPlayers: [Player] { substitutionState.benchPlayers }
-
+    
     /// Advance substitution manually (e.g. for testing or debugging).
     func advanceSubstitution() {
         substitutionState.advance()
         updateLiveActivity()
     }
-
+    
     // MARK: - Controls
-
     func togglePlayPause() {
         clockManager.togglePlayPause()
         updateLiveActivity()
@@ -113,6 +111,46 @@ final class GameSession: ObservableObject, Identifiable {
         endLiveActivity()
     }
 }
+
+// MARK: - Apply in-place game edits without resetting the clock
+extension GameSession {
+    func applyGameChanges(_ newGame: Game) {
+        // Keep the same clock; only refresh plan + interval alignment
+        let wasRunning = clockManager.isRunning
+        let savedQuarter = clockManager.currentQuarter
+        let savedElapsed = clockManager.elapsedSeconds
+        
+        // 1) Update stored game
+        self.game = newGame
+        
+        // 2) Rebuild substitution plan & state from the edited game
+        let newPlan = newGame.buildSubstitutionPlan()
+        self.substitutionState = SubstitutionState(plan: newPlan)
+        
+        // 3) If the sub interval changed, update the clock's interval and realign
+        let newInterval = Int(newPlan.subDuration)
+        if clockManager.substitutionInterval != newInterval {
+            clockManager.updateSubstitutionInterval(newInterval)
+        } else {
+            // Same interval; still realign to avoid drift (e.g., changed index/roster)
+            let timeIntoCycle = savedElapsed % newInterval
+            let remaining = max(newInterval - timeIntoCycle, 0)
+            clockManager.restartSubTimer(remaining: TimeInterval(remaining))
+        }
+        
+        // 4) (Optional safety) Ensure we didn’t accidentally jump periods
+        //    If your edit can change periodLengthMinutes or numberOfPeriods, consider
+        //    doing a full rebuild with state carryover (see comment below).
+        
+        // Keep play/pause state as-is
+        if wasRunning && !clockManager.isRunning {
+            clockManager.togglePlayPause() // resume if we inadvertently paused
+        }
+        
+        updateLiveActivity()
+    }
+}
+
 
 // MARK: - Live Activity plumbing
 extension GameSession {
