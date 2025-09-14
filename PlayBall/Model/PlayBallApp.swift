@@ -13,11 +13,12 @@ struct PlayBallApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .onOpenURL { url in
-                    if url.pathExtension == "json" {
-                        Coach.shared.importFrom(url: url)
-                    }
-                }
+                .environment(\.teamTheme, .default) 
+//                .onOpenURL { url in
+//                    if url.pathExtension == "json" {
+////                        Coach.shared.importFrom(url: url)
+//                    }
+//                }
         }
     }
 }

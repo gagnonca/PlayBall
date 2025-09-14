@@ -58,6 +58,8 @@ struct TeamEditView: View {
 struct TeamEditorForm: View {
     @Binding var team: Team
     @State private var newPlayerName: String = ""
+    @State private var homeColor: Color = .indigo
+    @State private var awayColor: Color = .cyan
     @Environment(\.dismiss) private var dismiss
     
     let title: String
@@ -76,6 +78,7 @@ struct TeamEditorForm: View {
                     ScrollView {
                         VStack(spacing: 12) {
                             TeamNameSection(teamName: $team.name)
+                            TeamColorPickerSection(homeColor: $homeColor, awayColor: $awayColor)
                             AddPlayerSection(
                                 newPlayerName: $newPlayerName,
                                 players: $team.players,
@@ -102,8 +105,19 @@ struct TeamEditorForm: View {
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     SaveButton(isEnabled: isSaveEnabled) {
+                        team.colors = Team.TeamColors(
+                            homeHex: homeColor.toHexRGB(),
+                            awayHex: awayColor.toHexRGB()
+                        )
+
                         onSave()
                     }
+                }
+            }
+            .onAppear {
+                if let c = team.colors {
+                    homeColor = Color(hex: c.homeHex)
+                    awayColor = Color(hex: c.awayHex)
                 }
             }
         }
@@ -136,6 +150,20 @@ struct TeamNameSection: View {
                 .onAppear {
                     isFocused = true
                 }
+        }
+    }
+}
+
+struct TeamColorPickerSection: View {
+    @Binding var homeColor: Color
+    @Binding var awayColor: Color
+
+    var body: some View {
+        GlassCard(title: "Team Colors", sfSymbol: "paintpalette") {
+            VStack(spacing: 8) {
+                ColorPicker("Home", selection: $homeColor, supportsOpacity: false)
+                ColorPicker("Away", selection: $awayColor, supportsOpacity: false)
+            }
         }
     }
 }

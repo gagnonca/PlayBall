@@ -18,6 +18,9 @@ class Team: Identifiable, Codable {
     var matchFormat: MatchFormat
     var gameFormat: GameFormat
     var periodLengthMinutes: Int
+    
+    // Team colors
+    var colors: TeamColors? = nil
 
     init(
         id: UUID = UUID(),
@@ -55,5 +58,12 @@ class Team: Identifiable, Codable {
     func removeGame(_ game: Game) {
         games.removeAll { $0.id == game.id }
         Coach.shared.saveTeamsToJson()
+    }
+}
+
+extension Team {
+    struct TeamColors: Codable, Hashable {
+        var homeHex: String
+        var awayHex: String
     }
 }

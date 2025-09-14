@@ -14,6 +14,16 @@ struct ContentView: View {
     @State private var showingTeamCreation = false
     
     @AppStorage("lastSelectedTeamID") private var lastSelectedTeamID: String = ""
+    
+    // ContentView.swift (inside the struct)
+    private var currentTheme: TeamTheme {
+        if let c = selectedTeam?.colors {
+            return TeamTheme(start: Color(hex: c.homeHex),
+                             end:   Color(hex: c.awayHex))
+        } else {
+            return .default
+        }
+    }
 
     var body: some View {
         NavigationStack {
@@ -101,6 +111,7 @@ struct ContentView: View {
                 }
             }
         }
+        .environment(\.teamTheme, currentTheme)
     }
     
     private func deleteSelectedTeam() {

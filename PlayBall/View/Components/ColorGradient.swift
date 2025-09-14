@@ -8,12 +8,13 @@
 import SwiftUI
 
 struct ColorGradient: View {
+    @Environment(\.teamTheme) private var theme
+
+    var start: Color = .green
+    var end: Color = .pink
     var body: some View {
         LinearGradient(
-            colors: [
-                .green,
-                .pink,
-            ],
+            colors: [theme.start, theme.end],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )

@@ -40,4 +40,12 @@ extension Color {
 
         self.init(red: r, green: g, blue: b)
     }
-}
+    
+    /// Hex string in "#RRGGBB" format (no alpha)
+    func toHexRGB() -> String {
+        let ui = UIColor(self)
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        guard ui.getRed(&r, green: &g, blue: &b, alpha: &a) else { return "#000000" }
+        func h(_ x: CGFloat) -> String { String(format: "%02X", Int(round(x * 255))) }
+        return "#\(h(r))\(h(g))\(h(b))"
+    }}
