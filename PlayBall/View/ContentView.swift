@@ -8,18 +8,29 @@
 import SwiftUI
 
 struct ContentView: View {
+    // Shared model
     @State private var coach = Coach.shared
-    @State private var selectedTeam: Team?
+
+    // Carousel state
+    @State private var currentIndex: Int = 0
+    @State private var selectedTeamID: UUID? = nil
+
+    // Sheets
     @State private var showingEditTeam = false
     @State private var showingTeamCreation = false
-    
+    @State private var showingOverview = false
+
+    // Persist last selected team
     @AppStorage("lastSelectedTeamID") private var lastSelectedTeamID: String = ""
-    
-    // ContentView.swift (inside the struct)
+
+    private var currentTeam: Team? {
+        guard coach.teams.indices.contains(currentIndex) else { return nil }
+        return coach.teams[currentIndex]
+    }
+
     private var currentTheme: TeamTheme {
-        if let c = selectedTeam?.colors {
-            return TeamTheme(start: Color(hex: c.homeHex),
-                             end:   Color(hex: c.awayHex))
+        if let c = currentTeam?.colors {
+            return TeamTheme(start: Color(hex: c.homeHex), end: Color(hex: c.awayHex))
         } else {
             return .default
         }
@@ -29,96 +40,116 @@ struct ContentView: View {
         NavigationStack {
             ZStack {
                 ColorGradient()
-                if let _ = selectedTeam {
-                    SelectedTeamView(team: Binding<Team>(
-                        get: { selectedTeam! },
-                        set: { selectedTeam = $0 }
-                    ))
+                
+                if coach.teams.isEmpty {
+                    // No teams yet
+                    AddTeamPageView(showingTeamCreation: $showingTeamCreation)
                 } else {
-                    EmptyTeamView(showingTeamCreation: $showingTeamCreation)
-                }
-            }
-            .toolbar {
-                ToolbarItem(placement: .principal) {
-                    Menu {
-                        Section("Teams") {
-                            ForEach(coach.teams, id: \.id) { team in
-                                Button {
-                                    selectedTeam = team
-                                    lastSelectedTeamID = team.id.uuidString
-                                } label: {
-                                    Label(team.name, systemImage: team.id == selectedTeam?.id ? "checkmark" : "")
-                                }
+                    VStack(spacing: 0) {
+                        TabView(selection: $selectedTeamID) {
+                            ForEach($coach.teams) { $team in
+                                SelectedTeamView(team: $team)
+                                    .tag(team.id as UUID?)
+                            }
+
+                            // Tag the “Add Team” page with nil so you can still swipe to it
+                            AddTeamPageView(showingTeamCreation: $showingTeamCreation)
+                                .tag(nil as UUID?)
+                        }
+                        .tabViewStyle(.page(indexDisplayMode: .always))
+                        .onChange(of: selectedTeamID) { newID in
+                            if let id = newID, let team = coach.teams.first(where: { $0.id == id }) {
+                                lastSelectedTeamID = team.id.uuidString
                             }
                         }
-
-                        Divider()
-
-                        // Add New Team
-                        Button {
-                            showingTeamCreation = true
-                        } label: {
-                            Label("Add New Team", systemImage: "plus")
-                        }
-                        
-                        // Edit selected Team
-                        Button("Edit Team", systemImage: "pencil") {
-                            showingEditTeam = true
-                        }
-                        .disabled(selectedTeam == nil)
-                        
-                        // Delete Team
-                        Button(role: .destructive) {
-                            deleteSelectedTeam()
-                        } label: {
-                            Label("Delete Team", systemImage: "trash")
-                        }
-                    } label: {
-                        HStack(spacing: 4) {
-                            Text(selectedTeam?.name ?? "Select Team")
-                                .font(.title.bold())
-                                .foregroundStyle(.white)
-
-                            Image(.menu)
-                                .font(.subheadline.bold())
-                                .foregroundStyle(.white.opacity(0.7))
-                                .offset(y: 1)
+                        .onAppear {
+                            if let saved = UUID(uuidString: lastSelectedTeamID),
+                               coach.teams.contains(where: { $0.id == saved }) {
+                                selectedTeamID = saved
+                            } else {
+                                selectedTeamID = coach.teams.first?.id
+                                lastSelectedTeamID = coach.teams.first?.id.uuidString ?? ""
+                            }
                         }
                     }
                 }
             }
-            .onAppear {
-                // Try to restore saved team; else default to first
-                if let saved = UUID(uuidString: lastSelectedTeamID),
-                   let match = coach.teams.first(where: { $0.id == saved }) {
-                    selectedTeam = match
-                } else if selectedTeam == nil, !coach.teams.isEmpty {
-                    selectedTeam = coach.teams.first
-                    lastSelectedTeamID = coach.teams.first!.id.uuidString
+            // Title = team name (no menu here)
+            .toolbar {
+                ToolbarItem(placement: .navigation) {
+                    Text(currentTeam?.name ?? (coach.teams.isEmpty ? "" : ""))
+                        .font(.title.bold())
+                        .foregroundStyle(.white)
+                }
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    Button {
+                        showingOverview = true
+                    } label: {
+                        Image(systemName: "rectangle.grid.2x2")
+//                            .font(.title2)
+                    }
+                    .tint(.white)
+
+                    Menu {
+                        Button("Edit Team", systemImage: "pencil") { showingEditTeam = true }
+                            .disabled(currentTeam == nil)
+                        Button(role: .destructive) {
+                            deleteCurrentTeam()
+                        } label: {
+                            Label("Delete Team", systemImage: "trash")
+                        }
+                        .disabled(currentTeam == nil)
+                    } label: {
+                        Image(systemName: "ellipsis")
+                            .foregroundStyle(.white.opacity(0.9))
+                            .accessibilityLabel("More actions")
+                    }
+                    .disabled(currentTeam == nil)
                 }
             }
+            // Add team
             .fullScreenCover(isPresented: $showingTeamCreation) {
                 TeamAddView { newTeam in
                     coach.saveTeam(newTeam)
-                    selectedTeam = newTeam
-                    lastSelectedTeamID = newTeam.id.uuidString
+                    if let idx = coach.teams.firstIndex(where: { $0.id == newTeam.id }) {
+                        currentIndex = idx
+                    } else {
+                        currentIndex = max(0, coach.teams.count - 1)
+                    }
+                    lastSelectedTeamID = coach.teams[currentIndex].id.uuidString
                 }
             }
+            // Edit team
             .fullScreenCover(isPresented: $showingEditTeam) {
-                if let selectedTeam = selectedTeam,
-                   let index = coach.teams.firstIndex(where: { $0.id == selectedTeam.id }) {
-                    TeamEditView(team: $coach.teams[index])
+                if let currentTeam = currentTeam,
+                   let idx = coach.teams.firstIndex(where: { $0.id == currentTeam.id }) {
+                    TeamEditView(team: $coach.teams[idx])
                 }
+            }
+            // Overview grid of all team cards + plus card
+            .fullScreenCover(isPresented: $showingOverview) {
+                TeamsOverviewView(
+                    coach: coach,
+                    currentIndex: $currentIndex,
+                    lastSelectedTeamID: $lastSelectedTeamID,
+                    showingTeamCreation: $showingTeamCreation
+                )
             }
         }
         .environment(\.teamTheme, currentTheme)
     }
-    
-    private func deleteSelectedTeam() {
-        if let selectedTeam {
-            coach.deleteTeam(selectedTeam)
-            self.selectedTeam = coach.teams.first
-            lastSelectedTeamID = coach.teams.first?.id.uuidString ?? ""
+
+    private func deleteCurrentTeam() {
+        guard let currentTeam else { return }
+        coach.deleteTeam(currentTeam)
+
+        if let first = coach.teams.first {
+            selectedTeamID = first.id
+            lastSelectedTeamID = first.id.uuidString
+        } else {
+            // No teams left; select the Add page
+            selectedTeamID = nil
+            lastSelectedTeamID = ""
         }
     }
 }
@@ -126,4 +157,3 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
-
