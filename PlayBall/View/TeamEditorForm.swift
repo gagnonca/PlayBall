@@ -67,6 +67,8 @@ struct TeamEditorForm: View {
     let onSave: () -> Void
     let onCancel: () -> Void
     let onDelete: (() -> Void)?
+    
+    @State private var showingEmojiPicker = false
 
     var body: some View {
         NavigationStack {
@@ -77,7 +79,7 @@ struct TeamEditorForm: View {
                 VStack {
                     ScrollView {
                         VStack(spacing: 12) {
-                            TeamNameSection(teamName: $team.name)
+                            TeamNameSection(teamName: $team.name, mascotEmoji: $team.mascotEmoji)
                             TeamColorPickerSection(homeColor: $homeColor, awayColor: $awayColor)
                             AddPlayerSection(
                                 newPlayerName: $newPlayerName,
@@ -120,6 +122,9 @@ struct TeamEditorForm: View {
                     awayColor = Color(hex: c.awayHex)
                 }
             }
+            .sheet(isPresented: $showingEmojiPicker) {
+                EmojiPickerView(selection: $team.mascotEmoji)
+            }
         }
     }
 
@@ -138,18 +143,44 @@ struct TeamEditorForm: View {
 
 struct TeamNameSection: View {
     @Binding var teamName: String
+    @Binding var mascotEmoji: String?
     @FocusState private var isFocused: Bool
+    @State private var showingEmojiPicker = false
 
     var body: some View {
         GlassCard(title: "Team Name", sfSymbol: "figure.run") {
-            TextField("Enter Team Name", text: $teamName)
-                .textInputAutocapitalization(.words)
-                .foregroundStyle(.primary)
-                .textInputAutocapitalization(.words)
-                .focused($isFocused)
-                .onAppear {
-                    isFocused = true
-                }
+            HStack(spacing: 12) {
+                // Team name field
+                TextField("Enter Team Name", text: $teamName)
+                    .textInputAutocapitalization(.words)
+                    .foregroundStyle(.primary)
+                    .focused($isFocused)
+                
+                //
+                // UNCOMMENT LATER IF I WANT TO ADD THIS
+                //
+//                Button {
+//                    isFocused = false
+//                    showingEmojiPicker = true
+//                } label: {
+//                    ZStack {
+//                        Circle()
+//                            .fill(.ultraThinMaterial)
+//                            .frame(width: 52, height: 52)
+//                            .overlay(Circle().strokeBorder(.white.opacity(0.2)))
+//                            .shadow(radius: 2)
+//                        Text(mascotEmoji ?? "🙂")
+//                            .font(.system(size: 28))
+//                            .accessibilityHidden(true)
+//                    }
+//                }
+//                .buttonStyle(.plain)
+//                .accessibilityLabel("Choose mascot emoji")
+            }
+            .onAppear { isFocused = true }
+        }
+        .sheet(isPresented: $showingEmojiPicker) {
+            EmojiPickerView(selection: $mascotEmoji)
         }
     }
 }

@@ -2,18 +2,21 @@
 //  ContentView.swift
 //  PlayBall
 //
-//  Created by Corey Gagnon on 4/26/25.
-//
 
 import SwiftUI
+
+// MARK: - Robust selection type (no more nil-tags)
+private enum TeamTabSelection: Hashable {
+    case team(UUID)
+    case add
+}
 
 struct ContentView: View {
     // Shared model
     @State private var coach = Coach.shared
 
-    // Carousel state
-    @State private var currentIndex: Int = 0
-    @State private var selectedTeamID: UUID? = nil
+    // Selection driven by stable IDs (via enum)
+    @State private var selection: TeamTabSelection = .add
 
     // Sheets
     @State private var showingEditTeam = false
@@ -23,9 +26,10 @@ struct ContentView: View {
     // Persist last selected team
     @AppStorage("lastSelectedTeamID") private var lastSelectedTeamID: String = ""
 
+    // Current team derived from selection
     private var currentTeam: Team? {
-        guard coach.teams.indices.contains(currentIndex) else { return nil }
-        return coach.teams[currentIndex]
+        guard case let .team(id) = selection else { return nil }
+        return coach.teams.first(where: { $0.id == id })
     }
 
     private var currentTheme: TeamTheme {
@@ -40,89 +44,108 @@ struct ContentView: View {
         NavigationStack {
             ZStack {
                 ColorGradient()
-                
+
                 if coach.teams.isEmpty {
-                    // No teams yet
+                    // No teams yet -> show Add page directly
                     AddTeamPageView(showingTeamCreation: $showingTeamCreation)
                 } else {
                     VStack(spacing: 0) {
-                        TabView(selection: $selectedTeamID) {
+                        TabView(selection: $selection) {
                             ForEach($coach.teams) { $team in
                                 SelectedTeamView(team: $team)
-                                    .tag(team.id as UUID?)
+                                    .tag(TeamTabSelection.team(team.id))
                             }
 
-                            // Tag the “Add Team” page with nil so you can still swipe to it
+                            // Last page = Add Team
                             AddTeamPageView(showingTeamCreation: $showingTeamCreation)
-                                .tag(nil as UUID?)
+                                .tag(TeamTabSelection.add)
                         }
                         .tabViewStyle(.page(indexDisplayMode: .always))
-                        .onChange(of: selectedTeamID) { newID in
-                            if let id = newID, let team = coach.teams.first(where: { $0.id == id }) {
-                                lastSelectedTeamID = team.id.uuidString
+                        .onChange(of: selection) { newSel in
+                            switch newSel {
+                            case .team(let id):
+                                lastSelectedTeamID = id.uuidString
+                            case .add:
+                                lastSelectedTeamID = ""
                             }
                         }
                         .onAppear {
-                            if let saved = UUID(uuidString: lastSelectedTeamID),
-                               coach.teams.contains(where: { $0.id == saved }) {
-                                selectedTeamID = saved
+                            // Restore last viewed team (if still exists) or default to first (or Add page if none)
+                            if
+                                let saved = UUID(uuidString: lastSelectedTeamID),
+                                coach.teams.contains(where: { $0.id == saved })
+                            {
+                                selection = .team(saved)
+                            } else if let first = coach.teams.first {
+                                selection = .team(first.id)
+                                lastSelectedTeamID = first.id.uuidString
                             } else {
-                                selectedTeamID = coach.teams.first?.id
-                                lastSelectedTeamID = coach.teams.first?.id.uuidString ?? ""
+                                selection = .add
+                                lastSelectedTeamID = ""
                             }
                         }
                     }
                 }
             }
-            // Title = team name (no menu here)
             .toolbar {
                 ToolbarItem(placement: .navigation) {
-                    Text(currentTeam?.name ?? (coach.teams.isEmpty ? "" : ""))
-                        .font(.title.bold())
-                        .foregroundStyle(.white)
+                    if let team = currentTeam {
+                        Menu {
+                            Button("Edit Team", systemImage: "pencil") { showingEditTeam = true }
+                            Button(role: .destructive) {
+                                deleteCurrentTeam()
+                            } label: {
+                                Label("Delete Team", systemImage: "trash")
+                            }
+                        } label: {
+                            HStack(spacing: 8) {
+                                Text(team.name)
+                                    .font(.largeTitle.bold())
+                                    .foregroundStyle(.white)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.8)
+
+                                Image(systemName: "chevron.down")
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(.white.opacity(0.7))
+                                    .padding(.leading, 2)
+                            }
+                            .contentShape(Rectangle())
+                        }
+                        .accessibilityLabel("Team actions for \(team.name)")
+                    }
                 }
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
                     Button {
                         showingOverview = true
                     } label: {
                         Image(systemName: "rectangle.grid.2x2")
-//                            .font(.title2)
                     }
                     .tint(.white)
-
-                    Menu {
-                        Button("Edit Team", systemImage: "pencil") { showingEditTeam = true }
-                            .disabled(currentTeam == nil)
-                        Button(role: .destructive) {
-                            deleteCurrentTeam()
-                        } label: {
-                            Label("Delete Team", systemImage: "trash")
-                        }
-                        .disabled(currentTeam == nil)
-                    } label: {
-                        Image(systemName: "ellipsis")
-                            .foregroundStyle(.white.opacity(0.9))
-                            .accessibilityLabel("More actions")
-                    }
-                    .disabled(currentTeam == nil)
                 }
             }
             // Add team
             .fullScreenCover(isPresented: $showingTeamCreation) {
                 TeamAddView { newTeam in
                     coach.saveTeam(newTeam)
-                    if let idx = coach.teams.firstIndex(where: { $0.id == newTeam.id }) {
-                        currentIndex = idx
+                    if coach.teams.contains(where: { $0.id == newTeam.id }) {
+                        selection = .team(newTeam.id)
+                        lastSelectedTeamID = newTeam.id.uuidString
+                    } else if let first = coach.teams.first {
+                        selection = .team(first.id)
+                        lastSelectedTeamID = first.id.uuidString
                     } else {
-                        currentIndex = max(0, coach.teams.count - 1)
+                        selection = .add
+                        lastSelectedTeamID = ""
                     }
-                    lastSelectedTeamID = coach.teams[currentIndex].id.uuidString
                 }
             }
             // Edit team
             .fullScreenCover(isPresented: $showingEditTeam) {
-                if let currentTeam = currentTeam,
-                   let idx = coach.teams.firstIndex(where: { $0.id == currentTeam.id }) {
+                if
+                    case let .team(id) = selection,
+                    let idx = coach.teams.firstIndex(where: { $0.id == id })
+                {
                     TeamEditView(team: $coach.teams[idx])
                 }
             }
@@ -130,7 +153,7 @@ struct ContentView: View {
             .fullScreenCover(isPresented: $showingOverview) {
                 TeamsOverviewView(
                     coach: coach,
-                    currentIndex: $currentIndex,
+                    currentIndex: indexSelectionBridge, // maps to enum selection
                     lastSelectedTeamID: $lastSelectedTeamID,
                     showingTeamCreation: $showingTeamCreation
                 )
@@ -139,17 +162,45 @@ struct ContentView: View {
         .environment(\.teamTheme, currentTheme)
     }
 
+    // MARK: - Delete
+
     private func deleteCurrentTeam() {
         guard let currentTeam else { return }
         coach.deleteTeam(currentTeam)
 
-        if let first = coach.teams.first {
-            selectedTeamID = first.id
-            lastSelectedTeamID = first.id.uuidString
-        } else {
-            // No teams left; select the Add page
-            selectedTeamID = nil
+        if coach.teams.isEmpty {
+            selection = .add
             lastSelectedTeamID = ""
+        } else if let first = coach.teams.first {
+            selection = .team(first.id)
+            lastSelectedTeamID = first.id.uuidString
+        }
+    }
+
+    // MARK: - Index <-> Selection Bridge (for components still expecting an index)
+
+    private var indexSelectionBridge: Binding<Int> {
+        Binding(
+            get: { selectedIndexFromSelection() },
+            set: { newIndex in
+                if coach.teams.indices.contains(newIndex) {
+                    let id = coach.teams[newIndex].id
+                    selection = .team(id)
+                    lastSelectedTeamID = id.uuidString
+                } else {
+                    selection = .add
+                    lastSelectedTeamID = ""
+                }
+            }
+        )
+    }
+
+    private func selectedIndexFromSelection() -> Int {
+        switch selection {
+        case .team(let id):
+            return coach.teams.firstIndex(where: { $0.id == id }) ?? coach.teams.count
+        case .add:
+            return coach.teams.count
         }
     }
 }

@@ -21,6 +21,9 @@ class Team: Identifiable, Codable {
     
     // Team colors
     var colors: TeamColors? = nil
+    
+    // Optional emoji mascot
+    var mascotEmoji: String? = nil
 
     init(
         id: UUID = UUID(),
@@ -29,7 +32,9 @@ class Team: Identifiable, Codable {
         games: [Game] = [],
         matchFormat: MatchFormat = .fourVFour,
         gameFormat: GameFormat = .quarter,
-        periodLengthMinutes: Int = 10
+        periodLengthMinutes: Int = 10,
+        colors: TeamColors? = nil,
+        mascotEmoji: String? = nil
     ) {
         self.id = id
         self.name = name
@@ -38,6 +43,8 @@ class Team: Identifiable, Codable {
         self.matchFormat = matchFormat
         self.gameFormat = gameFormat
         self.periodLengthMinutes = periodLengthMinutes
+        self.colors = colors
+        self.mascotEmoji = mascotEmoji
     }
 
     func addPlayer(_ player: Player) {

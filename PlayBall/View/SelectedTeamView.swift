@@ -28,6 +28,7 @@ struct SelectedTeamView: View {
                 RosterSection(players: team.players)
             }
         }
+        .padding(.top, 32)
         .fullScreenCover(isPresented: $showingGameCreation) {
             GameAddView(team: team)
         }
