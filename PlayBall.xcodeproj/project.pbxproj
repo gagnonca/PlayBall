@@ -87,7 +87,6 @@
 			membershipExceptions = (
 				"Extensions/Color+Theme.swift",
 				Model/Player.swift,
-				Model/teams.json,
 				View/Colors/PlayerPalette.swift,
 				View/Colors/ThemeEnvironment.swift,
 				View/Components/ColorGradient.swift,
