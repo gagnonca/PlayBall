@@ -8,30 +8,46 @@
 import SwiftUI
 
 struct GlassCard<Content: View>: View {
-    var title: String
-    var sfSymbol: String
+    var title: String?
+    var sfSymbol: String?
     var buttonSymbol: String?
     var onButtonTap: (() -> Void)? = nil
     var content: () -> Content
 
+    private var showsHeader: Bool {
+        title != nil || sfSymbol != nil || (buttonSymbol != nil && onButtonTap != nil)
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Label(title, systemImage: sfSymbol)
-                    .font(.headline.bold())
-                    .padding(.bottom, 4)
+            if showsHeader {
+                HStack {
+                    if let title, let sfSymbol {
+                        Label(title, systemImage: sfSymbol)
+                            .font(.headline.bold())
+                            .padding(.bottom, 4)
+                    } else if let title {
+                        Text(title)
+                            .font(.headline.bold())
+                            .padding(.bottom, 4)
+                    } else if let sfSymbol {
+                        Image(systemName: sfSymbol)
+                            .font(.headline.bold())
+                            .padding(.bottom, 4)
+                    }
 
-                Spacer()
+                    Spacer()
 
-                if let buttonSymbol, let onButtonTap {
-                    Button(action: onButtonTap) {
-                        Image(systemName: buttonSymbol)
-                            .font(.headline)
-                            .foregroundStyle(Color.primary)
+                    if let buttonSymbol, let onButtonTap {
+                        Button(action: onButtonTap) {
+                            Image(systemName: buttonSymbol)
+                                .font(.headline)
+                                .foregroundStyle(Color.primary)
+                        }
                     }
                 }
+                .padding(.bottom, 4)
             }
-            .padding(.bottom, 4)
         
             content()
         }
@@ -115,3 +131,11 @@ struct GlassCard<Content: View>: View {
     }
 }
 
+#Preview("Content Only") {
+    GlassCard(title: nil, sfSymbol: nil) {
+        VStack(alignment: .leading) {
+            Text("No header, just content")
+            Text("Line 2")
+        }
+    }
+}

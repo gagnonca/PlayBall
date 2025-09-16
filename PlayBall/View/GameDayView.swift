@@ -24,18 +24,19 @@ struct GameDayView: View {
             ColorGradient()
             
             ScrollView {
-                VStack {
-                    Text(session.game.name)
-                        .font(.title.bold())
-                        .foregroundStyle(.white)
-                    
-                    Text(session.game.date, style: .date)
-                        .font(.subheadline)
-                        .foregroundStyle(.white)
-                }
-                .padding(.bottom, 12)
-                
                 VStack(spacing: 12) {
+                    GlassCard {
+                        VStack {
+                            Text(session.game.name)
+                                .font(.title.bold())
+                                .foregroundStyle(.primary)
+
+                            Text(session.game.date, style: .date)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .center)
+                    }
                     GameClockSection(
                         clock: session.clockManager,
                         numberOfPeriods: session.game.numberOfPeriods
@@ -49,6 +50,7 @@ struct GameDayView: View {
                     }
                 }
             }
+            .scrollDisabled(true)
             .toolbar {
                 GameDayToolbar(
                     dismiss: dismiss,
@@ -244,3 +246,4 @@ struct GameDayViewWrapper: View {
         team: Coach.previewCoach.teams.first!
     )
 }
+

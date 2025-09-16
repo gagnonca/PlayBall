@@ -101,13 +101,14 @@ struct ContentView: View {
                             HStack(spacing: 8) {
                                 Text(team.name)
                                     .font(.largeTitle.bold())
-                                    .foregroundStyle(.white)
+//                                    .foregroundStyle(.white)
+//                                    .tint(toolbarForeground)
                                     .lineLimit(1)
                                     .minimumScaleFactor(0.8)
 
                                 Image(systemName: "chevron.down")
                                     .font(.subheadline.weight(.semibold))
-                                    .foregroundStyle(.white.opacity(0.7))
+//                                    .foregroundStyle(.white.opacity(0.7))
                                     .padding(.leading, 2)
                             }
                             .contentShape(Rectangle())
@@ -121,7 +122,6 @@ struct ContentView: View {
                     } label: {
                         Image(systemName: "rectangle.grid.2x2")
                     }
-                    .tint(.white)
                 }
             }
             // Add team
