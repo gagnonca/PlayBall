@@ -10,6 +10,7 @@ struct GameDayView: View {
     @State private var showingGameEditor = false
     @State private var showingGameOverview = false
     @State private var shouldDeleteGame = false
+    @State private var showingResyncTimerSheet = false
 
     @Environment(\.dismiss) private var dismiss
 
@@ -57,7 +58,8 @@ struct GameDayView: View {
                     session: session,
                     showingGameEditor: $showingGameEditor,
                     showingGameOverview: $showingGameOverview,
-                    shouldDeleteGame: $shouldDeleteGame
+                    shouldDeleteGame: $shouldDeleteGame,
+                    showingResyncTimerSheet: $showingResyncTimerSheet
                 )
             }
             .onChange(of: game) {
@@ -68,6 +70,19 @@ struct GameDayView: View {
             }
             .sheet(isPresented: $showingGameOverview) {
                 GameOverviewView(plan: session.substitutionState.plan)
+            }
+            .sheet(isPresented: $showingResyncTimerSheet) {
+                TimerResyncSheet(
+                    maxSeconds: session.clockManager.periodLength,
+                    currentElapsed: session.clockManager.elapsedSeconds,
+                    maxQuarter: session.game.numberOfPeriods.rawValue,
+                    currentQuarter: max(session.clockManager.currentQuarter, 1)
+                ) { newSeconds, targetQuarter in
+                    session.resyncTimer(to: newSeconds, inQuarter: targetQuarter)
+                }
+                .presentationDetents([.height(360), .medium])
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(16)
             }
             .onDisappear {
                 session.endLiveActivity()
@@ -197,11 +212,18 @@ private struct GameDayToolbar: ToolbarContent {
     @Binding var showingGameEditor: Bool
     @Binding var showingGameOverview: Bool
     @Binding var shouldDeleteGame: Bool
+    @Binding var showingResyncTimerSheet: Bool
 
     var body: some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
             Button("Game Overview", systemImage: "list.bullet.rectangle") {
                 showingGameOverview = true
+            }
+            .tint(.primary)
+        }
+        ToolbarItem(placement: .topBarTrailing) {
+            Button("Resync Timer", systemImage: "clock.arrow.circlepath") {
+                showingResyncTimerSheet = true
             }
             .tint(.primary)
         }
@@ -239,6 +261,92 @@ struct GameDayViewWrapper: View {
     }
 }
 
+struct TimerResyncSheet: View {
+    let maxSeconds: Int
+    let currentElapsed: Int
+    let maxQuarter: Int
+    let currentQuarter: Int
+    let onSave: (Int, Int) -> Void
+
+    @Environment(\.dismiss) private var dismiss
+
+    @State private var selectedMinutes: Int = 0
+    @State private var selectedSeconds: Int = 0
+    @State private var selectedQuarter: Int = 1
+
+    private var maxMinutes: Int {
+        maxSeconds / 60
+    }
+    private var maxSecondsForSelectedMinute: Int {
+        if selectedMinutes == maxMinutes {
+            return maxSeconds % 60
+        } else {
+            return 59
+        }
+    }
+
+    var body: some View {
+        NavigationView {
+            VStack {
+                Picker("Quarter", selection: $selectedQuarter) {
+                    ForEach(1...maxQuarter, id: \.self) { q in
+                        Text("Q\(q)").tag(q)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .padding(.horizontal)
+
+                HStack {
+                    Picker("Minutes", selection: $selectedMinutes) {
+                        ForEach(0...maxMinutes, id: \.self) { minute in
+                            Text("\(minute) min").tag(minute)
+                        }
+                    }
+                    .pickerStyle(WheelPickerStyle())
+                    .frame(maxWidth: .infinity)
+
+                    Picker("Seconds", selection: $selectedSeconds) {
+                        ForEach(0...maxSecondsForSelectedMinute, id: \.self) { second in
+                            Text("\(second) sec").tag(second)
+                        }
+                    }
+                    .pickerStyle(WheelPickerStyle())
+                    .frame(maxWidth: .infinity)
+                }
+                .padding()
+                Spacer()
+            }
+            .navigationTitle("Resync Timer")
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        let total = selectedMinutes * 60 + selectedSeconds
+                        onSave(total, selectedQuarter)
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+            }
+            .onAppear {
+                selectedQuarter = min(max(currentQuarter, 1), maxQuarter)
+                let minutes = currentElapsed / 60
+                let seconds = currentElapsed % 60
+                if minutes <= maxMinutes {
+                    selectedMinutes = minutes
+                    selectedSeconds = seconds <= (minutes == maxMinutes ? maxSeconds % 60 : 59) ? seconds : 0
+                } else {
+                    selectedMinutes = maxMinutes
+                    selectedSeconds = maxSeconds % 60
+                }
+            }
+        }
+    }
+}
+
 #Preview {
     @Previewable @State var game = Coach.previewCoach.teams.first!.games.first!
     GameDayView(
@@ -246,4 +354,3 @@ struct GameDayViewWrapper: View {
         team: Coach.previewCoach.teams.first!
     )
 }
-

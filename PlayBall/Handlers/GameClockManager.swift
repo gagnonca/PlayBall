@@ -43,7 +43,9 @@ final class GameClockManager: ObservableObject {
     }
     
     // MARK: - Public controls
-    var isGameOver: Bool { currentQuarter >= totalPeriods }
+    var isGameOver: Bool {
+        currentQuarter >= totalPeriods && elapsedSeconds >= periodLength
+    }
     
     func togglePlayPause() {
         guard !isGameOver else {
@@ -60,6 +62,24 @@ final class GameClockManager: ObservableObject {
     func startNextQuarterManually() {
         guard currentQuarter < totalPeriods else { return }
         beginNewPeriod()
+    }
+    
+    /// Switch to a specific quarter/period (1-based), resetting the period state.
+    /// Leaves the clock paused at 0 for that period and resets the sub countdown.
+    func switchToQuarter(_ quarter: Int) {
+        guard totalPeriods > 0 else { return }
+        let clamped = max(1, min(quarter, totalPeriods))
+        currentQuarter = clamped
+        // Reset period state
+        isRunning = false
+        periodStartAnchor = nil
+        pausedAccumulated = 0
+        elapsedSeconds = 0
+        // Reset sub countdown to a fresh cycle
+        lastSubBoundaryAt = 0
+        subRemainingSeconds = max(substitutionInterval, 0)
+        carryOverSubRemaining = nil
+        stopTicker()
     }
     
     /// Optional: Force a sub early or restart countdown from custom remaining
@@ -87,6 +107,27 @@ final class GameClockManager: ObservableObject {
         }
     }
 
+    // MARK: - External resync API
+    /// Resynchronize the clock to a specific elapsed time within the current period.
+    /// This does not auto-resume the clock; it leaves the clock paused at the given time
+    /// and realigns the substitution countdown accordingly.
+    func resync(toElapsed elapsed: Int) {
+        let clamped = min(max(elapsed, 0), periodLength)
+        pausedAccumulated = clamped
+        elapsedSeconds = clamped
+        // Realign sub-timer
+        let timeIntoCycle = substitutionInterval > 0 ? (clamped % substitutionInterval) : 0
+        let remaining = substitutionInterval > 0 ? max(substitutionInterval - timeIntoCycle, 0) : 0
+        lastSubBoundaryAt = clamped - timeIntoCycle
+        if subRemainingSeconds != remaining {
+            subRemainingSeconds = remaining
+            onSubTimerRestarted?()
+        }
+        // Pause, do not auto-resume
+        isRunning = false
+        periodStartAnchor = nil
+        stopTicker()
+    }
     
     // MARK: - Private
     private func startOrResume() {
@@ -203,3 +244,4 @@ final class GameClockManager: ObservableObject {
         }
     }
 }
+

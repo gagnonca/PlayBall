@@ -183,3 +183,54 @@ extension GameSession {
         )
     }
 }
+
+// MARK: - New resync timer functionality
+extension GameSession {
+    func resyncTimer(to elapsedSeconds: Int, inQuarter targetQuarter: Int) {
+        // Clamp target quarter to valid range
+        let maxQuarter = game.numberOfPeriods.rawValue
+        let clampedQuarter = max(1, min(targetQuarter, maxQuarter))
+
+        // Compute total game elapsed (across quarters), then clamp within total game length
+        let periodLen = clockManager.periodLength
+        let totalGameSeconds = maxQuarter * periodLen
+        var totalElapsed = (clampedQuarter - 1) * periodLen + min(max(elapsedSeconds, 0), periodLen)
+        totalElapsed = max(0, min(totalElapsed, totalGameSeconds))
+
+        // 1) Switch clock to the requested quarter and reset local period state
+        clockManager.switchToQuarter(clampedQuarter)
+
+        // 2) Set local (within-quarter) elapsed and pause at that time
+        let localElapsed = min(max(elapsedSeconds, 0), periodLen)
+        clockManager.resync(toElapsed: localElapsed)
+
+        // 3) Realign the sub countdown using TOTAL elapsed across the game
+        let cycle = max(Int(substitutionState.plan.subDuration), 0)
+        if cycle > 0 {
+            let timeIntoCycle = totalElapsed % cycle
+            let remaining = max(cycle - timeIntoCycle, 0)
+            clockManager.restartSubTimer(remaining: TimeInterval(remaining))
+        } else {
+            // No cycling: force remaining to 0 for consistency
+            clockManager.restartSubTimer(remaining: 0)
+        }
+
+        // 4) Align the substitution rotation index using TOTAL elapsed
+        if substitutionState.plan.subDuration > 0 {
+            let index = Int(floor(Double(totalElapsed) / substitutionState.plan.subDuration))
+            let clampedIndex = max(0, min(index, substitutionState.plan.segments.count - 1))
+            substitutionState.currentIndex = clampedIndex
+        } else if !substitutionState.plan.segments.isEmpty {
+            substitutionState.currentIndex = 0
+        }
+
+        // 5) Push an update to Live Activity/UI
+        updateLiveActivity()
+
+        // 6) Auto-resume the clock if the game is not over
+        if !clockManager.isGameOver && !clockManager.isRunning {
+            clockManager.togglePlayPause()
+        }
+    }
+}
+
