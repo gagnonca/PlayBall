@@ -7,16 +7,94 @@
 
 import SwiftUI
 
+private struct QuarterSegment: Identifiable {
+    let id = UUID()
+    let quarter: Int
+    let players: [Player]
+    let startInQuarter: Int // seconds relative to quarter start
+    let endInQuarter: Int   // seconds relative to quarter start
+}
+
+private extension SubstitutionPlan {
+    /// Returns the total number of quarters/periods if available from context. Defaults to 4.
+    var totalQuarters: Int { 4 }
+}
+
+private extension GameOverviewView {
+    /// Build per-quarter segments by splitting plan segments at quarter boundaries
+    func buildQuarterSegments() -> [Int: [QuarterSegment]] {
+        var result: [Int: [QuarterSegment]] = [:]
+
+        // Determine quarter length (in seconds)
+        let inferredQuarterLength: Int = {
+            // Try to read from the plan via reflection
+            let m = Mirror(reflecting: plan)
+            for c in m.children {
+                if c.label == "periodLength" || c.label == "quarterLength" { if let v = c.value as? Int { return v } }
+                if c.label == "periodLengthMinutes" { if let v = c.value as? Int { return v * 60 } }
+            }
+            // Fallback to 10 minutes per quarter if not present in plan
+            return 10 * 60
+        }()
+
+        let subLen = max(1, Int(plan.subDuration))
+
+        for (idx, seg) in plan.segments.enumerated() {
+            let globalStart = idx * subLen
+            let globalEnd = (idx + 1) * subLen
+            guard globalEnd > globalStart else { continue }
+
+            var cursor = globalStart
+            while cursor < globalEnd {
+                let quarterIndex = cursor / inferredQuarterLength // 0-based
+                let qStart = quarterIndex * inferredQuarterLength
+                let qEnd = qStart + inferredQuarterLength
+
+                let sliceStartGlobal = cursor
+                let sliceEndGlobal = min(globalEnd, qEnd)
+
+                let startInQuarter = sliceStartGlobal - qStart
+                let endInQuarter = sliceEndGlobal - qStart
+
+                let q = quarterIndex + 1
+                let piece = QuarterSegment(
+                    quarter: q,
+                    players: seg.players,
+                    startInQuarter: startInQuarter,
+                    endInQuarter: endInQuarter
+                )
+                result[q, default: []].append(piece)
+
+                cursor = sliceEndGlobal
+            }
+        }
+
+        // Sort segments within each quarter by start time
+        for q in result.keys {
+            result[q]?.sort { $0.startInQuarter < $1.startInQuarter }
+        }
+
+        return result
+    }
+
+    func timeString(_ seconds: Int) -> String {
+        let m = seconds / 60
+        let s = seconds % 60
+        return String(format: "%d:%02d", m, s)
+    }
+}
+
 struct GameOverviewView: View {
     let plan: SubstitutionPlan
-    private var segments: [SubSegment] { plan.segments }
-    
+    // Removed old segments property
+
     @Environment(\.teamTheme) private var theme
 
     var body: some View {
         let home = theme.end
-        
+
         ScrollView {
+            let quarterGroups = buildQuarterSegments()
             VStack(spacing: 0) {
                 // Header
                 HStack {
@@ -26,26 +104,34 @@ struct GameOverviewView: View {
                 }
                 .background(home.opacity(0.15))
 
-                // Each segment row
-                ForEach(Array(segments.enumerated()), id: \..offset) { index, segment in
-                    HStack(spacing: 8) {                        
-                        FlowLayout(items: segment.players, spacing: 8) { player in
-                            PlayerPill(name: player.name, tint: player.tint)
-                        }
-                        
-                        let start = plan.timeString(forSegment: index)
-                        let end = plan.timeString(forSegment: index + 1)
-                        Text("\(start)-\(end)")
-                            .foregroundStyle(.secondary)
+                ForEach(Array(quarterGroups.keys).sorted(), id: \.self) { quarter in
+                    // Quarter header
+                    HStack {
+                        Text("Q\(quarter)")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
                     }
-                    .padding(8)
-                    .frame(maxWidth: .infinity)
-                    .background(
-                        index.isMultiple(of: 2)
-                            ? home.opacity(0.25)
-                            : home.opacity(0.30)
-                    )
+                    .background(home.opacity(0.2))
 
+                    // Segments within quarter, show quarter-relative time
+                    ForEach(Array(quarterGroups[quarter]!.enumerated()), id: \.offset) { idx, seg in
+                        HStack(spacing: 8) {
+                            FlowLayout(items: seg.players, spacing: 8) { player in
+                                PlayerPill(name: player.name, tint: player.tint)
+                            }
+                            Text("\(timeString(seg.startInQuarter))-\(timeString(seg.endInQuarter))")
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding(8)
+                        .frame(maxWidth: .infinity)
+                        .background(
+                            idx.isMultiple(of: 2)
+                                ? home.opacity(0.25)
+                                : home.opacity(0.30)
+                        )
+                    }
                 }
             }
         }
